@@ -2,7 +2,7 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "gameStartTime",
+    "name": "maxDigital",
     "outputs": [
       {
         "name": "",
@@ -21,24 +21,10 @@
         "type": "uint256"
       }
     ],
-    "name": "extraPrizeMap",
+    "name": "codesMap",
     "outputs": [
       {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "curRandomRound",
-    "outputs": [
-      {
-        "name": "",
+        "name": "addrCount",
         "type": "uint256"
       }
     ],
@@ -63,7 +49,29 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "feeRatio",
+    "name": "validatorInfo",
+    "outputs": [
+      {
+        "name": "defaultValidator",
+        "type": "address"
+      },
+      {
+        "name": "exitingValidator",
+        "type": "address"
+      },
+      {
+        "name": "validatorCount",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "currentRandom",
     "outputs": [
       {
         "name": "",
@@ -78,38 +86,59 @@
     "constant": true,
     "inputs": [
       {
+        "name": "blockTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "getEpochId",
+    "outputs": [
+      {
         "name": "",
         "type": "uint256"
       }
     ],
-    "name": "updownGameMap",
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      },
+      {
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "delegateIn",
     "outputs": [
       {
-        "name": "openPrice",
-        "type": "uint256"
-      },
-      {
-        "name": "closePrice",
-        "type": "uint256"
-      },
-      {
-        "name": "upAmount",
-        "type": "uint256"
-      },
-      {
-        "name": "downAmount",
-        "type": "uint256"
-      },
-      {
-        "name": "finished",
+        "name": "success",
         "type": "bool"
-      },
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "subsidyInfo",
+    "outputs": [
       {
-        "name": "upStakersIdx",
+        "name": "total",
         "type": "uint256"
       },
       {
-        "name": "downStakersIdx",
+        "name": "startIndex",
+        "type": "uint256"
+      },
+      {
+        "name": "refundingCount",
         "type": "uint256"
       }
     ],
@@ -134,11 +163,11 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "calRandomRoundNumber",
+    "name": "closed",
     "outputs": [
       {
         "name": "",
-        "type": "uint256"
+        "type": "bool"
       }
     ],
     "payable": false,
@@ -148,10 +177,22 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "calUpDownRoundNumber",
+    "name": "poolInfo",
     "outputs": [
       {
-        "name": "",
+        "name": "prizePool",
+        "type": "uint256"
+      },
+      {
+        "name": "delegatePercent",
+        "type": "uint256"
+      },
+      {
+        "name": "delegatePool",
+        "type": "uint256"
+      },
+      {
+        "name": "demandDepositPool",
         "type": "uint256"
       }
     ],
@@ -162,7 +203,7 @@
   {
     "constant": false,
     "inputs": [],
-    "name": "acceptOwnership",
+    "name": "renounceOwnership",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -170,8 +211,13 @@
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "randomLotteryTimeCycle",
+    "inputs": [
+      {
+        "name": "epochId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRandomByEpochId",
     "outputs": [
       {
         "name": "",
@@ -185,7 +231,7 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "curUpDownRound",
+    "name": "pendingStakeOutCount",
     "outputs": [
       {
         "name": "",
@@ -212,55 +258,25 @@
   },
   {
     "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "randomMap",
+    "inputs": [],
+    "name": "isOwner",
     "outputs": [
       {
         "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "randomGameMap",
-    "outputs": [
-      {
-        "name": "stakeAmount",
-        "type": "uint256"
-      },
-      {
-        "name": "startUpdownRound",
-        "type": "uint256"
-      },
-      {
-        "name": "stopUpdownRound",
-        "type": "uint256"
-      },
-      {
-        "name": "finished",
         "type": "bool"
-      },
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "pendingStakeOutStartIndex",
+    "outputs": [
       {
-        "name": "stakingTimeIdx",
-        "type": "uint256"
-      },
-      {
-        "name": "accStakeRangeIdx",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -271,7 +287,7 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "randomLotteryTileMul",
+    "name": "feeRate",
     "outputs": [
       {
         "name": "",
@@ -290,11 +306,15 @@
         "type": "uint256"
       }
     ],
-    "name": "winnerMap",
+    "name": "pendingStakeOutMap",
     "outputs": [
       {
-        "name": "",
+        "name": "staker",
         "type": "address"
+      },
+      {
+        "name": "code",
+        "type": "uint256"
       }
     ],
     "payable": false,
@@ -304,7 +324,7 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "winnerNum",
+    "name": "delegateOutAmount",
     "outputs": [
       {
         "name": "",
@@ -319,20 +339,30 @@
     "constant": false,
     "inputs": [
       {
-        "name": "_newOwner",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "changeOwner",
-    "outputs": [],
+    "name": "delegateOut",
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool"
+      }
+    ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "upDownLtrstopTimeSpanInAdvance",
+    "inputs": [
+      {
+        "name": "blockTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRandomByBlockTime",
     "outputs": [
       {
         "name": "",
@@ -345,45 +375,46 @@
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "halted",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "upDownLotteryTimeCycle",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "newOwner",
-    "outputs": [
+    "inputs": [
       {
         "name": "",
         "type": "address"
       }
     ],
+    "name": "stakerInfoMap",
+    "outputs": [
+      {
+        "name": "prize",
+        "type": "uint256"
+      },
+      {
+        "name": "codeCount",
+        "type": "uint256"
+      }
+    ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
     "payable": true,
@@ -399,19 +430,19 @@
         "type": "address"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "name": "stakeAmount",
         "type": "uint256"
       },
       {
-        "indexed": true,
-        "name": "upDownRound",
-        "type": "uint256"
+        "indexed": false,
+        "name": "codes",
+        "type": "uint256[]"
       },
       {
         "indexed": false,
-        "name": "calRandomRound",
-        "type": "uint256"
+        "name": "amounts",
+        "type": "uint256[]"
       }
     ],
     "name": "StakeIn",
@@ -426,17 +457,44 @@
         "type": "address"
       },
       {
-        "indexed": true,
-        "name": "prizeAmount",
-        "type": "uint256"
+        "indexed": false,
+        "name": "codes",
+        "type": "uint256[]"
       },
       {
         "indexed": true,
-        "name": "round",
+        "name": "pending",
+        "type": "bool"
+      }
+    ],
+    "name": "StakeOut",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "delegatePool",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "demandDepositPool",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "prizePool",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "delegatePercent",
         "type": "uint256"
       }
     ],
-    "name": "RandomBingGo",
+    "name": "PoolUpdate",
     "type": "event"
   },
   {
@@ -444,21 +502,16 @@
     "inputs": [
       {
         "indexed": true,
-        "name": "staker",
+        "name": "refundAddress",
         "type": "address"
       },
       {
-        "indexed": true,
-        "name": "prizeAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "name": "round",
+        "indexed": false,
+        "name": "amount",
         "type": "uint256"
       }
     ],
-    "name": "UpDownBingGo",
+    "name": "SubsidyRefund",
     "type": "event"
   },
   {
@@ -466,21 +519,16 @@
     "inputs": [
       {
         "indexed": true,
-        "name": "staker",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "prizeAmount",
+        "name": "epochID",
         "type": "uint256"
       },
       {
-        "indexed": true,
-        "name": "round",
+        "indexed": false,
+        "name": "random",
         "type": "uint256"
       }
     ],
-    "name": "UpDownGiveBack",
+    "name": "RandomGenerate",
     "type": "event"
   },
   {
@@ -488,29 +536,111 @@
     "inputs": [
       {
         "indexed": true,
-        "name": "staker",
+        "name": "epochID",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "winnerCode",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "prizePool",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "winners",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "LotteryResult",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "owner",
         "type": "address"
       },
       {
         "indexed": true,
-        "name": "prizeAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "name": "round",
+        "name": "amount",
         "type": "uint256"
       }
     ],
-    "name": "UpDownReturn",
+    "name": "FeeSend",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "validator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "DelegateOut",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "validator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "DelegateIn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
     "type": "event"
   },
   {
     "constant": false,
     "inputs": [
       {
-        "name": "_up",
-        "type": "bool"
+        "name": "codes",
+        "type": "uint256[]"
+      },
+      {
+        "name": "amounts",
+        "type": "uint256[]"
       }
     ],
     "name": "stakeIn",
@@ -521,8 +651,22 @@
   },
   {
     "constant": false,
+    "inputs": [
+      {
+        "name": "codes",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "stakeOut",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
     "inputs": [],
-    "name": "upDownLotteryFanalize",
+    "name": "update",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -531,7 +675,34 @@
   {
     "constant": false,
     "inputs": [],
-    "name": "randomLotteryFanalize",
+    "name": "runDelegateIn",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "open",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "close",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "lotterySettlement",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -541,101 +712,7 @@
     "constant": false,
     "inputs": [
       {
-        "name": "_startTime",
-        "type": "uint256"
-      },
-      {
-        "name": "_updownLottryTimeCycle",
-        "type": "uint256"
-      },
-      {
-        "name": "_stopTimeSpanInAdvance",
-        "type": "uint256"
-      },
-      {
-        "name": "_randomLotteryTimeCycle",
-        "type": "uint256"
-      }
-    ],
-    "name": "setLotteryTime",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_currentPriceIndex",
-        "type": "uint256"
-      },
-      {
-        "name": "_cycleumber",
-        "type": "uint256"
-      },
-      {
-        "name": "_flag",
-        "type": "bool"
-      }
-    ],
-    "name": "setPriceIndex",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_startCycleNumber",
-        "type": "uint256"
-      },
-      {
-        "name": "_cycleNumber",
-        "type": "uint256"
-      }
-    ],
-    "name": "inputExtraPrize",
-    "outputs": [],
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_winnerNum",
-        "type": "uint256"
-      }
-    ],
-    "name": "setRandomWinnerNumber",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_feeRatio",
-        "type": "uint256"
-      }
-    ],
-    "name": "setFeeRatio",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_operator",
+        "name": "op",
         "type": "address"
       }
     ],
@@ -649,15 +726,11 @@
     "constant": false,
     "inputs": [
       {
-        "name": "_curUpDownRound",
-        "type": "uint256"
-      },
-      {
-        "name": "_curRandomRound",
-        "type": "uint256"
+        "name": "validator",
+        "type": "address"
       }
     ],
-    "name": "setFanalizeRoundNumber",
+    "name": "setValidator",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -667,11 +740,11 @@
     "constant": false,
     "inputs": [
       {
-        "name": "_randomRound",
-        "type": "uint256"
+        "name": "validator",
+        "type": "address"
       }
     ],
-    "name": "genRandom",
+    "name": "runDelegateOut",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -681,11 +754,11 @@
     "constant": false,
     "inputs": [
       {
-        "name": "_updownRound",
+        "name": "fee",
         "type": "uint256"
       }
     ],
-    "name": "upDownLotteryGiveBack",
+    "name": "setFeeRate",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -693,34 +766,48 @@
   },
   {
     "constant": false,
-    "inputs": [],
-    "name": "halt",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "unHalt",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "chainEndTime",
-    "outputs": [
+    "inputs": [
       {
-        "name": "",
+        "name": "percent",
         "type": "uint256"
       }
     ],
+    "name": "setDelegatePercent",
+    "outputs": [],
     "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "max",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxDigital",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "subsidyIn",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "subsidyOut",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]
