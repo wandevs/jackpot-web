@@ -2,70 +2,138 @@
     text-align: center;
 }
 
-.header {
-    display: flex;
-    justify-content: flex-end;
-    padding: 15px;
-    height: 60px;
-    border-bottom: 1px solid rgba(255,255,255,0.12);
-    
-}
 
-.logo {
-    font-size: 28px;
+.title5 {
+    font-size: 32px;
     color: #fff;
-    position: absolute;
-    left: 14px;
+    text-align: center;
+    font-family: PingFangSC-Medium;
 }
 
-.title {
-    width:200px;
+.guessNumber {
+    width: 1000px;
+    height: 275px;
+    position: relative;
+    margin: 0 auto;
+    margin-top: 30px;
+    padding-top: 15px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: #2b2564;
+}
+
+.leftTitle {
+    width: 220px;
+    height: 160px;
+    float: left;
+    line-height: 120px;
+    text-align: center;
+    position: relative;
+    padding-left: 20px;
+}
+
+.normal {
+    width: 711px;
+    float: left;
+    margin-left: 50px;
     text-align: left;
-    height:14px;
-    font-size:18px;
-    font-family:Roboto Condensed;
-    font-weight:bold;
-    color:rgba(255,255,255,1);
-    line-height:15px;
-    margin: 7px;
-    position: absolute;
-    left: 46px;
 }
 
-.upDownRegion {
-    border: 1px solid red;
-    display: flex;
-    justify-content: center;
-    margin: 20px 40px 20px 40px;
-    height: 100px;
+.yellowButton {
+    background: #FDC44E;
+    color: #1E1607;
+    -webkit-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
 }
 
-.upDownButton {
-    width: 160px;
-    height: 60px;
-    margin: 20px;
+.randomSelect {
+    width: 100%;
+    height: 160px;
+    float: left;
+    position: relative;
 }
 
-.roundHistory {
-    border: 1px solid red;
-    margin: 20px 40px 20px 40px;
-    height: 100px;
+.guessNumber .back-title {
+    display: inline-block;
+    padding: 0px 10px;
+    line-height: 24px;
+    font-size: 12px;
+    text-align: center;
+    background: #4c32a2;
+    margin-top: 27px;
+    -webkit-border-radius: 13px;
+    border-radius: 13px;
+    margin:10px;
 }
 
-.feePool {
-    border: 1px solid red;
-    margin: 20px 40px 20px 40px;
-    height: 100px;
+.guessNumber .normal .input-wrap {
+    overflow: hidden;
+    position: relative;
 }
 
-.history {
-    color: white;
+.input-wrap input:first-child {
+    -webkit-border-top-left-radius: 4px;
+    border-top-left-radius: 4px;
+    -webkit-border-bottom-left-radius: 4px;
+    border-bottom-left-radius: 4px;
 }
 
-.gameRule {
-    padding: 3px 16px 3px 16px;
-    border: 1px solid white;
-    border-radius: 15px;
+.input-wrap input:last-child {
+    -webkit-border-top-right-radius: 4px;
+    border-top-right-radius: 4px;
+    -webkit-border-bottom-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.app input {
+    border: none;
+    outline: none;
+    height: 40px;
+    line-height: 40px;
+    color: #0E1A40;
+    text-align: center;
+    font-size: 18px;
+}
+
+.input-wrap input {
+    width: 100px;
+    float: left;
+    border-right: 1px solid #DADADA;
+}
+
+
+
+.guess-button {
+    height: 43px;
+    line-height: 43px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 14px;
+    margin-right: 15px;
+    margin-left: 15px;
+    display: inline-block;
     cursor: pointer;
-    margin-right: 10px;
+    padding-left: 40px;
+    padding-right: 40px;
+    width: 140px;
+    margin-top:36px;
+}
+
+.table {
+    width: 1000px;
+    position: relative;
+    margin: 0 auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: #2b2564;
+}
+
+h1 {
+    color: white;
+    font-family: Roboto Consensed;
 }

@@ -1,5 +1,8 @@
 import { connect } from "react-redux";
 import { Component } from "../components/base";
+import { Row, Col, Divider, Table } from 'antd';
+import { Link } from 'umi';
+
 import BigNumber from 'bignumber.js';
 import { Wallet, getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
@@ -50,6 +53,24 @@ class IndexPage extends Component {
   componentWillUnmount() {
 
   }
+
+  columns = [
+    {
+      title: 'Index',
+      dataIndex: 'key',
+      key: 'key',
+    },
+    {
+      title: 'Raffle Number',
+      dataIndex: 'code',
+      key: 'code',
+    },
+    {
+      title: 'Multiple of Draws',
+      dataIndex: 'times',
+      key: 'times',
+    }
+  ]
 
   getDataWait = async (dataFunc) => {
     let max = 60;
@@ -158,6 +179,87 @@ class IndexPage extends Component {
   render() {
     return (
       <div className={style.app}>
+        
+
+        <div className={style.title5}>
+          Entry Area
+        </div>
+        <div>
+          <Link to="/history">View Past Draw Results</Link>
+        </div>
+        <div className={style.guessNumber}>
+          <Row>
+            <Col span={6}>
+              <div style={{ lineHeight: "100px" }}>Self Selection:</div>
+            </Col>
+            <Col span={12}>
+              <div className={style.normal}>
+                <p></p>
+                <p>Fill in a four digits' number in the box below, e.g.6666</p>
+                <div className={style['input-wrap']}>
+                  <input type="number" min='0' max='9' />
+                  <input type="number" min='0' max='9' />
+                  <input type="number" min='0' max='9' />
+                  <input type="number" min='0' max='9' />
+                </div>
+              </div>
+            </Col>
+            <Col span={6}>
+              <div className={[style['guess-button'], style.yellowButton].join(' ')}>Add</div>
+            </Col>
+          </Row>
+          <Row>
+            <Divider />
+          </Row>
+          <Row>
+            <Col span={6}>
+              <div style={{ lineHeight: "100px" }}>Machine Selection:</div>
+            </Col>
+            <Col span={12}>
+              <Row>
+                <div className={style.normal}>
+                  <p>Enter the number of bets you want to make</p>
+                  <input style={{ width: "400px" }} type="number" min='0' max='50' />
+                </div>
+              </Row>
+            </Col>
+            <Col span={6}>
+              <div className={[style['guess-button'], style.yellowButton].join(' ')}>Add</div>
+            </Col>
+          </Row>
+        </div>
+        <div style={{ height: "50px" }}>
+          <Link to="/history">View My Draw History</Link>
+        </div>
+
+        <div className={style['table']}>
+          <div style={{ height: "20px" }}></div>
+          <h1>Your Raffle Number:</h1>
+          <Table columns={this.columns} />
+          <div className={style.centerLine}>
+            <div className={[style['guess-button'], style.yellowButton].join(' ')}>Confirm</div>
+            <div className={[style['guess-button'], style.yellowButton].join(' ')}>Clear</div>
+          </div>
+          <div style={{ height: "30px" }}></div>
+        </div>
+
+        <div style={{ height: "50px" }}></div>
+        <div className={style['table']}>
+          <div style={{ height: "20px" }}></div>
+          <h1>Game Rules</h1>
+          <div>
+            <p>Jack’s Pot is a no-loss lottery game built on Wanchain which draws from the design of the Ethereum based PoolTogether game while introducing novel game mechanics.</p>
+            <p>To play the game, participants deposit WAN while also guessing a number between 1 and 4 inclusive.</p>
+            <p>Participants' WAN deposits are delegated to POS verification nodes, and the accrued consensus rewards are pooled into a prize pot.</p>
+            <p>Every Friday a winning number is selected at random using Wanchain’s true random number generation, and the reward will be awarded proportionally to participants who guessed the winning number.</p>
+            <p>If there is no winner, the prize pot will automatically accumulate to the next cycle.</p>
+          </div>
+          <div style={{ height: "30px" }}></div>
+
+        </div>
+        <div style={{ height: "50px" }}></div>
+        <div style={{ height: "50px" }}></div>
+
       </div>
     );
   }
