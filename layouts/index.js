@@ -16,6 +16,15 @@ const networkLogo = networkId == 1 ? 'https://img.shields.io/badge/Wanchain-Main
 class Layout extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      totalPool: 0,
+      pricePool: 0,
+      nextDraw: '2020-04-25 07:00:00 (UTC+8)',
+      closeHours: 24,
+      raffleCount: 0,
+      totalStake: 0,
+      totalPrize: 0, 
+    };
   }
 
   componentWillMount() {
@@ -40,28 +49,28 @@ class Layout extends Component {
         )}
         <div style={{ textAlign: "center" }}>
           <div className={style.title1}>Choose Your Jack's Pot Number</div>
-          <div className={style.title2}>Up to {135} WAN No-Loss Prize</div>
+          <div className={style.title2}>Up to {this.state.totalPool} WAN Total Pool</div>
           <div className={style.centerLine}>
             <div className={style.title3}>Price Pool:</div>
-            <div className={style.title4}>135 WAN</div>
+            <div className={style.title4}>{this.state.pricePool} WAN</div>
           </div>
           <div>
-            Next Draw Time：2020-04-25 00: 40: 00 (UTC+8)
+            Next Draw Time：{this.state.nextDraw}
           </div>
           <div>
-            Draw Entry Close: 24 hour before the draw time
+            Draw Entry Close: {this.state.closeHours} hour before the draw time
           </div>
           <div className={style.chance}>
           <div className={style.chanceLeft}>
-            <p>You Have 1 Raffle Number</p>
-            <p>Total 10 WAN in Jack's Pot Stake</p>
+            <p>You Have {this.state.raffleCount} Raffle Number</p>
+            <p>Total {this.state.totalStake} WAN in Jack's Pot Stake</p>
           </div>
           <div className={style.chanceCenter}>
             <Link to="/" className={style.centerButton}>Choose A Raffle Number</Link>
           </div>
           <div className={style.chanceRight}>
             <p>Total Prize You've Received:</p>
-            <p>120 WAN</p>
+            <p>{this.state.totalPrize} WAN</p>
           </div>
         </div>
         </div>

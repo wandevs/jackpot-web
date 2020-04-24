@@ -69,7 +69,12 @@ class IndexPage extends Component {
       title: 'Multiple of Draws',
       dataIndex: 'times',
       key: 'times',
-    }
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
+    },
   ]
 
   getDataWait = async (dataFunc) => {
@@ -179,15 +184,13 @@ class IndexPage extends Component {
   render() {
     return (
       <div className={style.app}>
-        
-
         <div className={style.title5}>
           Entry Area
         </div>
         <div>
           <Link to="/history">View Past Draw Results</Link>
         </div>
-        <div className={style.guessNumber}>
+        <div className={style.guessNumber} >
           <Row>
             <Col span={6}>
               <div style={{ lineHeight: "100px" }}>Self Selection:</div>
@@ -197,10 +200,10 @@ class IndexPage extends Component {
                 <p></p>
                 <p>Fill in a four digits' number in the box below, e.g.6666</p>
                 <div className={style['input-wrap']}>
-                  <input type="number" min='0' max='9' />
-                  <input type="number" min='0' max='9' />
-                  <input type="number" min='0' max='9' />
-                  <input type="number" min='0' max='9' />
+                  <input type="number" min='0' max='9' placeholder="0~9"/>
+                  <input type="number" min='0' max='9' placeholder="0~9"/>
+                  <input type="number" min='0' max='9' placeholder="0~9"/>
+                  <input type="number" min='0' max='9' placeholder="0~9"/>
                 </div>
               </div>
             </Col>
@@ -219,7 +222,7 @@ class IndexPage extends Component {
               <Row>
                 <div className={style.normal}>
                   <p>Enter the number of bets you want to make</p>
-                  <input style={{ width: "400px" }} type="number" min='0' max='50' />
+                  <input style={{ width: "400px" }} type="number" min='0' max='50' placeholder="1~50" />
                 </div>
               </Row>
             </Col>
