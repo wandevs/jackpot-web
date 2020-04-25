@@ -1,4 +1,4 @@
-import { Component } from "../base";
+import { Component } from "react";
 import { Modal, Form, Input, Icon } from 'antd';
 import style from './style.less';
 
@@ -41,7 +41,7 @@ class SendModalForm extends Component {
           confirmLoading: true,
         });
         setTimeout(async () => {
-          let ret = await this.props.sendTransaction(values.amount, this.props.type.toLowerCase() === 'up' ? true : false);
+          let ret = await this.props.sendTransaction(values.amount);
           if (ret) {
             this.props.watchTransactionStatus(ret, this.okCallback)
           } else {
@@ -56,15 +56,6 @@ class SendModalForm extends Component {
     this.props.hideModal();
   };
 
-  amountValidator = (rule, value, callback) => {
-    if (Number(value) < 1) {
-      callback("Must larger than 1.");
-    } else if (Number(value) > 1000) {
-      callback("We limit max amount to 1000 wan.");
-    } else {
-      callback();
-    }
-  }
 
   render() {
     const { confirmLoading, ModalText, fields } = this.state;
@@ -73,39 +64,26 @@ class SendModalForm extends Component {
     return (
       <div>
         <Modal
-          title={"Transaction for " + this.props.type}
+          title={"Transaction for Jack's Pot"}
           visible={this.props.visible}
           onOk={this.handleOk}
           confirmLoading={confirmLoading}
           onCancel={this.handleCancel}
         >
           <Form layout={'vertical'}>
-            <Form.Item label="Address:">
+            <Form.Item label="From Address:">
               <WalletButton />
             </Form.Item>
-            <Form.Item label="Amount:">
-              {getFieldDecorator('amount', {
-                getValueFromEvent: (e) => {
-                  const convertedValue = Number(e.currentTarget.value);
-                  if (isNaN(convertedValue)) {
-                    return Number(this.props.form.getFieldValue("amount"));
-                  } else {
-                    return convertedValue;
-                  }
-                },
-                rules: [{ required: true, type: 'integer', validator: this.amountValidator }],
-                initialValue: 1
-              })(
-                <Input
-                  prefix={<Icon type="dollar" style={{ color: 'white' }} />}
-                  suffix="WAN"
-                />,
-              )}
+            <Form.Item label="Information:">
+              <Input
+                style={{textAlign:'center'}}
+                readOnly
+                prefix={<Icon type="dollar" style={{ color: 'white' }} />}
+                // suffix="WAN"
+                defaultValue={"Raffle Number Count: 1, Total Price: 10 WAN"}
+              />
             </Form.Item>
           </Form>
-          <div className={style.bt20} onClick={() => { this.props.form.setFieldsValue({ amount: 20 }) }}>20 wan</div>
-          <div className={style.bt10} onClick={() => { this.props.form.setFieldsValue({ amount: 10 }) }}>10 wan</div>
-          <div className={style.bt5} onClick={() => { this.props.form.setFieldsValue({ amount: 5 }) }}>5 wan</div>
           <div style={{ color: '#880' }}>* We will use the lowest gas charge by default, around 0.002~0.03 WAN.</div>
         </Modal>
       </div>

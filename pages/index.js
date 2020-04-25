@@ -1,9 +1,9 @@
 import { connect } from "react-redux";
 import { Component } from "../components/base";
-import { Row, Col, Divider, Table } from 'antd';
+import { Row, Col, Divider, Table, message, Modal } from 'antd';
 import { Link } from 'umi';
+import SendModal from '../components/SendModal';
 
-import BigNumber from 'bignumber.js';
 import { Wallet, getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
 import lotteryAbi from "./abi/lottery";
@@ -12,6 +12,8 @@ import sleep from 'ko-sleep';
 import { alertAntd, toUnitAmount } from '../utils/utils.js';
 import { mainnetSCAddr, testnetSCAddr, networkId, nodeUrl } from '../conf/config.js';
 
+const { confirm } = Modal;
+
 const lotterySCAddr = networkId == 1 ? mainnetSCAddr : testnetSCAddr;
 
 var Web3 = require("web3");
@@ -19,7 +21,15 @@ var Web3 = require("web3");
 class IndexPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      n1: '',
+      n2: '',
+      n3: '',
+      n4: '',
+      machineCnt: '',
+      selectedCodes: [],
+      modalVisible: false,
+    };
 
     Date.prototype.format = function (fmt) {
       var o = {
@@ -71,7 +81,7 @@ class IndexPage extends Component {
       key: 'times',
     },
     {
-      title: 'Price',
+      title: 'Price (WAN)',
       dataIndex: 'price',
       key: 'price',
     },
@@ -181,6 +191,109 @@ class IndexPage extends Component {
     window.open("https://github.com/wandevs/wan-game/blob/master/GameRule.md");
   }
 
+  onChangeCode = (index, value) => {
+    if (value < 10) {
+      switch (index) {
+        case 1:
+          this.setState({ n1: value });
+          break;
+        case 2:
+          this.setState({ n2: value });
+          break;
+        case 3:
+          this.setState({ n3: value });
+          break;
+        case 4:
+          this.setState({ n4: value });
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  selfAdd = () => {
+    if (this.state.selectedCodes.length >= 50) {
+      message.warn("Max support add 50 raffle number once.");
+      return;
+    }
+
+    let code = Number(this.state.n1).toFixed(0) + Number(this.state.n2).toFixed(0) + Number(this.state.n3).toFixed(0) + Number(this.state.n4).toFixed(0);
+
+
+    for (let i = 0; i < this.state.selectedCodes.length; i++) {
+      if (this.state.selectedCodes[i].code === code) {
+        message.info("The same raffle number already exists, please modify it directly in the table.");
+        return;
+      }
+    }
+
+    let value = {
+      key: this.state.selectedCodes.length + 1,
+      code,
+      times: 1,
+      price: 10,
+    }
+
+    let data = this.state.selectedCodes.slice();
+    data.push(value);
+    this.setState({ selectedCodes: data });
+  }
+
+  randomAdd = () => {
+    let cnt = Number(this.state.machineCnt);
+
+    if (cnt < 1) {
+      message.warn("Count must >= 1");
+      return;
+    }
+    if ((cnt + this.state.selectedCodes.length) >= 50) {
+      cnt = 50 - this.state.selectedCodes.length;
+    }
+
+    let codes = [];
+    for (; codes.length < cnt;) {
+      let r = Math.random().toFixed(4).substr(2); //get a four number random code.
+      if (!codes.includes(r)) {
+        codes.push(r);
+      }
+    }
+
+    let data = this.state.selectedCodes.slice();
+    for (let i = 0; i < cnt; i++) {
+      const value = {
+        key: data.length + 1,
+        code: codes[i],
+        times: 1,
+        price: 10,
+      }
+      data.push(value);
+    }
+    this.setState({ selectedCodes: data });
+  }
+
+  clearRaffleNumber = () => {
+    confirm({
+      title: 'Do you Want to clear all raffle number?',
+      content: 'Clear confirm.',
+      onOk: () => {
+        this.setState({ selectedCodes: [] });
+      },
+      onCancel() {
+      },
+    });
+
+  }
+
+  hideModal = () => {
+    this.setState({ modalVisible: false });
+  }
+
+  onConfirm = () => {
+    this.setState({ modalVisible: true });
+  }
+
+
   render() {
     return (
       <div className={style.app}>
@@ -200,15 +313,15 @@ class IndexPage extends Component {
                 <p></p>
                 <p>Fill in a four digits' number in the box below, e.g.6666</p>
                 <div className={style['input-wrap']}>
-                  <input type="number" min='0' max='9' placeholder="0~9"/>
-                  <input type="number" min='0' max='9' placeholder="0~9"/>
-                  <input type="number" min='0' max='9' placeholder="0~9"/>
-                  <input type="number" min='0' max='9' placeholder="0~9"/>
+                  <input type="number" min='0' max='9' placeholder="0~9" value={this.state.n1} onChange={e => this.onChangeCode(1, e.target.value)} />
+                  <input type="number" min='0' max='9' placeholder="0~9" value={this.state.n2} onChange={e => this.onChangeCode(2, e.target.value)} />
+                  <input type="number" min='0' max='9' placeholder="0~9" value={this.state.n3} onChange={e => this.onChangeCode(3, e.target.value)} />
+                  <input type="number" min='0' max='9' placeholder="0~9" value={this.state.n4} onChange={e => this.onChangeCode(4, e.target.value)} />
                 </div>
               </div>
             </Col>
             <Col span={6}>
-              <div className={[style['guess-button'], style.yellowButton].join(' ')}>Add</div>
+              <div className={[style['guess-button'], style.yellowButton].join(' ')} onClick={this.selfAdd}>Add</div>
             </Col>
           </Row>
           <Row>
@@ -222,12 +335,12 @@ class IndexPage extends Component {
               <Row>
                 <div className={style.normal}>
                   <p>Enter the number of bets you want to make</p>
-                  <input style={{ width: "400px" }} type="number" min='0' max='50' placeholder="1~50" />
+                  <input style={{ width: "400px" }} type="number" min='1' max='50' placeholder="1~50" value={this.state.machineCnt} onChange={e => { if (e.target.value <= 50) { this.setState({ machineCnt: e.target.value }) } }} />
                 </div>
               </Row>
             </Col>
             <Col span={6}>
-              <div className={[style['guess-button'], style.yellowButton].join(' ')}>Add</div>
+              <div className={[style['guess-button'], style.yellowButton].join(' ')} onClick={this.randomAdd}>Add</div>
             </Col>
           </Row>
         </div>
@@ -238,10 +351,10 @@ class IndexPage extends Component {
         <div className={style['table']}>
           <div style={{ height: "20px" }}></div>
           <h1>Your Raffle Number:</h1>
-          <Table columns={this.columns} />
+          <Table columns={this.columns} dataSource={this.state.selectedCodes} />
           <div className={style.centerLine}>
-            <div className={[style['guess-button'], style.yellowButton].join(' ')}>Confirm</div>
-            <div className={[style['guess-button'], style.yellowButton].join(' ')}>Clear</div>
+            <div className={[style['guess-button'], style.yellowButton].join(' ')} onClick={this.onConfirm}>Confirm</div>
+            <div className={[style['guess-button'], style.yellowButton].join(' ')} onClick={this.clearRaffleNumber}>Clear</div>
           </div>
           <div style={{ height: "30px" }}></div>
         </div>
@@ -262,7 +375,13 @@ class IndexPage extends Component {
         </div>
         <div style={{ height: "50px" }}></div>
         <div style={{ height: "50px" }}></div>
-
+        <SendModal
+          sendTransaction={this.sendTransaction}
+          watchTransactionStatus={this.watchTransactionStatus}
+          visible={this.state.modalVisible}
+          hideModal={this.hideModal}
+          type={'up'}
+          walletButton={WalletButtonLong} />
       </div>
     );
   }
