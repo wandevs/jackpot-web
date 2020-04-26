@@ -1,8 +1,10 @@
 import { connect } from "react-redux";
+import React from 'react';
 import { Component } from "../components/base";
-import { Row, Col, Divider, Table, message, Modal } from 'antd';
+import { Row, Col, Divider, Table, message, Modal, Input, Form } from 'antd';
 import { Link } from 'umi';
 import SendModal from '../components/SendModal';
+import {EditableCell, EditableFormRow, EditableRow, EditableContext} from "../components/EditableRow";
 
 import { Wallet, getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
@@ -79,6 +81,7 @@ class IndexPage extends Component {
       title: 'Multiple of Draws',
       dataIndex: 'times',
       key: 'times',
+      editable: true,
     },
     {
       title: 'Price (WAN)',
@@ -286,15 +289,51 @@ class IndexPage extends Component {
   }
 
   hideModal = () => {
+    window.scrollTo(0, this.pageYOffset);
     this.setState({ modalVisible: false });
   }
 
   onConfirm = () => {
+    this.pageYOffset = window.scrollY;
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
     this.setState({ modalVisible: true });
   }
 
+  handleSave = row => {
+    const newData = [...this.state.selectedCodes];
+    const index = newData.findIndex(item => row.key === item.key);
+    const item = newData[index];
+    row.price = 10*row.times;
+    newData.splice(index, 1, { ...item, ...row });
+    this.setState({
+      selectedCodes: newData,
+    });
+  }
 
   render() {
+    const components = {
+      body: {
+        row: EditableFormRow,
+        cell: EditableCell,
+      },
+    };
+    const columns = this.columns.map(col => {
+      if (!col.editable) {
+        return col;
+      }
+      return {
+        ...col,
+        onCell: record => ({
+          record,
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          handleSave: this.handleSave,
+        }),
+      };
+    });
+
     return (
       <div className={style.app}>
         <div className={style.title5}>
@@ -351,7 +390,12 @@ class IndexPage extends Component {
         <div className={style['table']}>
           <div style={{ height: "20px" }}></div>
           <h1>Your Raffle Number:</h1>
-          <Table columns={this.columns} dataSource={this.state.selectedCodes} />
+          <Table
+            components={components}
+            columns={columns}
+            rowClassName={() => 'editable-row'}
+            bordered
+            dataSource={this.state.selectedCodes} />
           <div className={style.centerLine}>
             <div className={[style['guess-button'], style.yellowButton].join(' ')} onClick={this.onConfirm}>Confirm</div>
             <div className={[style['guess-button'], style.yellowButton].join(' ')} onClick={this.clearRaffleNumber}>Clear</div>
