@@ -1,105 +1,111 @@
-:global{
-    .HydroSDK-toggleButton-long {
-        width:484px;
-        height:44px;
-        background:rgba(31,32,52,1);
-        // border:2px solid rgba(65,78,221,1);
-        border-radius:20px;
-    }
+.sendModal {
+    :global {
+        .HydroSDK-toggleButton-long {
+            width: 484px;
+            height: 44px;
+            background: rgba(31, 32, 52, 1);
+            // border:2px solid rgba(65,78,221,1);
+            border-radius: 20px;
+        }
 
-    .ant-modal-content {
-        width:640px;
-        height:508px;
-        background:rgba(39,40,64,1);
-        border-radius:6px;
-    }
-    
-    .ant-modal-header {
-        background-color: #27283F;
-        border: none;
-        padding-top: 60px;
-        padding-bottom: 30px;
-    }
+        .ant-modal-content {
+            width: 640px;
+            height: 600px;
+            background: rgba(39, 40, 64, 1);
+            border-radius: 6px;
+        }
 
-    .ant-modal-body {
-        padding-left: 70px;
-        padding-right: 70px;
+        .ant-modal-header {
+            background-color: #27283F;
+            border: none;
+            padding-top: 60px;
+            padding-bottom: 30px;
+        }
 
-    }
+        .ant-modal-body {
+            padding-left: 70px;
+            padding-right: 70px;
 
-    .ant-modal-title {
-        text-align: center;
-        font-family: Roboto Condensed;
-        font-size:24px;
-        font-weight:700;
-        color:rgba(255,255,255,1);
-        line-height:16px;
-    }
+        }
 
-    .ant-form label {
-        color: white;
-        font-size: 18px;
-        font-family: Roboto Condensed;
-    }
+        .ant-modal-title {
+            text-align: center;
+            font-family: Roboto Condensed;
+            font-size: 24px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 1);
+            line-height: 16px;
+        }
 
-    .ant-modal-footer {
-        border: none;
-        text-align: center;
-    }
+        .ant-form label {
+            color: white;
+            font-size: 18px;
+            font-family: Roboto Condensed;
+        }
 
-    .ant-input-affix-wrapper .ant-input {
-        width:480px;
-        height:40px;
-        background:rgba(31,32,52,1);
-        border-radius:20px;
-        color: white;
-        border: none;
-        font-size: 16px;
-        font-family: Roboto Condensed;
-    }
+        .ant-modal-footer {
+            border: none;
+            text-align: center;
+        }
 
-    .ant-input-affix-wrapper .ant-input-suffix {
-        right: 253px;
-        color: white;
-        color: rgba(64,218,191,1);
-        line-height: 16px;
-        font-family: Roboto Condensed;
-        font-weight:700;
-    }
+        .ant-input-affix-wrapper .ant-input {
+            width: 480px;
+            height: 40px;
+            background: rgba(31, 32, 52, 1);
+            border-radius: 20px;
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-family: Roboto Condensed;
+        }
 
-    .ant-btn {
-        width:150px;
-        height:40px;
-        background:linear-gradient(90deg,rgba(74,76,114,1) 0%,rgba(61,62,95,1) 100%);
-        border-radius:20px;
-        font-size:18px;
-        font-family:Roboto Condensed;
-        font-weight:700;
-        color:rgba(255,255,255,1);
-        line-height:40px;
-        border: none;
-    }
+        .ant-input-affix-wrapper .ant-input-suffix {
+            right: 253px;
+            color: white;
+            color: rgba(64, 218, 191, 1);
+            line-height: 16px;
+            font-family: Roboto Condensed;
+            font-weight: 700;
+        }
 
-    .has-error .ant-input-affix-wrapper .ant-input, .has-error .ant-input-affix-wrapper .ant-input:hover {
-        background:rgba(31,32,52,1);
-        border: 1px solid red;
+        .ant-btn {
+            width: 150px;
+            height: 40px;
+            background: linear-gradient(90deg, rgba(74, 76, 114, 1) 0%, rgba(61, 62, 95, 1) 100%);
+            border-radius: 20px;
+            font-size: 18px;
+            font-family: Roboto Condensed;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 1);
+            line-height: 40px;
+            border: none;
+        }
+
+        .has-error .ant-input-affix-wrapper .ant-input,
+        .has-error .ant-input-affix-wrapper .ant-input:hover {
+            background: rgba(31, 32, 52, 1);
+            border: 1px solid red;
+        }
     }
 }
 
-.bt20, .bt10, .bt5 {
+
+.bt20,
+.bt10,
+.bt5 {
     position: absolute;
     top: 284px;
     left: 327px;
     color: white;
-    width:68px;
-    height:24px;
-    background:rgba(65,78,221,1);
-    border-radius:12px;
-    font-size:16px;
-    font-family:Roboto Condensed;
-    font-weight:700;
-    color:rgba(255,255,255,1);
-    line-height:16px;
+    width: 68px;
+    height: 24px;
+    background: rgba(65, 78, 221, 1);
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: Roboto Condensed;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 1);
+    line-height: 16px;
     text-align: center;
     padding-top: 4px;
     border: none;
@@ -116,6 +122,33 @@
     left: 473px;
 }
 
-.bt20:hover, .bt10:hover, .bt5:hover {
-    background:rgb(40, 48, 133);
+.bt20:hover,
+.bt10:hover,
+.bt5:hover {
+    background: rgb(40, 48, 133);
+}
+
+.selectedRaffleList {
+    height: 250px;
+    overflow-y: auto;
+}
+
+.selectedRaffleList::-webkit-scrollbar {
+    width: 8px;
+    background-color: rgb(26, 27, 44);
+}
+
+.selectedRaffleList::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: rgb(26, 27, 44);
+}
+
+.selectedRaffleList::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    background-color: #9e9e9e;
+}
+
+.totalContainer {
+    color: white;
 }

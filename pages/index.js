@@ -1,24 +1,20 @@
 import { connect } from "react-redux";
 import React from 'react';
 import { Component } from "../components/base";
-import { Row, Col, Divider, Table, message, Modal, Input, Form } from 'antd';
+import { Row, Col, Divider, Table, message, Modal } from 'antd';
 import { Link } from 'umi';
 import SendModal from '../components/SendModal';
-import {EditableCell, EditableFormRow, EditableRow, EditableContext} from "../components/EditableRow";
+import { EditableCell, EditableFormRow } from "../components/EditableRow";
 
-import { Wallet, getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
+import { getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
-import lotteryAbi from "./abi/lottery";
 import style from './style.less';
 import sleep from 'ko-sleep';
 import { alertAntd, toUnitAmount } from '../utils/utils.js';
-import { mainnetSCAddr, testnetSCAddr, networkId, nodeUrl } from '../conf/config.js';
+import { web3, lotterySC, lotterySCAddr } from '../utils/contract.js';
+import { price } from '../conf/config.js';
 
 const { confirm } = Modal;
-
-const lotterySCAddr = networkId == 1 ? mainnetSCAddr : testnetSCAddr;
-
-var Web3 = require("web3");
 
 class IndexPage extends Component {
   constructor(props) {
@@ -56,14 +52,9 @@ class IndexPage extends Component {
   }
 
   async componentDidMount() {
-    var web3 = new Web3();
-    web3.setProvider(new Web3.providers.HttpProvider(nodeUrl));
-    this.web3 = web3;
-    this.lotterySC = new this.web3.eth.Contract(lotteryAbi, lotterySCAddr);
   }
 
   componentWillUnmount() {
-
   }
 
   columns = [
@@ -107,20 +98,20 @@ class IndexPage extends Component {
     const getTransactionStatus = async () => {
       const tx = await getTransactionReceipt(txID);
       if (!tx) {
-        window.setTimeout(() => getTransactionStatus(txID), 3000);
+        setTimeout(() => getTransactionStatus(txID), 3000);
       } else if (callback) {
         callback(Number(tx.status) === 1);
       } else {
-        window.alertAntd('success');
+        alertAntd('success');
       }
     };
-    window.setTimeout(() => getTransactionStatus(txID), 3000);
+    setTimeout(() => getTransactionStatus(txID), 3000);
   };
 
-  estimateSendGas = async (value, selectUp) => {
-    let lotterySC = this.lotterySC;
+  estimateSendGas = async (value, selectUp, address) => {
     try {
-      let ret = await lotterySC.methods.stakeIn(selectUp).estimateGas({ gas: 10000000, value })
+      let ret = await lotterySC.methods.buy(...selectUp).estimateGas({ gas: 10000000, value, from: address });
+      console.log('=------es-----=:', ret);
       if (ret == 10000000) {
         return -1;
       }
@@ -134,58 +125,61 @@ class IndexPage extends Component {
   sendTransaction = async (amount, selectUp) => {
     const { selectedAccount, selectedWallet, wanBalance } = this.props;
     const address = selectedAccount ? selectedAccount.get('address') : null;
+    selectUp[1] = selectUp[1].map(v => web3.utils.toWei(v.toString()));
+    console.log('wanBalance:', wanBalance);
 
     if (wanBalance <= amount) {
-      window.alertAntd('Out of balance.');
+      alertAntd('Out of balance.');
       return false;
     }
 
     if (!address || address.length < 20) {
-      window.alertAntd('Please select a wallet address first.');
+      alertAntd('Please select a wallet address first.');
       return false
     }
-    const value = this.web3.utils.toWei(amount.toString());
 
+    const value = web3.utils.toWei(amount.toString());
+    let encoded = await lotterySC.methods.buy(...selectUp).encodeABI();
+    console.log('encoded:', encoded);
     let params = {
       to: lotterySCAddr,
-      data: selectUp ? '0xf4ee1fbc0000000000000000000000000000000000000000000000000000000000000001' : '0xf4ee1fbc0000000000000000000000000000000000000000000000000000000000000000',
+      data: encoded,
       value,
       gasPrice: "0x29E8D60800",
-      // gasLimit: "0x87A23",
+      gasLimit: "0x989680", // 10,000,000
     };
 
     if (selectedWallet.type() == "EXTENSION") {
-      params.gas = await this.estimateSendGas(value, selectUp);
+      params.gas = await this.estimateSendGas(value, selectUp, address);
     } else {
-      params.gasLimit = await this.estimateSendGas(value, selectUp);
+      params.gasLimit = await this.estimateSendGas(value, selectUp, address);
       // params.gasPrice = "0x2540BE400";
     }
+
+    console.log('gasLimit:', params.gasLimit);
+
     if (params.gasLimit == -1) {
-      window.alertAntd('Estimate Gas Error. Maybe out of time range.');
+      alertAntd('Estimate Gas Error. Maybe out of time range.');
       return false;
     }
 
     try {
       let transactionID = await selectedWallet.sendTransaction(params);
-      let round = this.state.trendInfo.round;
+      console.log('transactionID:', transactionID);
       this.watchTransactionStatus(transactionID, (ret) => {
+        console.log('status:', ret)
         if (ret) {
-          this.addTransactionHistory({
-            key: transactionID,
-            time: new Date().format("yyyy-MM-dd hh:mm:ss"),
-            address,
-            round,
-            amount: amount * -1,
-            type: selectUp ? 'Up' : 'Down',
-            result: 'To be settled',
-          });
+          console.log('watch tx status');
+          alertAntd('Success');
+        } else {
+          alertAntd('Failed');
         }
+        this.hideModal();
       });
-
       return transactionID;
     } catch (err) {
       console.log(err);
-      window.alertAntd(err);
+      alertAntd(err);
       return false;
     }
   }
@@ -235,7 +229,7 @@ class IndexPage extends Component {
       key: this.state.selectedCodes.length + 1,
       code,
       times: 1,
-      price: 10,
+      price: price,
     }
 
     let data = this.state.selectedCodes.slice();
@@ -268,7 +262,7 @@ class IndexPage extends Component {
         key: data.length + 1,
         code: codes[i],
         times: 1,
-        price: 10,
+        price: price,
       }
       data.push(value);
     }
@@ -295,16 +289,17 @@ class IndexPage extends Component {
 
   onConfirm = () => {
     this.pageYOffset = window.scrollY;
-    window.scrollTo(0, 0);
+    // window.scrollTo(0, 0);
     document.body.scrollTop = 0;
     this.setState({ modalVisible: true });
+    // console.log('datas:', this.state.selectedCodes);
   }
 
   handleSave = row => {
     const newData = [...this.state.selectedCodes];
     const index = newData.findIndex(item => row.key === item.key);
     const item = newData[index];
-    row.price = 10*row.times;
+    row.price = price * row.times;
     newData.splice(index, 1, { ...item, ...row });
     this.setState({
       selectedCodes: newData,
@@ -342,7 +337,7 @@ class IndexPage extends Component {
         <div>
           <Link to="/history">View Past Draw Results</Link>
         </div>
-        <div className={style.guessNumber} >
+        <div id="entryArea" className={style.guessNumber} >
           <Row>
             <Col span={6}>
               <div style={{ lineHeight: "100px" }}>Self Selection:</div>
@@ -419,13 +414,15 @@ class IndexPage extends Component {
         </div>
         <div style={{ height: "50px" }}></div>
         <div style={{ height: "50px" }}></div>
-        <SendModal
-          sendTransaction={this.sendTransaction}
-          watchTransactionStatus={this.watchTransactionStatus}
-          visible={this.state.modalVisible}
-          hideModal={this.hideModal}
-          type={'up'}
-          walletButton={WalletButtonLong} />
+        {
+          this.state.modalVisible && <SendModal
+            sendTransaction={this.sendTransaction}
+            watchTransactionStatus={this.watchTransactionStatus}
+            hideModal={this.hideModal}
+            data={this.state.selectedCodes}
+            type={'up'}
+            WalletButton={WalletButtonLong} />
+        }
       </div>
     );
   }

@@ -1,6 +1,29 @@
 [
   {
     "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "pendingRedeemSearchMap",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
     "inputs": [],
     "name": "maxDigital",
     "outputs": [
@@ -49,18 +72,48 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "validatorInfo",
+    "name": "pendingRedeemCount",
     "outputs": [
       {
-        "name": "defaultValidator",
-        "type": "address"
-      },
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
       {
-        "name": "exitingValidator",
-        "type": "address"
-      },
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "validatorsMap",
+    "outputs": [
       {
-        "name": "validatorCount",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "subsidyAmountMap",
+    "outputs": [
+      {
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -201,6 +254,28 @@
     "type": "function"
   },
   {
+    "constant": true,
+    "inputs": [],
+    "name": "validatorsInfo",
+    "outputs": [
+      {
+        "name": "currentValidator",
+        "type": "address"
+      },
+      {
+        "name": "withdrawFromValidator",
+        "type": "address"
+      },
+      {
+        "name": "validatorsCount",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": false,
     "inputs": [],
     "name": "renounceOwnership",
@@ -218,20 +293,6 @@
       }
     ],
     "name": "getRandomByEpochId",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "pendingStakeOutCount",
     "outputs": [
       {
         "name": "",
@@ -273,7 +334,7 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "pendingStakeOutStartIndex",
+    "name": "feeRate",
     "outputs": [
       {
         "name": "",
@@ -287,7 +348,7 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "feeRate",
+    "name": "pendingPrizeWithdrawStartIndex",
     "outputs": [
       {
         "name": "",
@@ -303,17 +364,36 @@
     "inputs": [
       {
         "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userInfoMap",
+    "outputs": [
+      {
+        "name": "prize",
+        "type": "uint256"
+      },
+      {
+        "name": "codeCount",
         "type": "uint256"
       }
     ],
-    "name": "pendingStakeOutMap",
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "validatorsAmountMap",
     "outputs": [
       {
-        "name": "staker",
-        "type": "address"
-      },
-      {
-        "name": "code",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -325,6 +405,25 @@
     "constant": true,
     "inputs": [],
     "name": "delegateOutAmount",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "validatorIndexMap",
     "outputs": [
       {
         "name": "",
@@ -356,6 +455,20 @@
   },
   {
     "constant": true,
+    "inputs": [],
+    "name": "pendingPrizeWithdrawCount",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
     "inputs": [
       {
         "name": "blockTime",
@@ -375,21 +488,31 @@
   },
   {
     "constant": true,
+    "inputs": [],
+    "name": "pendingRedeemStartIndex",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
     "inputs": [
       {
         "name": "",
-        "type": "address"
+        "type": "uint256"
       }
     ],
-    "name": "stakerInfoMap",
+    "name": "pendingPrizeWithdrawMap",
     "outputs": [
       {
-        "name": "prize",
-        "type": "uint256"
-      },
-      {
-        "name": "codeCount",
-        "type": "uint256"
+        "name": "",
+        "type": "address"
       }
     ],
     "payable": false,
@@ -411,10 +534,27 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "pendingRedeemMap",
+    "outputs": [
+      {
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "name": "code",
+        "type": "uint256"
+      }
+    ],
     "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "payable": true,
@@ -426,7 +566,7 @@
     "inputs": [
       {
         "indexed": true,
-        "name": "staker",
+        "name": "user",
         "type": "address"
       },
       {
@@ -445,7 +585,7 @@
         "type": "uint256[]"
       }
     ],
-    "name": "StakeIn",
+    "name": "Buy",
     "type": "event"
   },
   {
@@ -453,48 +593,50 @@
     "inputs": [
       {
         "indexed": true,
-        "name": "staker",
+        "name": "user",
         "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "success",
+        "type": "bool"
       },
       {
         "indexed": false,
         "name": "codes",
         "type": "uint256[]"
-      },
-      {
-        "indexed": true,
-        "name": "pending",
-        "type": "bool"
       }
     ],
-    "name": "StakeOut",
+    "name": "Redeem",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "GasNotEnough",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "name": "delegatePool",
-        "type": "uint256"
+        "indexed": true,
+        "name": "user",
+        "type": "address"
       },
       {
-        "indexed": false,
-        "name": "demandDepositPool",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "prizePool",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "delegatePercent",
-        "type": "uint256"
+        "indexed": true,
+        "name": "success",
+        "type": "bool"
       }
     ],
-    "name": "PoolUpdate",
+    "name": "PrizeWithdraw",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "UpdateSuccess",
     "type": "event"
   },
   {
@@ -633,6 +775,15 @@
   },
   {
     "constant": false,
+    "inputs": [],
+    "name": "init",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
     "inputs": [
       {
         "name": "codes",
@@ -643,7 +794,7 @@
         "type": "uint256[]"
       }
     ],
-    "name": "stakeIn",
+    "name": "buy",
     "outputs": [],
     "payable": true,
     "stateMutability": "payable",
@@ -657,8 +808,27 @@
         "type": "uint256[]"
       }
     ],
-    "name": "stakeOut",
-    "outputs": [],
+    "name": "redeem",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "prizeWithdraw",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -676,7 +846,12 @@
     "constant": false,
     "inputs": [],
     "name": "runDelegateIn",
-    "outputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -803,11 +978,39 @@
   },
   {
     "constant": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
     "name": "subsidyOut",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getUserCodeList",
+    "outputs": [
+      {
+        "name": "codes",
+        "type": "uint256[]"
+      },
+      {
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
     "type": "function"
   }
 ]

@@ -2,14 +2,14 @@ import { Component } from 'react';
 import withRouter from 'umi/withRouter';
 import { connect } from 'react-redux';
 import { message } from 'antd';
-import { Wallet, getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
+import { Wallet, getSelectedAccount, WalletButton, getSelectedAccountWallet } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
 import style from './style.less';
-// import logo from '../img/wandoraLogo.png';
 import { alertAntd, toUnitAmount } from '../utils/utils.js';
+import { lotterySC } from '../utils/contract.js';
 import { networkId, nodeUrl } from '../conf/config.js';
 import { Link } from 'umi';
-
+import sleep from 'ko-sleep';
 
 const networkLogo = networkId == 1 ? 'https://img.shields.io/badge/Wanchain-Mainnet-green.svg' : 'https://img.shields.io/badge/Wanchain-Testnet-green.svg';
 
@@ -18,17 +18,76 @@ class Layout extends Component {
     super(props);
     this.state = {
       totalPool: 0,
-      pricePool: 0,
+      prizePool: 0,
       nextDraw: '2020-04-25 07:00:00 (UTC+8)',
       closeHours: 24,
       raffleCount: 0,
       totalStake: 0,
-      totalPrize: 0, 
+      totalPrize: 0,
     };
   }
 
   componentWillMount() {
 
+  }
+
+  async componentDidMount() {
+    try {
+      let setStakerInfo = async (address) => {
+        let { prize, codeCount } = await lotterySC.methods.userInfoMap(address).call();
+        this.setState({
+          totalPrize: parseInt(prize) + 11,
+          raffleCount: parseInt(codeCount) + 22,
+        });
+      }
+
+      let updateData = async () => {
+        let { prizePool } = await lotterySC.methods.poolInfo().call();
+        while (this.props.selectedAccount === null) {
+          await sleep(500);
+        }
+        let address = this.props.selectedAccount.get('address');
+        console.log('address:', address);
+        if (address) {
+          setStakerInfo(address);
+        }
+        this.setState({
+          prizePool: parseInt(prizePool) + 123
+        });
+      }
+      
+      updateData();
+      this.timer = setInterval(updateData, 30000);
+    } catch (err) {
+      console.log('err:', err);
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  chooseRaffleNum = () => {
+    let { path } = this.props.location;
+    if (path === '/') {
+      let domObj = document.getElementById('entryArea');
+      if (domObj !== null) {
+        domObj.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
+    } else {
+      setTimeout(() => {
+        let domObj = document.getElementById('entryArea');
+        if (domObj !== null) {
+          domObj.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }
+      }, 50);
+    }
   }
 
   render() {
@@ -51,8 +110,8 @@ class Layout extends Component {
           <div className={style.title1}>Choose Your Jack's Pot Number</div>
           <div className={style.title2}>Up to {this.state.totalPool} WAN Total Pool</div>
           <div className={style.centerLine}>
-            <div className={style.title3}>Price Pool:</div>
-            <div className={style.title4}>{this.state.pricePool} WAN</div>
+            <div className={style.title3}>Prize Pool:</div>
+            <div className={style.title4}>{this.state.prizePool} WAN</div>
           </div>
           <div>
             Next Draw Time：{this.state.nextDraw}
@@ -61,18 +120,18 @@ class Layout extends Component {
             Draw Entry Close: {this.state.closeHours} hour before the draw time
           </div>
           <div className={style.chance}>
-          <div className={style.chanceLeft}>
-            <p>You Have {this.state.raffleCount} Raffle Number</p>
-            <p>Total {this.state.totalStake} WAN in Jack's Pot Stake</p>
+            <div className={style.chanceLeft}>
+              <p>You Have {this.state.raffleCount} Raffle Number</p>
+              <p>Total {this.state.totalStake} WAN in Jack's Pot Stake</p>
+            </div>
+            <div className={style.chanceCenter}>
+              <Link to="/" className={style.centerButton} onClick={this.chooseRaffleNum} replace>Choose A Raffle Number</Link>
+            </div>
+            <div className={style.chanceRight}>
+              <p>Total Prize You've Received:</p>
+              <p>{this.state.totalPrize} WAN</p>
+            </div>
           </div>
-          <div className={style.chanceCenter}>
-            <Link to="/" className={style.centerButton}>Choose A Raffle Number</Link>
-          </div>
-          <div className={style.chanceRight}>
-            <p>Total Prize You've Received:</p>
-            <p>{this.state.totalPrize} WAN</p>
-          </div>
-        </div>
         </div>
         {this.props.children}
       </div>
