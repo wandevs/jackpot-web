@@ -18,3 +18,8 @@ export const alertAntd = (info) => {
     }
   }
 }
+
+export const formatRaffleNumber = (num, len = 4) => {
+  num = num.toString();
+  return num.length === 4 ? num : num.padStart(len, '0');
+}

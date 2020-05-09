@@ -47,8 +47,9 @@ h1 {
   margin-left: 15px;
   display: inline-block;
   cursor: pointer;
-  padding-left: 40px;
-  padding-right: 40px;
+  /* padding-left: 40px;
+  padding-right: 40px; */
   width: 140px;
   margin-top:36px;
+  border: none;
 }

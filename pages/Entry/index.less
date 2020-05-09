@@ -1,0 +1,171 @@
+.app {
+    text-align: center;
+
+    :global {
+        .editable-cell {
+            position: relative;
+        }
+
+        .editable-cell-value-wrap {
+            padding: 5px 12px;
+            cursor: pointer;
+        }
+
+        .editable-row:hover .editable-cell-value-wrap {
+            width: 120px;
+            margin: auto;
+            background: rgba(32, 34, 66, 1);
+            border: 1px solid rgba(77, 78, 113, 1);
+            border-radius: 4px;
+        }
+
+        .ant-modal-confirm-body .ant-modal-confirm-title {
+            color: white;
+        }
+
+        .ant-modal-confirm-body>.anticon+.ant-modal-confirm-title+.ant-modal-confirm-content {
+            color: white;
+        }
+    }
+}
+
+.guessNumber {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 0 auto;
+    margin-top: 30px;
+    padding-top: 15px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+    .centerContainer {
+        width: 650px;
+    }
+
+    .leftWing {
+        margin-right: 40px;
+
+        img {
+            width: 90px;
+            height: 170px;
+            margin-top: -10px;
+        }
+    }
+
+    .rightWing {
+        margin-left: 40px;
+
+        img {
+            width: 90px;
+            height: 170px;
+            margin-top: -10px;
+        }
+    }
+}
+
+.normal {
+    text-align: left;
+    margin-bottom: 48px;
+
+    .highlight {
+        font-size: 18px;
+        font-family: Roboto Condensed;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 1);
+        line-height: 15px;
+        margin-right: 10px;
+    }
+
+    .input-wrap {
+        overflow: hidden;
+        position: relative;
+    }
+
+    .randomInput {
+        width: 510px;
+        height: 45px;
+        background: rgba(32, 34, 66, 1);
+        border: 1px solid rgba(77, 78, 113, 1);
+        border-radius: 4px;
+        margin-right: 5px;
+        ;
+    }
+}
+
+.randomSelect {
+    width: 100%;
+    height: 160px;
+    float: left;
+    position: relative;
+}
+
+.input-wrap {
+    input {
+        width: 120px;
+        height: 45px;
+        background: rgba(32, 34, 66, 1);
+        border: 1px solid rgba(77, 78, 113, 1);
+        border-radius: 4px;
+        margin: auto 5px;
+    }
+
+    input:first-child {
+        margin-left: 0px;
+    }
+
+    input:focus {
+        border: 2px solid;
+        border-image: linear-gradient(0deg, rgba(230, 174, 55, 1), rgba(238, 219, 11, 1)) 10 10;
+        border-radius: 4px;
+    }
+}
+
+.app input {
+    border: none;
+    outline: none;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
+}
+
+.centerLine {
+    display: flex;
+    justify-content: center;
+}
+
+.gameRule {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0px 60px 0px;
+
+    .ruleTitle {
+        max-width: 1000px;
+        font-size: 24px;
+        font-family: Roboto Condensed;
+        font-weight: bold;
+        color: rgba(255, 255, 255, 1);
+    }
+
+    .ruleContents {
+        max-width: 1000px;
+        text-align: left;
+        line-height: 18px;
+        font-size: 16px;
+        font-family: Roboto Condensed;
+        // color: rgba(255, 255, 255, 0.6);
+        color: rgba(0, 98, 231, 1);
+    }
+
+    .text {
+        color: rgba(255, 255, 255, 0.6);
+    }
+}

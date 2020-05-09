@@ -3,7 +3,7 @@ import { Modal, Form, Input, Icon, Table } from 'antd';
 import style from './style.less';
 import { alertAntd } from '../../utils/utils.js';
 
-class SendModal extends Component {
+class RefundPrincipalModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -12,7 +12,6 @@ class SendModal extends Component {
     };
 
     const { data } = this.props;
-    console.log('data:', data)
     let selections = data.filter(v => v.times > 0);
     this.codes = selections.map(v => v.code);
     this.amount = 0;
@@ -67,18 +66,21 @@ class SendModal extends Component {
     }
   }
 
-  handleOk = async (e) => {
+  handleOk = (e) => {
     e.preventDefault();
-    console.log('s:', this.codes, this.amounts);
-    this.setState({
-      confirmLoading: true,
+    this.props.form.validateFields(async (err, values) => {
+      if (!err) {
+        this.setState({
+          confirmLoading: true,
+        });
+        let ret = await this.props.sendTransaction(this.amount, [this.codes, this.amounts]);
+        if (ret) {
+          this.props.watchTransactionStatus(ret, this.okCallback)
+        } else {
+          this.okCallback(false);
+        }
+      }
     });
-    let ret = await this.props.sendTransaction(this.amount, [this.codes, this.amounts]);
-    if (ret) {
-      this.props.watchTransactionStatus(ret, this.okCallback)
-    } else {
-      this.okCallback(false);
-    }
   };
 
   handleCancel = () => {
@@ -91,7 +93,7 @@ class SendModal extends Component {
     return (
       <div>
         <Modal
-          title={"Transaction for Jack's Pot"}
+          title={"Refund Principal"}
           wrapClassName={style['sendModal']}
           visible={true}
           onOk={this.handleOk}
@@ -107,7 +109,7 @@ class SendModal extends Component {
           <Table
             className={style['selectedRaffleList']}
             columns={this.columns}
-            bordered={false}
+            bordered
             pagination={false}
             dataSource={data} />
           <div style={{ color: '#880' }}>* We will use the lowest gas charge by default, around 0.002~0.03 WAN.</div>
@@ -117,4 +119,4 @@ class SendModal extends Component {
   }
 }
 
-export default SendModal;
+export default RefundPrincipalModal;

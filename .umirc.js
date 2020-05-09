@@ -11,4 +11,8 @@ export default {
     ],
     "./umi-plugin-entry.js"
   ],
+  routes: [
+    { path: '/', component: '../layouts' },
+  ]
 };
+

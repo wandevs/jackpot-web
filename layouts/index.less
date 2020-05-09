@@ -1,0 +1,282 @@
+@font-face {
+    font-family: 'UnidreamLED';
+    src: url('../static/fonts/UnidreamLED.ttf');
+}
+
+.layout {
+    width: 1200px;
+    overflow: auto;
+    margin: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 15px 6px;
+    height: 60px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    position: relative;
+}
+
+.logo {
+    font-size: 28px;
+    color: #fff;
+    position: absolute;
+    left: 14px;
+}
+
+.title {
+    width: 200px;
+    text-align: left;
+    height: 14px;
+    font-size: 18px;
+    font-family: Roboto Condensed;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
+    line-height: 15px;
+    margin: 7px;
+    position: absolute;
+    left: 24px;
+}
+
+.gameRule {
+    padding: 3px 16px 3px 16px;
+    border: 1px solid white;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.mainContainer {
+    // width: 1200px;
+    // overflow: auto;
+    // margin: auto;
+
+    .top {
+        width: 100%;
+        height: 500px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(69deg, rgba(25, 35, 84, 1) 0%, rgba(49, 62, 129, 1) 100%);
+        border-radius: 4px;
+
+        .block1 {
+            flex: 1;
+
+            .leftPart {
+                height: 100%;
+                // display: flex;
+                // flex-direction: column;
+                // justify-content: center;
+                // align-items: center;
+                // background-image: url('../static/images/bg1.png');
+                background-image: url('../static/images/bg1.png');
+                background-repeat: no-repeat;
+                background-size: contain;
+                // background-attachment:fixed;
+                // background-position:center; 
+
+                :global(p) {
+                    margin: 0px;
+                    font-size: 30px;
+                    font-family: Roboto Condensed;
+                    font-weight: bold;
+                    color: rgba(255, 255, 255, 1);
+                    line-height: 39px;
+                    text-shadow: 0px 3px 20px rgba(0, 0, 0, 0.47);
+                    -webkit-text-stroke: 5px undefined;
+                }
+            }
+
+            .rightPart {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                padding-top: 0px;
+                background-image: url('../static/images/bg2.png');
+                background-repeat: no-repeat;
+                background-size: contain;
+                background-position: right;
+
+                .totalPool {
+                    background-image: url('../static/images/panel1.png');
+                    width: 100%;
+                    height: 110px;
+                    background-repeat: no-repeat;
+                    background-size: contain;
+                    background-position: left;
+                    padding-left: 40px;
+                    margin-bottom: 20px;
+                }
+
+                .totalPoolValue {
+                    color: rgba(169, 239, 252, 1);
+                    height: 50px;
+                    line-height: 50px;
+
+                    :global {
+                        img {
+                            width: 18px;
+                            height: 21px;
+                            line-height: 50px;
+                            vertical-align: baseline;
+                            margin-right: 14px;
+                        }
+                    }
+                }
+
+                .prizePool {
+                    background-image: url('../static/images/panel2.png');
+                    width: 100%;
+                    height: 110px;
+                    background-repeat: no-repeat;
+                    background-size: contain;
+                    background-position: left;
+                    padding-left: 40px;
+                    margin-bottom: 20px;
+                }
+
+                .prizePoolValue {
+                    color: rgba(255, 210, 89, 1);
+                    height: 50px;
+                    line-height: 50px;
+
+                    :global {
+                        img {
+                            width: 22px;
+                            height: 21px;
+                            line-height: 50px;
+                            vertical-align: baseline;
+                            margin-right: 14px;
+                        }
+                    }
+                }
+
+                .label1 {
+                    font-size: 18px;
+                    font-family: Roboto Condensed;
+                    font-weight: bold;
+                    color: rgba(255, 255, 255, 1);
+                    line-height: 40px;
+                    height: 45px !important;
+                }
+
+                .label2 {
+                    font-size: 18px;
+                    font-family: Roboto Condensed;
+                    font-weight: bold;
+                    color: rgba(255, 255, 255, 1);
+                    line-height: 40px;
+                    height: 40px !important;
+                }
+
+                .value {
+                    :global {
+                        span:nth-of-type(1) {
+                            font-size: 36px;
+                            font-family: UniDreamLED;
+                            font-weight: 400;
+                            line-height: 50px;
+                        }
+
+                        span:nth-of-type(2) {
+                            font-size: 16px;
+                            line-height: 50px;
+                            margin-left: 10px;
+                            vertical-align: super;
+                        }
+                    }
+                }
+
+                .drawTime {
+                    font-size: 14px;
+                    font-family: Microsoft YaHei;
+                    font-weight: 400;
+                    color: rgba(255, 255, 255, 1);
+                    line-height: 19px;
+                    padding-left: 10px;
+                    margin-bottom: 6px;
+
+                    :global(span) {
+                        color: rgba(255, 210, 89, 1)
+                    }
+                }
+
+                .drawClose {
+                    font-size: 14px;
+                    font-family: Microsoft YaHei;
+                    font-weight: 400;
+                    color: rgba(255, 255, 255, 1);
+                    line-height: 19px;
+                    opacity: 0.5;
+                    padding-left: 10px;
+                }
+            }
+        }
+
+        .block2 {
+            width: 100%;
+            height: 90px;
+            position: absolute;
+            bottom: 0px;
+            background: linear-gradient(90deg, rgba(20, 20, 63, 1) 0%, rgba(34, 37, 90, 1) 100%);
+            opacity: 0.8;
+
+            :global {
+                .ant-col {
+                    padding-top: 20px;
+                }
+
+                .ant-col-6 {
+                    padding-left: 36px;
+                }
+            }
+
+            .label {
+                font-size: 12px;
+                font-weight: bold;
+                color: rgba(255, 255, 255, 1);
+                line-height: 15px;
+                opacity: 0.6;
+            }
+
+            .value {
+                font-size: 24px;
+                font-weight: bold;
+                color: rgba(255, 255, 255, 1);
+                line-height: 15px;
+            }
+
+            .totalPrize {
+                color: rgba(255, 210, 89, 1);
+            }
+        }
+    }
+}
+
+.mainTab {
+    :global {
+        .ant-tabs-nav-scroll {
+            text-align: center;
+        }
+        
+        .ant-tabs {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .ant-tabs-nav .ant-tabs-tab-active {
+            color: white;
+        }
+
+        .ant-tabs-bar {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .ant-tabs-ink-bar {
+            background:rgba(65,78,221,1);
+        }
+    }
+}

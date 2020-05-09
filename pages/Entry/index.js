@@ -1,18 +1,16 @@
 import { connect } from "react-redux";
 import React from 'react';
-import { Component } from "../components/base";
+import { Component } from "../../components/base";
 import { Row, Col, Divider, Table, message, Modal } from 'antd';
-import { Link } from 'umi';
-import SendModal from '../components/SendModal';
-import { EditableCell, EditableFormRow } from "../components/EditableRow";
-
+import SendModal from '../../components/SendModal';
+import { EditableCell, EditableFormRow } from "../../components/EditableRow";
 import { getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
-import style from './style.less';
+import style from './index.less';
 import sleep from 'ko-sleep';
-import { alertAntd, toUnitAmount } from '../utils/utils.js';
-import { web3, lotterySC, lotterySCAddr } from '../utils/contract.js';
-import { price } from '../conf/config.js';
+import { alertAntd, toUnitAmount } from '../../utils/utils.js';
+import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
+import { price } from '../../conf/config.js';
 
 const { confirm } = Modal;
 
@@ -59,25 +57,34 @@ class IndexPage extends Component {
 
   columns = [
     {
-      title: 'Index',
+      title: 'INDEX',
       dataIndex: 'key',
       key: 'key',
+      align: 'center'
     },
     {
-      title: 'Raffle Number',
+      title: 'RAFFLE NUMBER',
       dataIndex: 'code',
       key: 'code',
+      align: 'center',
+      render: text => {
+        let arr = text.split('');
+        arr = arr.map((s, i) => (<span key={i} className={ i % 2 === 0 ? 'blueCircle' : 'redCircle' }>{s}</span>));
+        return <span key={text}>{arr}</span>
+      }
     },
     {
-      title: 'Multiple of Draws',
+      title: 'MULTIPLE OF DRAWS',
       dataIndex: 'times',
       key: 'times',
       editable: true,
+      align: 'center'
     },
     {
-      title: 'Price (WAN)',
+      title: 'PRICE',
       dataIndex: 'price',
       key: 'price',
+      render: text => (<span className={'price'}>{text} WAN</span>)
     },
   ]
 
@@ -111,7 +118,6 @@ class IndexPage extends Component {
   estimateSendGas = async (value, selectUp, address) => {
     try {
       let ret = await lotterySC.methods.buy(...selectUp).estimateGas({ gas: 10000000, value, from: address });
-      console.log('=------es-----=:', ret);
       if (ret == 10000000) {
         return -1;
       }
@@ -139,9 +145,8 @@ class IndexPage extends Component {
     }
 
     const value = web3.utils.toWei(amount.toString());
-    let encoded = await lotterySC.methods.buy(...selectUp).encodeABI();
-    console.log('encoded:', encoded);
-    let params = {
+    const encoded = await lotterySC.methods.buy(...selectUp).encodeABI();
+    const params = {
       to: lotterySCAddr,
       data: encoded,
       value,
@@ -156,8 +161,6 @@ class IndexPage extends Component {
       // params.gasPrice = "0x2540BE400";
     }
 
-    console.log('gasLimit:', params.gasLimit);
-
     if (params.gasLimit == -1) {
       alertAntd('Estimate Gas Error. Maybe out of time range.');
       return false;
@@ -165,12 +168,14 @@ class IndexPage extends Component {
 
     try {
       let transactionID = await selectedWallet.sendTransaction(params);
-      console.log('transactionID:', transactionID);
+      console.log('Tx ID:', transactionID);
       this.watchTransactionStatus(transactionID, (ret) => {
         console.log('status:', ret)
         if (ret) {
-          console.log('watch tx status');
           alertAntd('Success');
+          this.setState({
+            selectedCodes: []
+          });
         } else {
           alertAntd('Failed');
         }
@@ -214,10 +219,7 @@ class IndexPage extends Component {
       message.warn("Max support add 50 raffle number once.");
       return;
     }
-
     let code = Number(this.state.n1).toFixed(0) + Number(this.state.n2).toFixed(0) + Number(this.state.n3).toFixed(0) + Number(this.state.n4).toFixed(0);
-
-
     for (let i = 0; i < this.state.selectedCodes.length; i++) {
       if (this.state.selectedCodes[i].code === code) {
         message.info("The same raffle number already exists, please modify it directly in the table.");
@@ -288,9 +290,9 @@ class IndexPage extends Component {
   }
 
   onConfirm = () => {
-    this.pageYOffset = window.scrollY;
+    // this.pageYOffset = window.scrollY;
     // window.scrollTo(0, 0);
-    document.body.scrollTop = 0;
+    // document.body.scrollTop = 0;
     this.setState({ modalVisible: true });
     // console.log('datas:', this.state.selectedCodes);
   }
@@ -331,89 +333,65 @@ class IndexPage extends Component {
 
     return (
       <div className={style.app}>
-        <div className={style.title5}>
-          Entry Area
-        </div>
-        <div>
-          <Link to="/history">View Past Draw Results</Link>
-        </div>
         <div id="entryArea" className={style.guessNumber} >
-          <Row>
-            <Col span={6}>
-              <div style={{ lineHeight: "100px" }}>Self Selection:</div>
-            </Col>
-            <Col span={12}>
-              <div className={style.normal}>
-                <p></p>
-                <p>Fill in a four digits' number in the box below, e.g.6666</p>
-                <div className={style['input-wrap']}>
-                  <input type="number" min='0' max='9' placeholder="0~9" value={this.state.n1} onChange={e => this.onChangeCode(1, e.target.value)} />
-                  <input type="number" min='0' max='9' placeholder="0~9" value={this.state.n2} onChange={e => this.onChangeCode(2, e.target.value)} />
-                  <input type="number" min='0' max='9' placeholder="0~9" value={this.state.n3} onChange={e => this.onChangeCode(3, e.target.value)} />
-                  <input type="number" min='0' max='9' placeholder="0~9" value={this.state.n4} onChange={e => this.onChangeCode(4, e.target.value)} />
-                </div>
+          <div className={style.leftWing}>
+            <img src={require('../../static/images/ear1.png')} />
+          </div>
+          <div className={style.centerContainer}>
+            <div className={style.normal}>
+              <p><span className={style.highlight}>Self Selection</span>Fill in a four digits' number in the box below, e.g.6666</p>
+              <div className={style['input-wrap']}>
+                <input type="number" min='0' max='9' placeholder="0 - 9" value={this.state.n1} onChange={e => this.onChangeCode(1, e.target.value)} />
+                <input type="number" min='0' max='9' placeholder="0 - 9" value={this.state.n2} onChange={e => this.onChangeCode(2, e.target.value)} />
+                <input type="number" min='0' max='9' placeholder="0 - 9" value={this.state.n3} onChange={e => this.onChangeCode(3, e.target.value)} />
+                <input type="number" min='0' max='9' placeholder="0 - 9" value={this.state.n4} onChange={e => this.onChangeCode(4, e.target.value)} />
+                <div className={'guess-button yellowButton'} onClick={this.selfAdd}>ADD</div>
               </div>
-            </Col>
-            <Col span={6}>
-              <div className={[style['guess-button'], style.yellowButton].join(' ')} onClick={this.selfAdd}>Add</div>
-            </Col>
-          </Row>
-          <Row>
-            <Divider />
-          </Row>
-          <Row>
-            <Col span={6}>
-              <div style={{ lineHeight: "100px" }}>Machine Selection:</div>
-            </Col>
-            <Col span={12}>
-              <Row>
-                <div className={style.normal}>
-                  <p>Enter the number of bets you want to make</p>
-                  <input style={{ width: "400px" }} type="number" min='1' max='50' placeholder="1~50" value={this.state.machineCnt} onChange={e => { if (e.target.value <= 50) { this.setState({ machineCnt: e.target.value }) } }} />
-                </div>
-              </Row>
-            </Col>
-            <Col span={6}>
-              <div className={[style['guess-button'], style.yellowButton].join(' ')} onClick={this.randomAdd}>Add</div>
-            </Col>
-          </Row>
-        </div>
-        <div style={{ height: "50px" }}>
-          <Link to="/history">View My Draw History</Link>
+            </div>
+            <div className={style.normal}>
+              <p><span className={style.highlight}>Machine Selection</span>Enter the number of bets you want to make</p>
+              <input className={style.randomInput} type="number" min='1' max='50' placeholder="1 - 50" value={this.state.machineCnt} onChange={e => { if (e.target.value <= 50) { this.setState({ machineCnt: e.target.value }) } }} />
+              <div className={'guess-button greenButton'} onClick={this.randomAdd}>ADD</div>
+            </div>
+          </div>
+          <div className={style.rightWing}>
+            <img src={require('../../static/images/ear2.png')} />
+          </div>
         </div>
 
-        <div className={style['table']}>
-          <div style={{ height: "20px" }}></div>
-          <h1>Your Raffle Number:</h1>
+        <div className={'title'}>
+          <img src={require('../../static/images/coupon.png')} />
+          <span>Your Raffle Number</span>
+        </div>
+
+        <div className={'table'}>
           <Table
             components={components}
             columns={columns}
             rowClassName={() => 'editable-row'}
-            bordered
+            bordered={false}
             dataSource={this.state.selectedCodes} />
-          <div className={style.centerLine}>
-            <div className={[style['guess-button'], style.yellowButton].join(' ')} onClick={this.onConfirm}>Confirm</div>
-            <div className={[style['guess-button'], style.yellowButton].join(' ')} onClick={this.clearRaffleNumber}>Clear</div>
+          <div className={style['centerLine']}>
+            <div className={'guess-button ellipsoidalButton'} onClick={this.onConfirm}>Confirm</div>
+            <div className={'guess-button ellipsoidalButton'} onClick={this.clearRaffleNumber}>Clear</div>
           </div>
-          <div style={{ height: "30px" }}></div>
         </div>
 
-        <div style={{ height: "50px" }}></div>
-        <div className={style['table']}>
-          <div style={{ height: "20px" }}></div>
-          <h1>Game Rules</h1>
-          <div>
-            <p>Jack’s Pot is a no-loss lottery game built on Wanchain which draws from the design of the Ethereum based PoolTogether game while introducing novel game mechanics.</p>
-            <p>To play the game, participants deposit WAN while also guessing a number between 1 and 4 inclusive.</p>
-            <p>Participants' WAN deposits are delegated to POS verification nodes, and the accrued consensus rewards are pooled into a prize pot.</p>
-            <p>Every Friday a winning number is selected at random using Wanchain’s true random number generation, and the reward will be awarded proportionally to participants who guessed the winning number.</p>
-            <p>If there is no winner, the prize pot will automatically accumulate to the next cycle.</p>
-          </div>
-          <div style={{ height: "30px" }}></div>
-
+        <div className={'title'}>
+          <img src={require('../../static/images/tag.png')} />
+          <span>Game Rules</span>
         </div>
-        <div style={{ height: "50px" }}></div>
-        <div style={{ height: "50px" }}></div>
+
+        <div className={style['gameRule']}>
+          <h1 className={style['ruleTitle']}>Jack’s Pot is a no-loss lottery game built on Wanchain which draws from the design of the Ethereum based PoolTogether game while introducing novel game mechanics.</h1>
+          <ul className={style['ruleContents']}>
+            <li><span className={style['text']}>To play the game, participants deposit WAN while also guessing a number between 1 and 4 inclusive.</span></li>
+            <li><span className={style['text']}>Participants' WAN deposits are delegated to POS verification nodes, and the accrued consensus rewards are pooled into a prize pot.</span></li>
+            <li><span className={style['text']}>Every Friday a winning number is selected at random using Wanchain’s true random number generation, and the reward will be awarded proportionally to participants who guessed the winning number.</span></li>
+            <li><span className={style['text']}>If there is no winner, the prize pot will automatically accumulate to the next cycle.</span></li>
+          </ul>
+        </div>
+
         {
           this.state.modalVisible && <SendModal
             sendTransaction={this.sendTransaction}
