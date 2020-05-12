@@ -26,6 +26,7 @@ class IndexPage extends Component {
       machineCnt: '',
       selectedCodes: [],
       modalVisible: false,
+      scrollY: 0
     };
 
     Date.prototype.format = function (fmt) {
@@ -260,14 +261,17 @@ class IndexPage extends Component {
 
   hideModal = () => {
     this.setState({ modalVisible: false });
+    window.scrollTo(0, this.state.scrollY);
+    console.log('to Y:', this.state.scrollY);
   }
 
   onConfirm = () => {
+    const Y = window.scrollY;
     if(this.state.selectedCodes.length === 0) {
       return false;
     }
-
-    this.setState({ modalVisible: true });
+    this.setState({ modalVisible: true, scrollY: Y });
+    window.scrollTo(0, 0);
   }
   
   clearRaffleNumber = () => {
