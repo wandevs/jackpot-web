@@ -1,14 +1,15 @@
 import { connect } from "react-redux";
 import React from 'react';
 import { Table, Button } from 'antd';
-import style from './index.css';
+import style from './index.less';
 import { Component } from '../../components/base';
 import sleep from 'ko-sleep';
-
-import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
+import RefundPrincipalModal from '../../components/RefundPrincipalModal';
+import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt, WalletButtonLong } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
 import { alertAntd, toUnitAmount, formatRaffleNumber } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
+import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
 
 const prefix = 'jackpot';
@@ -22,6 +23,7 @@ class History extends Component {
       historyList: [],
       selectedRowKeys: [],
       selectedRows: [],
+      modalVisible: false,
     }
   }
 
@@ -48,7 +50,6 @@ class History extends Component {
   getHistoryData = async () => {
     let address = this.props.selectedAccount.get('address');
     let ret = await lotterySC.methods.getUserCodeList(address).call();
-    console.log('history:', ret);
     let { amounts, codes } = ret;
     let data = amounts.map((v, i) => ({
       key: i + 1,
@@ -62,12 +63,12 @@ class History extends Component {
 
   myDrawColumns = [
     {
-      title: 'Index',
+      title: 'INDEX',
       dataIndex: 'key',
       key: 'key',
     },
     {
-      title: "Number",
+      title: "RAFFLE NUMBER",
       dataIndex: 'code',
       key: 'code',
       align: 'center',
@@ -80,20 +81,20 @@ class History extends Component {
       }
     },
     {
-      title: "Multiple",
+      title: "MULTIPLE OF DRAWS",
       dataIndex: 'times',
       key: 'times',
       align: 'center'
     },
     {
-      title: "Price",
+      title: "PRICE",
       dataIndex: "price",
       key: "price",
       align: 'center',
       render: text => (<span className={'price'}>{text} WAN</span>)
     },
     {
-      title: "from",
+      title: "FROM",
       dataIndex: "from",
       key: "from",
     },
@@ -103,14 +104,20 @@ class History extends Component {
     this.setState({ selectedRowKeys, selectedRows });
   }
 
-  refundPrincipal = async () => {
+  refundPrincipal = () => {
+    this.setState({ modalVisible: true })
+  }
+
+  hideModal = () => {
+    this.setState({ modalVisible: false });
+  }
+
+  sendRefundPrincipalTx = async () => {
     const { selectedRows } = this.state;
     const { selectedAccount, selectedWallet } = this.props;
     const codes = selectedRows.map(v => Number(v.code));
     const encoded = await lotterySC.methods.redeem(codes).encodeABI();
     const address = selectedAccount ? selectedAccount.get('address') : null;
-    console.log('refundPrincipal');
-    console.log('codes:', codes);
 
     if (codes.length === 0) {
       alertAntd('Please select at least one row to refund.');
@@ -147,12 +154,12 @@ class History extends Component {
       return false;
     }
 
-    console.log('params:', params);
+    // console.log('params:', params);
 
     try {
       let transactionID = await selectedWallet.sendTransaction(params);
-      console.log('tx ID:', transactionID);
-      this.watchTransactionStatus(transactionID, (ret) => {
+      // console.log('tx ID:', transactionID);
+      watchTransactionStatus(transactionID, (ret) => {
         if (ret) {
           alertAntd('Refund success');
         } else {
@@ -193,24 +200,6 @@ class History extends Component {
     }
   }
 
-  watchTransactionStatus = (txID, callback) => {
-    const getTransactionStatus = async () => {
-      const tx = await getTransactionReceipt(txID);
-      if (!tx) {
-        window.setTimeout(() => getTransactionStatus(txID), 3000);
-      } else if (callback) {
-        callback(Number(tx.status) === 1);
-      } else {
-        alertAntd('success');
-      }
-    };
-    window.setTimeout(() => getTransactionStatus(txID), 3000);
-  };
-
-  refundPrize = () => {
-    console.log('refundPrize');
-  }
-
   render() {
     const { selectedRowKeys, historyLoading, principalButtonLoading, historyList } = this.state;
     const rowSelection = {
@@ -219,7 +208,6 @@ class History extends Component {
       hideDefaultSelections: false,
       fixed: true,
     }
-    // console.log('historyList:', historyList)
     return (
       <div className={style.normal}>
         <div className={'title'}>
@@ -230,10 +218,18 @@ class History extends Component {
           <Table rowSelection={rowSelection} columns={this.myDrawColumns} dataSource={historyList} loading={historyLoading} />
           <div className={style['centerLine']}>
             <div className={'guess-button ellipsoidalButton'} /* loading={principalButtonLoading} */ onClick={this.refundPrincipal}>Refund Principal</div>
-            <div className={'guess-button ellipsoidalButton'} onClick={this.refundPrize}>Refund Prize</div>
+            {/* <div className={'guess-button ellipsoidalButton'} onClick={this.refundPrize}>Refund Prize</div> */}
           </div>
         </div>
         <div style={{ height: "30px" }}></div>
+
+        {
+          this.state.modalVisible && <RefundPrincipalModal
+            sendTransaction={this.sendRefundPrincipalTx}
+            hideModal={this.hideModal}
+            data={this.state.selectedRows}
+            WalletButton={WalletButtonLong} />
+        }
       </div>
     );
   }

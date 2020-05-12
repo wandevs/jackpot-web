@@ -87,6 +87,29 @@
     "constant": true,
     "inputs": [
       {
+        "name": "blockTime",
+        "type": "uint256"
+      },
+      {
+        "name": "randomPrecompileAddr",
+        "type": "address"
+      }
+    ],
+    "name": "getRandomByBlockTime",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
         "name": "",
         "type": "uint256"
       }
@@ -133,48 +156,6 @@
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "blockTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "getEpochId",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "",
-        "type": "address"
-      },
-      {
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "delegateIn",
-    "outputs": [
-      {
-        "name": "success",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -276,6 +257,29 @@
     "type": "function"
   },
   {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "blockTime",
+        "type": "uint256"
+      },
+      {
+        "name": "randomPrecompileAddr",
+        "type": "address"
+      }
+    ],
+    "name": "getEpochId",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": false,
     "inputs": [],
     "name": "renounceOwnership",
@@ -286,17 +290,12 @@
   },
   {
     "constant": true,
-    "inputs": [
-      {
-        "name": "epochId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getRandomByEpochId",
+    "inputs": [],
+    "name": "randomPrecompileAddress",
     "outputs": [
       {
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "payable": false,
@@ -435,25 +434,6 @@
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "delegateOut",
-    "outputs": [
-      {
-        "name": "success",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "constant": true,
     "inputs": [],
     "name": "pendingPrizeWithdrawCount",
@@ -471,11 +451,15 @@
     "constant": true,
     "inputs": [
       {
-        "name": "blockTime",
+        "name": "epochId",
         "type": "uint256"
+      },
+      {
+        "name": "randomPrecompileAddr",
+        "type": "address"
       }
     ],
-    "name": "getRandomByBlockTime",
+    "name": "getRandomByEpochId",
     "outputs": [
       {
         "name": "",
@@ -550,6 +534,20 @@
       {
         "name": "code",
         "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "posPrecompileAddress",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
       }
     ],
     "payable": false,
@@ -1011,6 +1009,48 @@
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getPendingAmount",
+    "outputs": [
+      {
+        "name": "total",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "addr",
+        "type": "address"
+      }
+    ],
+    "name": "setPosPrecompileAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "addr",
+        "type": "address"
+      }
+    ],
+    "name": "setRandomPrecompileAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

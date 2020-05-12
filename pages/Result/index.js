@@ -1,13 +1,13 @@
 import { connect } from "react-redux";
 import React from 'react';
 import { Table, Button } from 'antd';
-import style from './index.css';
+import style from './index.less';
 import { Component } from '../../components/base';
 import sleep from 'ko-sleep';
 
 import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
-import { alertAntd, toUnitAmount } from '../../utils/utils.js';
+import { alertAntd, toUnitAmount, formatRaffleNumber } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
 
 const prefix = 'jackpot';
@@ -35,9 +35,9 @@ class Result extends Component {
   }
 
   checkSCUpdate() {
-    let scOld = window.localStorage.getItem(prefix+'_SC');
+    let scOld = window.localStorage.getItem(prefix + '_SC');
     if (!scOld || scOld !== lotterySCAddr) {
-      console.log('Detect smart contract update.');
+      // console.log('Detect smart contract update.');
       window.localStorage.setItem(`${prefix}_SC`, lotterySCAddr);
       window.localStorage.removeItem(`${prefix}_historyStartBlock`);
     }
@@ -60,18 +60,19 @@ class Result extends Component {
     });
     let data = [];
     if (events && events.length > 0) {
-      console.log('events:', events);
-      for(let i = 0; i < events.length; i ++) {
+      // console.log('events:', events);
+      for (let i = 0; i < events.length; i++) {
         let block = await web3.eth.getBlock(events[i].blockNumber);
-        // console.log('block:', block);
         let hasWinner = events[i].returnValues.amounts.length !== 1 || events[i].returnValues.amounts[0] !== '0';
         data.push({
           key: events[i].blockNumber,
           blockNumber: events[i].blockNumber,
           time: (new Date(Number(block.timestamp) * 1000)).toLocaleDateString(),
           jackpot: events[i].returnValues.winnerCode,
-          amount: hasWinner ? events[i].returnValues.amounts.reduce((t, n) => t + n) : 0,
+          amount: web3.utils.fromWei(events[i].returnValues.prizePool),
           winnerCount: hasWinner ? events[i].returnValues.amounts.length : 0,
+          winners: hasWinner ? events[i].returnValues.winners : 'No winners.',
+          amounts: hasWinner ? events[i].returnValues.amounts : [],
         })
       }
     }
@@ -83,24 +84,36 @@ class Result extends Component {
 
   pastDrawResults = [
     {
-      title: 'Draw',
+      title: 'DRAW',
       dataIndex: 'time',
       key: 'draw',
+      align: 'center',
     },
     {
-      title: 'Jackpot',
+      title: 'JACKPOT',
       dataIndex: 'jackpot',
       key: 'jackpot',
+      align: 'center',
+      render: text => {
+        let arr = formatRaffleNumber(text).split('');
+        arr = arr.map((s, i) => {
+          return (<span key={i} className={i % 2 === 0 ? 'blueCircle' : 'redCircle'}>{s}</span>)
+        });
+        return <span key={text}>{arr}</span>
+      }
     },
     {
-      title: 'Prize',
+      title: 'PRIZE',
       dataIndex: 'amount',
       key: 'prize',
+      align: 'center',
+      render: text => (<span className={'price'}>{text} WAN</span>)
     },
     {
-      title: 'Winner',
+      title: 'WAINNER',
       dataIndex: 'winnerCount',
       key: 'winnerCount',
+      align: 'center',
     },
   ]
 
@@ -109,13 +122,27 @@ class Result extends Component {
 
     return (
       <div className={style.normal}>
-        <div className={style.title5}>
-            Past Draw Results
+        <div className={'title'}>
+          <img src={require('../../static/images/coupon.png')} />
+          <span>Past Draw Results</span>
         </div>
 
         <div style={{ height: "20px" }}></div>
         <div className={'table'}>
-          <Table columns={this.pastDrawResults} dataSource={resultList}  loading={resultLoading} />
+          <Table
+            columns={this.pastDrawResults}
+            dataSource={resultList}
+            loading={resultLoading}
+            expandedRowRender={record => {
+              if (typeof record.winners === 'string') {
+                return <p style={{ margin: 0 }}>{record.winners}</p>;
+              } else {
+                return (<ul className={style.detailList}>
+                    {record.winners.map((v, i) => <li key={v}>Winner: {v} &nbsp;&nbsp;&nbsp;&nbsp; Prize: {web3.utils.fromWei(record.amounts[i])} WAN</li>)}
+                </ul>)
+              }
+            }}
+          />
         </div>
         <div style={{ height: "50px" }}></div>
         <div style={{ height: "50px" }}></div>

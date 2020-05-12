@@ -1,4 +1,5 @@
 @hover_color: rgb(64, 68, 158);
+
 :global {
     .ant-table table {
         background: rgba(255, 255, 255, 0);
@@ -34,30 +35,30 @@
             background-color: @hover_color;
         } */
 
-        .ant-table-tbody > tr.ant-table-row-selected td {
-            background-color: @hover_color !important;
+        .ant-table-tbody>tr.ant-table-row-selected td {
+            background-color: @hover_color  !important;
         }
 
         .ant-table-thead>tr.ant-table-row-hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)>td,
         .ant-table-tbody>tr.ant-table-row-hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)>td,
         .ant-table-thead>tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)>td,
         .ant-table-tbody>tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)>td {
-            background-color: @hover_color !important;
+            background-color: @hover_color  !important;
         }
 
         .ant-table-thead>tr.ant-table-row-selected>td.ant-table-column-sort,
         .ant-table-tbody>tr.ant-table-row-selected>td.ant-table-column-sort {
-            background-color: @hover_color !important;
+            background-color: @hover_color  !important;
         }
 
         .ant-table-thead>tr:hover.ant-table-row-selected>td,
         .ant-table-tbody>tr:hover.ant-table-row-selected>td {
-            background-color: @hover_color !important;
+            background-color: @hover_color  !important;
         }
 
         .ant-table-thead>tr:hover.ant-table-row-selected>td.ant-table-column-sort,
         .ant-table-tbody>tr:hover.ant-table-row-selected>td.ant-table-column-sort {
-            background-color: @hover_color !important;
+            background-color: @hover_color  !important;
         }
 
         .price {
@@ -86,6 +87,46 @@
             background-position: center;
             background-size: contain;
             margin: 0 16px;
+        }
+    }
+
+    .ant-table-wrapper .ant-table-pagination {
+
+        .ant-pagination-prev,
+        .ant-pagination-next,
+        .ant-pagination-jump-prev,
+        .ant-pagination-jump-next,
+        .ant-pagination-item {
+            min-width: 26px;
+            height: 26px;
+            line-height: 26px;
+            background: rgba(31, 32, 70, 1);
+            border: 1px solid rgba(69, 71, 103, 1);
+            border-radius: 6px;
+
+            &:hover a {
+                color: rgba(255, 255, 255, 1);
+            }
+        }
+
+        .ant-pagination-item a {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .ant-pagination-item-active {
+            background: rgba(45, 47, 104, 1);
+        }
+
+        .ant-pagination-item-active a {
+            color: rgba(255, 255, 255, 1);
+        }
+
+        .ant-pagination-prev .ant-pagination-item-link,
+        .ant-pagination-next .ant-pagination-item-link {
+            background: #1f2046;
+            border: none;
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.5);
         }
     }
 
@@ -120,7 +161,7 @@
         text-align: left;
         padding-left: 20px;
         position: relative;
-    
+
         img {
             width: 25px;
             height: 25px;
@@ -132,7 +173,7 @@
             bottom: 0;
             margin: auto 10px auto 20px;
         }
-    
+
         span {
             font-size: 18px;
             font-family: Roboto Condensed;
@@ -157,7 +198,7 @@
         user-select: none;
         padding: 0px 16px;
     }
-    
+
     .yellowButton {
         background: linear-gradient(90deg, #dda62f 0%, #a2982e 100%);
         font-size: 18px;
@@ -166,7 +207,7 @@
         color: rgba(255, 255, 255, 1);
         line-height: 46px;
     }
-    
+
     .greenButton {
         background: linear-gradient(90deg, rgba(0, 206, 136, 1) 0%, rgba(37, 121, 108, 1) 100%);
         font-size: 18px;
@@ -175,7 +216,7 @@
         color: rgba(255, 255, 255, 1);
         line-height: 46px;
     }
-    
+
     .ellipsoidalButton {
         height: 40px;
         background: linear-gradient(90deg, #dda62f 0%, #a2982e 100%);
@@ -185,5 +226,9 @@
         color: rgba(255, 255, 255, 1);
         line-height: 40px;
         border-radius: 20px !important;
+    }
+
+    input[type=number]::-webkit-inner-spin-button {
+        display: none;
     }
 }

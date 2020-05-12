@@ -30,23 +30,23 @@ class SendModal extends Component {
 
   columns = [
     {
-      title: 'Index',
+      title: 'INDEX',
       dataIndex: 'key',
       key: 'key',
     },
     {
-      title: 'Raffle Number',
+      title: 'RAFFLE NUMBER',
       dataIndex: 'code',
       key: 'code',
     },
     {
-      title: 'Multiple of Draws',
+      title: 'MULTIPLE OF DRAWS',
       dataIndex: 'times',
       key: 'times',
       editable: true,
     },
     {
-      title: 'Price (WAN)',
+      title: 'PRICE (WAN)',
       dataIndex: 'price',
       key: 'price',
     },
@@ -69,7 +69,6 @@ class SendModal extends Component {
 
   handleOk = async (e) => {
     e.preventDefault();
-    console.log('s:', this.codes, this.amounts);
     this.setState({
       confirmLoading: true,
     });

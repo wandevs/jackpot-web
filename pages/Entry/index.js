@@ -10,6 +10,7 @@ import style from './index.less';
 import sleep from 'ko-sleep';
 import { alertAntd, toUnitAmount } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
+import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
 
 const { confirm } = Modal;
@@ -101,20 +102,6 @@ class IndexPage extends Component {
     return undefined
   }
 
-  watchTransactionStatus = (txID, callback) => {
-    const getTransactionStatus = async () => {
-      const tx = await getTransactionReceipt(txID);
-      if (!tx) {
-        setTimeout(() => getTransactionStatus(txID), 3000);
-      } else if (callback) {
-        callback(Number(tx.status) === 1);
-      } else {
-        alertAntd('success');
-      }
-    };
-    setTimeout(() => getTransactionStatus(txID), 3000);
-  };
-
   estimateSendGas = async (value, selectUp, address) => {
     try {
       let ret = await lotterySC.methods.buy(...selectUp).estimateGas({ gas: 10000000, value, from: address });
@@ -168,8 +155,8 @@ class IndexPage extends Component {
 
     try {
       let transactionID = await selectedWallet.sendTransaction(params);
-      console.log('Tx ID:', transactionID);
-      this.watchTransactionStatus(transactionID, (ret) => {
+      // console.log('Tx ID:', transactionID);
+      watchTransactionStatus(transactionID, (ret) => {
         console.log('status:', ret)
         if (ret) {
           alertAntd('Success');
@@ -271,7 +258,23 @@ class IndexPage extends Component {
     this.setState({ selectedCodes: data });
   }
 
+  hideModal = () => {
+    this.setState({ modalVisible: false });
+  }
+
+  onConfirm = () => {
+    if(this.state.selectedCodes.length === 0) {
+      return false;
+    }
+
+    this.setState({ modalVisible: true });
+  }
+  
   clearRaffleNumber = () => {
+    if(this.state.selectedCodes.length === 0) {
+      return false;
+    }
+
     confirm({
       title: 'Do you Want to clear all raffle number?',
       content: 'Clear confirm.',
@@ -281,20 +284,6 @@ class IndexPage extends Component {
       onCancel() {
       },
     });
-
-  }
-
-  hideModal = () => {
-    window.scrollTo(0, this.pageYOffset);
-    this.setState({ modalVisible: false });
-  }
-
-  onConfirm = () => {
-    // this.pageYOffset = window.scrollY;
-    // window.scrollTo(0, 0);
-    // document.body.scrollTop = 0;
-    this.setState({ modalVisible: true });
-    // console.log('datas:', this.state.selectedCodes);
   }
 
   handleSave = row => {
@@ -395,10 +384,9 @@ class IndexPage extends Component {
         {
           this.state.modalVisible && <SendModal
             sendTransaction={this.sendTransaction}
-            watchTransactionStatus={this.watchTransactionStatus}
+            watchTransactionStatus={watchTransactionStatus}
             hideModal={this.hideModal}
             data={this.state.selectedCodes}
-            type={'up'}
             WalletButton={WalletButtonLong} />
         }
       </div>

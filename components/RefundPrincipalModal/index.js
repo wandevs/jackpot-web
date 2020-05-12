@@ -1,23 +1,21 @@
 import { Component } from "react";
 import { Modal, Form, Input, Icon, Table } from 'antd';
+import BigNumber from 'bignumber.js';
 import style from './style.less';
-import { alertAntd } from '../../utils/utils.js';
+import { alertAntd, formatRaffleNumber } from '../../utils/utils.js';
 
 class RefundPrincipalModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ModalText: 'Content of the modal',
       confirmLoading: false,
     };
 
     const { data } = this.props;
-    let selections = data.filter(v => v.times > 0);
-    this.codes = selections.map(v => v.code);
+    this.codes = data.map(v => v.code);
     this.amount = 0;
-    this.amounts = selections.map(v => {
-      this.amount += v.price;
-      return v.price;
+    data.forEach(v => {
+      this.amount = new BigNumber(this.amount).plus(v.price).toString();
     });
   }
 
@@ -29,58 +27,33 @@ class RefundPrincipalModal extends Component {
 
   columns = [
     {
-      title: 'Index',
+      title: 'INDEX',
       dataIndex: 'key',
       key: 'key',
     },
     {
-      title: 'Raffle Number',
+      title: 'RAFFLE NUMBER',
       dataIndex: 'code',
       key: 'code',
+      render: text => formatRaffleNumber(text)
     },
     {
-      title: 'Multiple of Draws',
+      title: 'MULTIPLE OF DRAWS',
       dataIndex: 'times',
       key: 'times',
       editable: true,
     },
     {
-      title: 'Price (WAN)',
+      title: 'PRICE (WAN)',
       dataIndex: 'price',
       key: 'price',
     },
   ]
 
-  okCallback = (ret) => {
-    this.setState({
-      confirmLoading: false,
-    });
-
-    if (ret) {
-      alertAntd('Transaction Success!');
-      if (ret) {
-        this.props.hideModal();
-      }
-    } else {
-      alertAntd('Error: Transaction Failed!');
-    }
-  }
-
   handleOk = (e) => {
     e.preventDefault();
-    this.props.form.validateFields(async (err, values) => {
-      if (!err) {
-        this.setState({
-          confirmLoading: true,
-        });
-        let ret = await this.props.sendTransaction(this.amount, [this.codes, this.amounts]);
-        if (ret) {
-          this.props.watchTransactionStatus(ret, this.okCallback)
-        } else {
-          this.okCallback(false);
-        }
-      }
-    });
+    this.props.sendTransaction();
+    this.handleCancel();
   };
 
   handleCancel = () => {
@@ -101,18 +74,16 @@ class RefundPrincipalModal extends Component {
           onCancel={this.handleCancel}
         >
           <Form layout={'vertical'}>
-            <Form.Item label="From Address:">
+            <Form.Item label="To Address:">
               <WalletButton />
             </Form.Item>
           </Form>
-          <div className={style['totalContainer']}>Total cost: {this.amount}</div>
+          <div className={style['totalContainer']}>Total refund: {this.amount}</div>
           <Table
             className={style['selectedRaffleList']}
             columns={this.columns}
-            bordered
             pagination={false}
             dataSource={data} />
-          <div style={{ color: '#880' }}>* We will use the lowest gas charge by default, around 0.002~0.03 WAN.</div>
         </Modal>
       </div>
     );

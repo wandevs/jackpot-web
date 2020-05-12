@@ -1,13 +1,14 @@
 import { Component } from 'react';
 import withRouter from 'umi/withRouter';
 import { connect } from 'react-redux';
-import { Tabs, Row, Col, message, Tooltip } from 'antd';
+import { Tabs, Row, Col, message, Tooltip, Modal } from 'antd';
 import { Wallet, getSelectedAccount, WalletButton, getSelectedAccountWallet } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
 import style from './index.less';
 import "../pages/global.less";
 import { alertAntd, toUnitAmount } from '../utils/utils.js';
-import { web3, lotterySC } from '../utils/contract.js';
+import { web3, lotterySC, lotterySCAddr } from '../utils/contract.js';
+import { watchTransactionStatus } from '../utils/common.js';
 import { networkId, nodeUrl } from '../conf/config.js';
 import { Link } from 'umi';
 import sleep from 'ko-sleep';
@@ -19,6 +20,7 @@ import Result from '../pages/Result';
 
 const networkLogo = networkId == 1 ? 'https://img.shields.io/badge/Wanchain-Mainnet-green.svg' : 'https://img.shields.io/badge/Wanchain-Testnet-green.svg';
 const { TabPane } = Tabs;
+const { confirm } = Modal;
 
 class Layout extends Component {
   constructor(props) {
@@ -36,16 +38,16 @@ class Layout extends Component {
         demandDepositPool: 0,
         delegatePool: 0,
         delegatePercent: 0
-      }
+      },
+      tabKeyNow: '1'
     };
   }
 
   async componentDidMount() {
     try {
-      // this.setNextDraw();
+      this.setNextDraw();
       let setStakerInfo = async (address) => {
         let ret = await lotterySC.methods.userInfoMap(address).call();
-        console.log('ret:', ret);
         let { prize, codeCount } = ret;
         this.setState({
           totalPrize: parseInt(prize),
@@ -55,20 +57,18 @@ class Layout extends Component {
 
       let updateInfo = async () => {
         let ret = await lotterySC.methods.poolInfo().call();
-        // console.log('poolInfo:', ret);
         let { prizePool, demandDepositPool, delegatePool, delegatePercent } = ret;
         while (this.props.selectedAccount === null) {
           await sleep(500);
         }
         let address = this.props.selectedAccount.get('address');
-        // console.log('address:', address);
         if (address) {
           setStakerInfo(address);
 
           let drawHistory = await lotterySC.methods.getUserCodeList(address).call();
-          let totalStake = drawHistory.amounts.reduce((t, n) => {
+          let totalStake = drawHistory.amounts.length ? drawHistory.amounts.reduce((t, n) => {
             return new BigNumber(t).plus(n);
-          });
+          }) : 0;
           this.setState({
             totalStake: web3.utils.fromWei(totalStake.toString()),
           });
@@ -94,18 +94,28 @@ class Layout extends Component {
 
   setNextDraw = () => {
     let n = new Date();
-    let offset = n.getTimezoneOffset();
-    console.log('n:', n.getTime());
-    console.log('offset:', offset);
-    let utc8 = n.getTime() + offset * 60000 + 8 * 3600 * 1000;
-    console.log('utc8:', utc8);
-    // console.log(new Date(utc8));
-    let day = new Date(utc8).getDay();
-    console.log('day:', day);
-    // console.log('offset:', offset);
-    /* this.setState({
-      nextDraw: '2020-04-27 07:00:01 (UTC+8)'
-    }) */
+    let time1 = n.getTime();
+    n.setUTCHours(23);
+    n.setUTCMinutes(0);
+    n.setUTCSeconds(0);
+    n.setUTCMilliseconds(0);
+    let time2 = n.getTime();
+    const UTC_Day = n.getUTCDay();
+    let time = 0;
+    if (UTC_Day < 5) {
+      time = new BigNumber(5 - UTC_Day).times(24).times(3600000).plus(time2).toNumber();
+    } else if (UTC_Day === 5) {
+      if (time1 < time2) {
+        time = time2;
+      } else {
+        time = new BigNumber(7).times(24).times(3600000).plus(time2).toNumber();
+      }
+    } else if (UTC_Day > 5) {
+      time = new BigNumber(5 + 7 - UTC_Day).times(24).times(3600000).plus(time2).toNumber();
+    }
+    this.setState({
+      nextDraw: new Date(time).toString()
+    })
   }
 
   chooseRaffleNum = () => {
@@ -131,12 +141,83 @@ class Layout extends Component {
     }
   }
 
-  onTabChange = () => {
-    console.log('onTabChange');
+  onWithdrawPrize = () => {
+    const { totalPrize } = this.state;
+    if (totalPrize === 0) {
+      message.warning('There is no sufficient prize to withdraw!');
+      return false;
+    }
+    confirm({
+      title: 'Do you Want to withdraw the prize?',
+      content: `${totalPrize} WAN`,
+      onOk: () => {
+        this.withdrawPrize();
+      },
+      onCancel() {
+      },
+    });
+  }
+
+  withdrawPrize = async () => {
+    const { selectedAccount, selectedWallet } = this.props;
+    const encoded = await lotterySC.methods.prizeWithdraw().encodeABI();
+    const address = selectedAccount ? selectedAccount.get('address') : null;
+    const value = 0;
+    let params = {
+      to: lotterySCAddr,
+      data: encoded,
+      value,
+      gasPrice: "0x29E8D60800",
+      gasLimit: "0x989680", // 10,000,000
+    };
+
+    if (selectedWallet.type() == "EXTENSION") {
+      params.gas = await this.estimateSendGas(value, address);
+    } else {
+      params.gasLimit = await this.estimateSendGas(value, address);
+    }
+
+    if (params.gasLimit == -1) {
+      alertAntd('Estimate Gas Error. Maybe out of time range.');
+      return false;
+    }
+
+    try {
+      let transactionID = await selectedWallet.sendTransaction(params);
+      watchTransactionStatus(transactionID, (ret) => {
+        if (ret) {
+          alertAntd('Withdraw success');
+        } else {
+          alertAntd('Withdraw failed');
+        }
+      });
+      return transactionID;
+    } catch (err) {
+      console.log(err.message);
+      alertAntd(err.message);
+      return false;
+    }
+  }
+
+  estimateSendGas = async (value, address) => {
+    try {
+      let ret = await lotterySC.methods.prizeWithdraw().estimateGas({ gas: 10000000, value, from: address });
+      if (ret == 10000000) {
+        return -1;
+      }
+      return '0x' + (ret + 30000).toString(16);
+    } catch (err) {
+      console.log(err.message);
+      return -1;
+    }
+  }
+
+  onTabChange = (activeKey) => {
+    this.setState({ tabKeyNow: activeKey });
   }
 
   render() {
-    let { poolInfo, prizePool, raffleCount, totalStake, totalPrize, totalPool } = this.state;
+    let { poolInfo, prizePool, raffleCount, totalStake, totalPrize, totalPool, tabKeyNow, nextDraw } = this.state;
     let tooltipText = <div>
       <p>Demand deposit pool: {poolInfo.demandDepositPool} WAN</p>
       <p>Prize pool: {prizePool} WAN</p>
@@ -167,7 +248,7 @@ class Layout extends Component {
                   <div className={style.label2}>Prize Pool for Today:</div>
                   <div className={`${style.value} ${style.prizePoolValue}`}><img src={require('@/static/images/trophy.png')} /><span>{prizePool}</span><span> WAN</span></div>
                 </div>
-                <div className={style.drawTime}>Next Draw Time: <span>2020-04-25 07:00:00 (UTC+8)</span></div>
+                <div className={style.drawTime}>Next Draw Time: <span>{nextDraw}</span></div>
                 <div className={style.drawClose}>Draw Entry Close: 24 hour before the draw time</div>
               </Col>
             </Row>
@@ -182,21 +263,27 @@ class Layout extends Component {
               </Col>
               <Col span={12}>
                 <p className={style.label}>Total Prize You've Received:</p>
-                <p className={`${style.value} ${style.totalPrize}`}>{totalPrize} WAN</p>
+                <p className={`${style.value} ${style.totalPrize}`}>{totalPrize} WAN <span className={style.withdraw} onClick={this.onWithdrawPrize}>[ Withdraw ]</span></p>
               </Col>
             </Row>
           </div>
           <div className={style.mainTab}>
-            <Tabs defaultActiveKey="2" onChange={this.onTabChange} size={'large'}>
+            <Tabs defaultActiveKey="1" onChange={this.onTabChange} size={'large'}>
               <TabPane tab="Entry Area" key="1">
-                <Entry/>
-            </TabPane>
+                {
+                  tabKeyNow === '1' ? <Entry /> : <div></div>
+                }
+              </TabPane>
               <TabPane tab="Draw History" key="2">
-                <History/>
-            </TabPane>
+                {
+                  tabKeyNow === '2' ? <History /> : <div></div>
+                }
+              </TabPane>
               <TabPane tab="Past Draw Results" key="3">
-                <Result/>
-            </TabPane>
+                {
+                  tabKeyNow === '3' ? <Result /> : <div></div>
+                }
+              </TabPane>
             </Tabs>
           </div>
         </div>
