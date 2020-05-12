@@ -240,10 +240,12 @@ class Layout extends Component {
             <Row className={style.block1}>
               <Col xs={12} sm={12} md={11} lg={11} xl={11} className={style.leftPart}></Col>
               <Col xs={12} sm={12} md={13} lg={12} xl={13} className={style.rightPart}>
-                <div className={style.totalPool}>
-                  <div className={style.label1}>Up tp WAN Total Pool</div>
-                  <div className={`${style.value} ${style.totalPoolValue}`}><img src={require('@/static/images/flag.png')} /><span>{totalPool}</span><span> WAN</span></div>
-                </div>
+                <Tooltip title={tooltipText}>
+                  <div className={style.totalPool}>
+                    <div className={style.label1}>Up tp WAN Total Pool</div>
+                    <div className={`${style.value} ${style.totalPoolValue}`}><img src={require('@/static/images/flag.png')} /><span>{totalPool}</span><span> WAN</span></div>
+                  </div>
+                </Tooltip>
                 <div className={style.prizePool}>
                   <div className={style.label2}>Prize Pool for Today:</div>
                   <div className={`${style.value} ${style.prizePoolValue}`}><img src={require('@/static/images/trophy.png')} /><span>{prizePool}</span><span> WAN</span></div>
