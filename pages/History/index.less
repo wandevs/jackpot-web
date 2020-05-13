@@ -1,17 +1,23 @@
-
 .normal {
   text-align: center;
   background-color: transparent;
 }
 
 .table {
-  width: 1000px;
-  position: relative;
-  margin: 0 auto;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  background-color: #2b2564;
+  :global {
+    .ant-select {
+      color: white;
+    }
+
+    .ant-select-selection {
+      background-color: #1f2046;
+      border-color: #454767;
+    }
+
+    .ant-select-arrow .ant-select-arrow-icon svg {
+      color: white;
+    }
+  }
 }
 
 h1 {
@@ -50,6 +56,6 @@ h1 {
   /* padding-left: 40px;
   padding-right: 40px; */
   width: 140px;
-  margin-top:36px;
+  margin-top: 36px;
   border: none;
 }

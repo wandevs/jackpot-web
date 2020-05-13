@@ -71,7 +71,7 @@ class IndexPage extends Component {
       align: 'center',
       render: text => {
         let arr = text.split('');
-        arr = arr.map((s, i) => (<span key={i} className={ i % 2 === 0 ? 'blueCircle' : 'redCircle' }>{s}</span>));
+        arr = arr.map((s, i) => (<span key={i} className={i % 2 === 0 ? 'blueCircle' : 'redCircle'}>{s}</span>));
         return <span key={text}>{arr}</span>
       }
     },
@@ -138,7 +138,7 @@ class IndexPage extends Component {
       to: lotterySCAddr,
       data: encoded,
       value,
-      gasPrice: "0x29E8D60800",
+      gasPrice: "0x3B9ACA00",
       gasLimit: "0x989680", // 10,000,000
     };
 
@@ -202,51 +202,64 @@ class IndexPage extends Component {
     }
   }
 
-  selfAdd = () => {
-    if (this.state.selectedCodes.length >= 50) {
-      message.warn("Max support add 50 raffle number once.");
-      return;
-    }
-    let code = Number(this.state.n1).toFixed(0) + Number(this.state.n2).toFixed(0) + Number(this.state.n3).toFixed(0) + Number(this.state.n4).toFixed(0);
-    for (let i = 0; i < this.state.selectedCodes.length; i++) {
-      if (this.state.selectedCodes[i].code === code) {
+  selfAdd = async () => {
+
+    const { raffleCount } = this.props;
+    const { selectedCodes, n1, n2, n3, n4 } = this.state;
+    const code = Number(n1).toFixed(0) + Number(n2).toFixed(0) + Number(n3).toFixed(0) + Number(n4).toFixed(0);
+
+    for (let i = 0; i < selectedCodes.length; i++) {
+      if (selectedCodes[i].code === code) {
         message.info("The same raffle number already exists, please modify it directly in the table.");
         return;
       }
     }
 
+    if (!(await this.checkRaffleCount([code]))) {
+      message.info("The count of Raffle number should not over 50.");
+      return false;
+    }
+
     let value = {
-      key: this.state.selectedCodes.length + 1,
+      key: selectedCodes.length + 1,
       code,
       times: 1,
       price: price,
     }
 
-    let data = this.state.selectedCodes.slice();
+    let data = selectedCodes.slice();
     data.push(value);
     this.setState({ selectedCodes: data });
   }
 
-  randomAdd = () => {
+  randomAdd = async () => {
     let cnt = Number(this.state.machineCnt);
+    const { selectedCodes } = this.state;
 
     if (cnt < 1) {
       message.warn("Count must >= 1");
       return;
     }
-    if ((cnt + this.state.selectedCodes.length) >= 50) {
-      cnt = 50 - this.state.selectedCodes.length;
+
+    if ((cnt + selectedCodes.length) >= 50) {
+      cnt = 50 - selectedCodes.length;
     }
 
     let codes = [];
     for (; codes.length < cnt;) {
       let r = Math.random().toFixed(4).substr(2); //get a four number random code.
-      if (!codes.includes(r)) {
-        codes.push(r);
+      while(codes.includes(r)) {
+        r = Math.random().toFixed(4).substr(2);
       }
+      codes.push(r);
     }
 
-    let data = this.state.selectedCodes.slice();
+    if (!(await this.checkRaffleCount(codes))) {
+      message.info("The count of Raffle number should not over 50.");
+      return false;
+    }
+
+    let data = selectedCodes.slice();
     for (let i = 0; i < cnt; i++) {
       const value = {
         key: data.length + 1,
@@ -259,23 +272,42 @@ class IndexPage extends Component {
     this.setState({ selectedCodes: data });
   }
 
+  checkRaffleCount = async (selected) => {
+    const { selectedCodes } = this.state;
+    const data = await this.getHistoryData();
+    let s = new Set();
+    let allCodes = data.codes.concat(selected, selectedCodes.map(v => v.code));
+    allCodes.forEach(v => {
+      s.add(parseInt(v).toString());
+    });
+    return s.size > 50 ? false : true;
+  }
+
+  getHistoryData = async () => {
+    let address = this.props.selectedAccount.get('address');
+    let ret = await lotterySC.methods.getUserCodeList(address).call();
+    return {
+      amounts: ret.amounts,
+      codes: ret.codes
+    };
+  }
+
   hideModal = () => {
     this.setState({ modalVisible: false });
     window.scrollTo(0, this.state.scrollY);
-    console.log('to Y:', this.state.scrollY);
   }
 
   onConfirm = () => {
     const Y = window.scrollY;
-    if(this.state.selectedCodes.length === 0) {
+    if (this.state.selectedCodes.length === 0) {
       return false;
     }
     this.setState({ modalVisible: true, scrollY: Y });
     window.scrollTo(0, 0);
   }
-  
+
   clearRaffleNumber = () => {
-    if(this.state.selectedCodes.length === 0) {
+    if (this.state.selectedCodes.length === 0) {
       return false;
     }
 

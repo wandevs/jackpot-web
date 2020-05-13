@@ -102,7 +102,7 @@ class SendModal extends Component {
               <WalletButton />
             </Form.Item>
           </Form>
-          <div className={style['totalContainer']}>Total cost: {this.amount}</div>
+          <div className={style['totalContainer']}><span className={style.label}>Total Cost: </span><span className={style.value}>{this.amount} WAN</span></div>
           <Table
             className={style['selectedRaffleList']}
             columns={this.columns}

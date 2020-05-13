@@ -167,7 +167,7 @@ class Layout extends Component {
       to: lotterySCAddr,
       data: encoded,
       value,
-      gasPrice: "0x29E8D60800",
+      gasPrice: "0x3B9ACA00",
       gasLimit: "0x989680", // 10,000,000
     };
 
@@ -247,7 +247,7 @@ class Layout extends Component {
                   </div>
                 </Tooltip>
                 <div className={style.prizePool}>
-                  <div className={style.label2}>Prize Pool for Today:</div>
+                  <div className={style.label2}>Prize Pool:</div>
                   <div className={`${style.value} ${style.prizePoolValue}`}><img src={require('@/static/images/trophy.png')} /><span>{prizePool}</span><span> WAN</span></div>
                 </div>
                 <div className={style.drawTime}>Next Draw Time: <span>{nextDraw}</span></div>
@@ -273,7 +273,7 @@ class Layout extends Component {
             <Tabs defaultActiveKey="1" onChange={this.onTabChange} size={'large'}>
               <TabPane tab="Entry Area" key="1">
                 {
-                  tabKeyNow === '1' ? <Entry /> : <div></div>
+                  tabKeyNow === '1' ? <Entry raffleCount={raffleCount}/> : <div></div>
                 }
               </TabPane>
               <TabPane tab="Draw History" key="2">

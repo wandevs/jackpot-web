@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import React from 'react';
-import { Table, Button } from 'antd';
+import { Table } from 'antd';
 import style from './index.less';
 import { Component } from '../../components/base';
 import sleep from 'ko-sleep';
@@ -139,7 +139,7 @@ class History extends Component {
       to: lotterySCAddr,
       data: encoded,
       value,
-      gasPrice: "0x29E8D60800",
+      gasPrice: "0x3B9ACA00",
       gasLimit: "0x989680", // 10,000,000
     };
 
@@ -214,11 +214,10 @@ class History extends Component {
           <img src={require('../../static/images/coupon.png')} />
           <span>My Draw History</span>
         </div>
-        <div className={'table'}>
-          <Table rowSelection={rowSelection} columns={this.myDrawColumns} dataSource={historyList} loading={historyLoading} />
+        <div className={'table' + ' ' + style.table}>
+          <Table rowSelection={rowSelection} columns={this.myDrawColumns} dataSource={historyList} loading={historyLoading} pagination={{ defaultCurrent: 1, showSizeChanger: true, pageSizeOptions: ['10', '20', '50'] }} />
           <div className={style['centerLine']}>
             <div className={'guess-button ellipsoidalButton'} /* loading={principalButtonLoading} */ onClick={this.refundPrincipal}>Refund Principal</div>
-            {/* <div className={'guess-button ellipsoidalButton'} onClick={this.refundPrize}>Refund Prize</div> */}
           </div>
         </div>
         <div style={{ height: "30px" }}></div>
