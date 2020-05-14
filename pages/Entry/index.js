@@ -8,7 +8,7 @@ import { getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountW
 import "wan-dex-sdk-wallet/index.css";
 import style from './index.less';
 import sleep from 'ko-sleep';
-import { alertAntd, toUnitAmount } from '../../utils/utils.js';
+import { alertAntd, toUnitAmount, formatRaffleNumber } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
 import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
@@ -65,7 +65,7 @@ class IndexPage extends Component {
       align: 'center'
     },
     {
-      title: 'RAFFLE NUMBER',
+      title: 'NUMBER',
       dataIndex: 'code',
       key: 'code',
       align: 'center',
@@ -76,19 +76,37 @@ class IndexPage extends Component {
       }
     },
     {
-      title: 'MULTIPLE OF DRAWS',
+      title: 'DRAWS',
       dataIndex: 'times',
       key: 'times',
       editable: true,
-      align: 'center'
+      align: 'center',
+      width: 200
     },
     {
-      title: 'PRICE',
+      title: 'AMOUNT',
       dataIndex: 'price',
       key: 'price',
       render: text => (<span className={'price'}>{text} WAN</span>)
     },
+    {
+      title: 'ACTION',
+      dataIndex: 'action',
+      key: 'action',
+      render: (text, record) => {
+        return (
+          <span>
+            <a className={style.deleteAction} onClick={() => {this.deleteOne(record)}}>Delete</a>
+          </span>
+        );
+      }
+    },
   ]
+
+  deleteOne = (record) => {
+    const selectedCodes = [...this.state.selectedCodes];
+    this.setState({ selectedCodes: selectedCodes.filter(item => item.key !== record.key) });
+  }
 
   getDataWait = async (dataFunc) => {
     let max = 60;
@@ -203,8 +221,11 @@ class IndexPage extends Component {
   }
 
   selfAdd = async () => {
+    if (this.props.selectedAccount == null) {
+      message.info("The page is not ready, please try later.");
+      return false;
+    }
 
-    const { raffleCount } = this.props;
     const { selectedCodes, n1, n2, n3, n4 } = this.state;
     const code = Number(n1).toFixed(0) + Number(n2).toFixed(0) + Number(n3).toFixed(0) + Number(n4).toFixed(0);
 
@@ -230,10 +251,22 @@ class IndexPage extends Component {
     let data = selectedCodes.slice();
     data.push(value);
     this.setState({ selectedCodes: data });
+    document.getElementById('selectedNumberTable').scrollIntoView({
+      block: 'center'
+    });
   }
 
   randomAdd = async () => {
+    if (this.props.selectedAccount == null) {
+      message.info("The page is not ready, please try later.");
+      return false;
+    }
+
     let cnt = Number(this.state.machineCnt);
+    if (cnt > 50 || cnt < 0) {
+      message.info("The count of number is invalid.");
+      return false;
+    }
     const { selectedCodes } = this.state;
 
     if (cnt < 1) {
@@ -247,11 +280,11 @@ class IndexPage extends Component {
 
     let codes = [];
     for (; codes.length < cnt;) {
-      let r = Math.random().toFixed(4).substr(2); //get a four number random code.
-      while(codes.includes(r)) {
-        r = Math.random().toFixed(4).substr(2);
+      let r = Math.floor(Math.random() * 9999) + 1; //get a four number random code.
+      while (codes.includes(r)) {
+        r = Math.floor(Math.random() * 9999) + 1;
       }
-      codes.push(r);
+      codes.push(formatRaffleNumber(r));
     }
 
     if (!(await this.checkRaffleCount(codes))) {
@@ -270,6 +303,9 @@ class IndexPage extends Component {
       data.push(value);
     }
     this.setState({ selectedCodes: data });
+    document.getElementById('selectedNumberTable').scrollIntoView({
+      block: 'center'
+    });
   }
 
   checkRaffleCount = async (selected) => {
@@ -284,6 +320,7 @@ class IndexPage extends Component {
   }
 
   getHistoryData = async () => {
+
     let address = this.props.selectedAccount.get('address');
     let ret = await lotterySC.methods.getUserCodeList(address).call();
     return {
@@ -323,6 +360,7 @@ class IndexPage extends Component {
   }
 
   handleSave = row => {
+    console.log('row:', row);
     const newData = [...this.state.selectedCodes];
     const index = newData.findIndex(item => row.key === item.key);
     const item = newData[index];
@@ -364,7 +402,7 @@ class IndexPage extends Component {
           </div>
           <div className={style.centerContainer}>
             <div className={style.normal}>
-              <p><span className={style.highlight}>Self Selection</span>Fill in a four digits' number in the box below, e.g.6666</p>
+              <p><span className={style.highlight}>Self Selection</span></p>
               <div className={style['input-wrap']}>
                 <input type="number" min='0' max='9' placeholder="0 - 9" value={this.state.n1} onChange={e => this.onChangeCode(1, e.target.value)} />
                 <input type="number" min='0' max='9' placeholder="0 - 9" value={this.state.n2} onChange={e => this.onChangeCode(2, e.target.value)} />
@@ -374,7 +412,7 @@ class IndexPage extends Component {
               </div>
             </div>
             <div className={style.normal}>
-              <p><span className={style.highlight}>Machine Selection</span>Enter the number of bets you want to make</p>
+              <p><span className={style.highlight}>Machine Selection</span></p>
               <input className={style.randomInput} type="number" min='1' max='50' placeholder="1 - 50" value={this.state.machineCnt} onChange={e => { if (e.target.value <= 50) { this.setState({ machineCnt: e.target.value }) } }} />
               <div className={'guess-button greenButton'} onClick={this.randomAdd}>ADD</div>
             </div>
@@ -386,10 +424,10 @@ class IndexPage extends Component {
 
         <div className={'title'}>
           <img src={require('../../static/images/coupon.png')} />
-          <span>Your Raffle Number</span>
+          <span>Selected Number</span>
         </div>
 
-        <div className={'table'}>
+        <div className={'table'} id="selectedNumberTable">
           <Table
             components={components}
             columns={columns}
@@ -397,24 +435,9 @@ class IndexPage extends Component {
             bordered={false}
             dataSource={this.state.selectedCodes} />
           <div className={style['centerLine']}>
-            <div className={'guess-button ellipsoidalButton'} onClick={this.onConfirm}>Confirm</div>
+            <div className={'guess-button ellipsoidalButton'} onClick={this.onConfirm}>Buy</div>
             <div className={'guess-button ellipsoidalButton'} onClick={this.clearRaffleNumber}>Clear</div>
           </div>
-        </div>
-
-        <div className={'title'}>
-          <img src={require('../../static/images/tag.png')} />
-          <span>Game Rules</span>
-        </div>
-
-        <div className={style['gameRule']}>
-          <h1 className={style['ruleTitle']}>Jack’s Pot is a no-loss lottery game built on Wanchain which draws from the design of the Ethereum based PoolTogether game while introducing novel game mechanics.</h1>
-          <ul className={style['ruleContents']}>
-            <li><span className={style['text']}>To play the game, participants deposit WAN while also guessing a number between 1 and 4 inclusive.</span></li>
-            <li><span className={style['text']}>Participants' WAN deposits are delegated to POS verification nodes, and the accrued consensus rewards are pooled into a prize pot.</span></li>
-            <li><span className={style['text']}>Every Friday a winning number is selected at random using Wanchain’s true random number generation, and the reward will be awarded proportionally to participants who guessed the winning number.</span></li>
-            <li><span className={style['text']}>If there is no winner, the prize pot will automatically accumulate to the next cycle.</span></li>
-          </ul>
         </div>
 
         {

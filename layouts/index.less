@@ -39,14 +39,6 @@
     left: 24px;
 }
 
-.gameRule {
-    padding: 3px 16px 3px 16px;
-    border: 1px solid white;
-    border-radius: 15px;
-    cursor: pointer;
-    margin-right: 10px;
-}
-
 .mainContainer {
     // width: 1200px;
     // overflow: auto;
@@ -218,55 +210,7 @@
             }
         }
 
-        .block2 {
-            width: 100%;
-            height: 90px;
-            position: absolute;
-            bottom: 0px;
-            background: linear-gradient(90deg, rgba(20, 20, 63, 1) 0%, rgba(34, 37, 90, 1) 100%);
-            opacity: 0.8;
-
-            :global {
-                .ant-col {
-                    padding-top: 20px;
-                }
-
-                .ant-col-6 {
-                    padding-left: 36px;
-                }
-            }
-
-            .label {
-                font-size: 12px;
-                font-weight: bold;
-                color: rgba(255, 255, 255, 1);
-                line-height: 15px;
-                opacity: 0.6;
-            }
-
-            .value {
-                font-size: 24px;
-                font-weight: bold;
-                color: rgba(255, 255, 255, 1);
-                line-height: 15px;
-            }
-
-            .totalPrize {
-                color: rgba(255, 210, 89, 1);
-            }
-
-            .withdraw {
-                color: #30f439;
-                font-size: 16px;
-                text-decoration: underline;
-                margin-left: 5px;
-
-                &:hover {
-                    color: #40a9ff;
-                    cursor: pointer;
-                }
-            }
-        }
+        
     }
 }
 
@@ -291,5 +235,40 @@
         .ant-tabs-ink-bar {
             background:rgba(65,78,221,1);
         }
+    }
+}
+
+.gameRule {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 0px 140px 0px;
+
+    .ruleTitle {
+        max-width: 1000px;
+        font-size: 24px;
+        font-family: Roboto Condensed;
+        font-weight: bold;
+        color: rgba(255, 255, 255, 1);
+        margin-bottom: 60px;
+        line-height: 30px;
+    }
+
+    .ruleContents {
+        max-width: 1000px;
+        text-align: left;
+        line-height: 18px;
+        font-size: 16px;
+        font-family: Roboto Condensed;
+        color: rgba(0, 98, 231, 1);
+
+        li {
+            margin-bottom: 22px;
+        }
+    }
+
+    .text {
+        color: rgba(152, 154, 192, 0.8);
     }
 }

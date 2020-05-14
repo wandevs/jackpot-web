@@ -35,18 +35,18 @@ class SendModal extends Component {
       key: 'key',
     },
     {
-      title: 'RAFFLE NUMBER',
+      title: 'NUMBER',
       dataIndex: 'code',
       key: 'code',
     },
     {
-      title: 'MULTIPLE OF DRAWS',
+      title: 'DRAWS',
       dataIndex: 'times',
       key: 'times',
       editable: true,
     },
     {
-      title: 'PRICE (WAN)',
+      title: 'AMOUNT (WAN)',
       dataIndex: 'price',
       key: 'price',
     },

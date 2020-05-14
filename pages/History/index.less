@@ -1,9 +1,70 @@
 .normal {
   text-align: center;
   background-color: transparent;
+
+  :global {
+    .title>.guess-button {
+      display: inline-block;
+      position: absolute;
+      right: 10px;
+      top: 0px;
+      bottom: 0px;
+    }
+  }
+
+  .block {
+    width: 100%;
+    height: 90px;
+    background: linear-gradient(90deg, rgba(20, 20, 63, 1) 0%, rgba(34, 37, 90, 1) 100%);
+    opacity: 0.8;
+    margin-bottom: 16px;
+
+    :global {
+      .ant-col {
+        padding-top: 20px;
+      }
+
+      .ant-col-6 {
+        padding-left: 36px;
+      }
+    }
+
+    .label {
+      font-size: 12px;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 1);
+      line-height: 15px;
+      opacity: 0.6;
+    }
+
+    .value {
+      font-size: 24px;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 1);
+      line-height: 15px;
+    }
+
+    .totalPrize {
+      color: rgba(255, 210, 89, 1);
+    }
+
+    .withdraw {
+      color: #30f439;
+      font-size: 16px;
+      text-decoration: underline;
+      margin-left: 5px;
+
+      &:hover {
+        color: #40a9ff;
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 .table {
+  margin-bottom: 40px;
+
   :global {
     .ant-select {
       color: white;
@@ -16,6 +77,10 @@
 
     .ant-select-arrow .ant-select-arrow-icon svg {
       color: white;
+    }
+
+    .ant-table-wrapper {
+      margin-bottom: 8px;
     }
   }
 }
@@ -30,32 +95,4 @@ h1 {
   color: #fff;
   text-align: center;
   font-family: PingFangSC-Medium;
-}
-
-.yellowButton {
-  background: #FDC44E;
-  color: #1E1607;
-  -webkit-transition: all 0.3s ease-in-out;
-  -o-transition: all 0.3s ease-in-out;
-  -moz-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-}
-
-
-.guess-button {
-  height: 43px;
-  line-height: 43px;
-  -webkit-border-radius: 6px;
-  border-radius: 6px;
-  text-align: center;
-  font-size: 14px;
-  margin-right: 15px;
-  margin-left: 15px;
-  display: inline-block;
-  cursor: pointer;
-  /* padding-left: 40px;
-  padding-right: 40px; */
-  width: 140px;
-  margin-top: 36px;
-  border: none;
 }

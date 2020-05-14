@@ -32,19 +32,19 @@ class RefundPrincipalModal extends Component {
       key: 'key',
     },
     {
-      title: 'RAFFLE NUMBER',
+      title: 'NUMBER',
       dataIndex: 'code',
       key: 'code',
       render: text => formatRaffleNumber(text)
     },
     {
-      title: 'MULTIPLE OF DRAWS',
+      title: 'DRAWS',
       dataIndex: 'times',
       key: 'times',
       editable: true,
     },
     {
-      title: 'PRICE (WAN)',
+      title: 'AMOUNT (WAN)',
       dataIndex: 'price',
       key: 'price',
     },
@@ -66,7 +66,7 @@ class RefundPrincipalModal extends Component {
     return (
       <div>
         <Modal
-          title={"Refund Principal"}
+          title={"Redeem"}
           wrapClassName={style['sendModal']}
           visible={true}
           onOk={this.handleOk}
@@ -78,7 +78,7 @@ class RefundPrincipalModal extends Component {
               <WalletButton />
             </Form.Item>
           </Form>
-          <div className={style['totalContainer']}>Total refund: {this.amount}</div>
+          <div className={style['totalContainer']}>Total Redeem: {this.amount}</div>
           <Table
             className={style['selectedRaffleList']}
             columns={this.columns}

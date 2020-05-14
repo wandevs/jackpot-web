@@ -1,9 +1,10 @@
 import { connect } from "react-redux";
 import React from 'react';
-import { Table } from 'antd';
+import { Table, Row, Col, message, Spin } from 'antd';
 import style from './index.less';
 import { Component } from '../../components/base';
 import sleep from 'ko-sleep';
+import BigNumber from 'bignumber.js';
 import RefundPrincipalModal from '../../components/RefundPrincipalModal';
 import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt, WalletButtonLong } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
@@ -12,53 +13,21 @@ import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
 import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
 
-const prefix = 'jackpot';
-
 class History extends Component {
   constructor(props) {
     super(props);
     this.state = {
       historyLoading: true,
+      stakerInfoLoading: true,
       principalButtonLoading: false,
       historyList: [],
       selectedRowKeys: [],
       selectedRows: [],
       modalVisible: false,
+      raffleCount: 0,
+      totalStake: 0,
+      totalPrize: 0,
     }
-  }
-
-  async componentDidMount() {
-    while (this.props.selectedAccount === null) {
-      await sleep(500);
-    }
-    await this.resetHistoryData();
-    this.setState({
-      historyLoading: false
-    });
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.resultTimer);
-  }
-
-  resetHistoryData = async () => {
-    this.setState({
-      historyList: await this.getHistoryData(),
-    });
-  }
-
-  getHistoryData = async () => {
-    let address = this.props.selectedAccount.get('address');
-    let ret = await lotterySC.methods.getUserCodeList(address).call();
-    let { amounts, codes } = ret;
-    let data = amounts.map((v, i) => ({
-      key: i + 1,
-      code: codes[i],
-      times: web3.utils.fromWei(v) / price,
-      from: address,
-      price: web3.utils.fromWei(v)
-    }));
-    return data;
   }
 
   myDrawColumns = [
@@ -68,7 +37,7 @@ class History extends Component {
       key: 'key',
     },
     {
-      title: "RAFFLE NUMBER",
+      title: "NUMBER",
       dataIndex: 'code',
       key: 'code',
       align: 'center',
@@ -81,13 +50,13 @@ class History extends Component {
       }
     },
     {
-      title: "MULTIPLE OF DRAWS",
+      title: "DRAWS",
       dataIndex: 'times',
       key: 'times',
       align: 'center'
     },
     {
-      title: "PRICE",
+      title: "AMOUNT",
       dataIndex: "price",
       key: "price",
       align: 'center',
@@ -99,6 +68,64 @@ class History extends Component {
       key: "from",
     },
   ]
+
+  async componentDidMount() {
+    let timer = 0;
+    while (this.props.selectedAccount === null) {
+      if (timer > 10) {
+        message.info('Account is not found.');
+        this.setState({
+          historyLoading: false,
+          stakerInfoLoading: false,
+        });
+        return false;
+      }
+      await sleep(500);
+      timer++;
+    }
+    await this.resetData();
+    this.setState({
+      historyLoading: false,
+      stakerInfoLoading: false,
+    });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.resultTimer);
+  }
+
+  setStakerInfo = async (address) => {
+    let { prize, codeCount } = await lotterySC.methods.userInfoMap(address).call();
+    return [parseInt(prize), parseInt(codeCount)];
+  }
+
+  resetData = async () => {
+    let address = this.props.selectedAccount.get('address');
+    let historyData = await this.getHistoryData(address);
+    let [totalPrize, raffleCount] = await this.setStakerInfo(address);
+    let totalStake = historyData.reduce((t, n) => {
+      return new BigNumber(t).plus(n.price);
+    }, 0).toString();
+    this.setState({
+      historyList: historyData,
+      totalStake,
+      totalPrize,
+      raffleCount,
+    });
+  }
+
+  getHistoryData = async (address) => {
+    let ret = await lotterySC.methods.getUserCodeList(address).call();
+    let { amounts, codes } = ret;
+    let data = amounts.map((v, i) => ({
+      key: i + 1,
+      code: codes[i],
+      times: web3.utils.fromWei(v) / price,
+      from: address,
+      price: web3.utils.fromWei(v)
+    }));
+    return data;
+  }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
     this.setState({ selectedRowKeys, selectedRows });
@@ -120,7 +147,7 @@ class History extends Component {
     const address = selectedAccount ? selectedAccount.get('address') : null;
 
     if (codes.length === 0) {
-      alertAntd('Please select at least one row to refund.');
+      alertAntd('Please select at least one row to redeem.');
       return false
     }
 
@@ -132,6 +159,7 @@ class History extends Component {
     this.setState({
       principalButtonLoading: true,
       historyLoading: true,
+      stakerInfoLoading: true,
     });
 
     const value = 0;
@@ -154,24 +182,24 @@ class History extends Component {
       return false;
     }
 
-    // console.log('params:', params);
+    console.log('params:', params);
 
     try {
       let transactionID = await selectedWallet.sendTransaction(params);
-      // console.log('tx ID:', transactionID);
-      watchTransactionStatus(transactionID, (ret) => {
+      watchTransactionStatus(transactionID, async (ret) => {
         if (ret) {
-          alertAntd('Refund success');
+          alertAntd('Redeem success');
         } else {
-          alertAntd('Refund failed');
+          alertAntd('Redeem failed');
         }
+        await this.resetData();
         this.setState({
           principalButtonLoading: false,
           historyLoading: false,
+          stakerInfoLoading: false,
           selectedRows: [],
           selectedRowKeys: [],
         });
-        this.resetHistoryData();
       });
       return transactionID;
     } catch (err) {
@@ -180,6 +208,7 @@ class History extends Component {
       this.setState({
         principalButtonLoading: false,
         historyLoading: false,
+        stakerInfoLoading: false,
         selectedRows: [],
         selectedRowKeys: [],
       });
@@ -200,27 +229,114 @@ class History extends Component {
     }
   }
 
+  estimateSendGas2 = async (value, address) => {
+    try {
+      let ret = await lotterySC.methods.prizeWithdraw().estimateGas({ gas: 10000000, value, from: address });
+      if (ret == 10000000) {
+        return -1;
+      }
+      return '0x' + (ret + 30000).toString(16);
+    } catch (err) {
+      console.log(err.message);
+      return -1;
+    }
+  }
+
+  onWithdrawPrize = () => {
+    const { totalPrize } = this.state;
+    if (totalPrize === 0) {
+      message.warning('There is no sufficient prize to withdraw!');
+      return false;
+    }
+    confirm({
+      title: 'Do you Want to withdraw the prize?',
+      content: `${totalPrize} WAN`,
+      onOk: () => {
+        this.withdrawPrize();
+      },
+      onCancel() {
+      },
+    });
+  }
+
+  withdrawPrize = async () => {
+    const { selectedAccount, selectedWallet } = this.props;
+    const encoded = await lotterySC.methods.prizeWithdraw().encodeABI();
+    const address = selectedAccount ? selectedAccount.get('address') : null;
+    const value = 0;
+    let params = {
+      to: lotterySCAddr,
+      data: encoded,
+      value,
+      gasPrice: "0x3B9ACA00",
+      gasLimit: "0x989680", // 10,000,000
+    };
+
+    if (selectedWallet.type() == "EXTENSION") {
+      params.gas = await this.estimateSendGas2(value, address);
+    } else {
+      params.gasLimit = await this.estimateSendGas2(value, address);
+    }
+
+    if (params.gasLimit == -1) {
+      alertAntd('Estimate Gas Error. Maybe out of time range.');
+      return false;
+    }
+
+    try {
+      let transactionID = await selectedWallet.sendTransaction(params);
+      watchTransactionStatus(transactionID, (ret) => {
+        if (ret) {
+          alertAntd('Withdraw success');
+        } else {
+          alertAntd('Withdraw failed');
+        }
+      });
+      return transactionID;
+    } catch (err) {
+      console.log(err.message);
+      alertAntd(err.message);
+      return false;
+    }
+  }
+
   render() {
-    const { selectedRowKeys, historyLoading, principalButtonLoading, historyList } = this.state;
+    const { selectedRowKeys, historyLoading, principalButtonLoading, historyList, raffleCount, totalStake, totalPrize, stakerInfoLoading } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
       hideDefaultSelections: false,
       fixed: true,
     }
+    console.log('historyList:', historyList);
+    console.log('raffleCount, totalStake, totalPrize:', raffleCount, totalStake, totalPrize);
     return (
       <div className={style.normal}>
+
+        <Spin spinning={stakerInfoLoading}>
+          <Row className={style.block}>
+            <Col span={6}>
+              <p className={style.label}>Tickets You Have</p>
+              <p className={style.value}>{raffleCount}</p>
+            </Col>
+            <Col span={6}>
+              <p className={style.label}>Jack's Pot Stake</p>
+              <p className={style.value}>{totalStake} WAN</p>
+            </Col>
+            <Col span={12}>
+              <p className={style.label}>You Have Won:</p>
+              <p className={`${style.value} ${style.totalPrize}`}>{totalPrize} WAN <span className={style.withdraw} onClick={this.onWithdrawPrize}>[ Withdraw ]</span></p>
+            </Col>
+          </Row>
+        </Spin>
         <div className={'title'}>
           <img src={require('../../static/images/coupon.png')} />
-          <span>My Draw History</span>
+          <span>My Raffle Number</span>
+          <div className={'guess-button ellipsoidalButton'} /* loading={principalButtonLoading} */ onClick={this.refundPrincipal}>Redeem</div>
         </div>
         <div className={'table' + ' ' + style.table}>
           <Table rowSelection={rowSelection} columns={this.myDrawColumns} dataSource={historyList} loading={historyLoading} pagination={{ defaultCurrent: 1, showSizeChanger: true, pageSizeOptions: ['10', '20', '50'] }} />
-          <div className={style['centerLine']}>
-            <div className={'guess-button ellipsoidalButton'} /* loading={principalButtonLoading} */ onClick={this.refundPrincipal}>Refund Principal</div>
-          </div>
         </div>
-        <div style={{ height: "30px" }}></div>
 
         {
           this.state.modalVisible && <RefundPrincipalModal

@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import React from 'react';
-import { Table, Button } from 'antd';
+import { Table, message } from 'antd';
 import style from './index.less';
 import { Component } from '../../components/base';
 import sleep from 'ko-sleep';
@@ -23,9 +23,19 @@ class Result extends Component {
   }
 
   async componentDidMount() {
+    let timer = 0;
     while (this.props.selectedAccount === null) {
+      if (timer > 10) {
+        message.info('Account is not found.');
+        this.setState({
+          resultLoading: false,
+        });
+        return false;
+      }
       await sleep(500);
+      timer++;
     }
+
     this.updateDrawResult();
     this.resultTimer = setInterval(this.updateDrawResult, 20000);
   }
@@ -110,7 +120,7 @@ class Result extends Component {
       render: text => (<span className={'price'}>{text} WAN</span>)
     },
     {
-      title: 'WAINNER',
+      title: 'WINNER',
       dataIndex: 'winnerCount',
       key: 'winnerCount',
       align: 'center',
@@ -138,13 +148,12 @@ class Result extends Component {
                 return <p style={{ margin: 0 }}>{record.winners}</p>;
               } else {
                 return (<ul className={style.detailList}>
-                    {record.winners.map((v, i) => <li key={v}>Winner: {v} &nbsp;&nbsp;&nbsp;&nbsp; Prize: {web3.utils.fromWei(record.amounts[i])} WAN</li>)}
+                  {record.winners.map((v, i) => <li key={v}>Winner: {v} &nbsp;&nbsp;&nbsp;&nbsp; Prize: {web3.utils.fromWei(record.amounts[i])} WAN</li>)}
                 </ul>)
               }
             }}
           />
         </div>
-        <div style={{ height: "50px" }}></div>
         <div style={{ height: "50px" }}></div>
       </div>
     );
