@@ -87,7 +87,7 @@ class Result extends Component {
       }
     }
     this.setState({
-      resultList: data,
+      resultList: data.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()),
       resultLoading: false,
     })
   }
@@ -98,9 +98,6 @@ class Result extends Component {
       dataIndex: 'time',
       key: 'draw',
       align: 'center',
-      sorter: (a, b) => {
-        return new Date(b.time).getTime() - new Date(a.time).getTime();
-      },
     },
     {
       title: 'JACKPOT',
