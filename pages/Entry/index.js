@@ -199,10 +199,18 @@ class IndexPage extends Component {
   }
 
   onChangeCode = (index, value) => {
+    if (value.length > 1) {
+      value = value.substr(-1);
+    }
+
     let t = /^[0-9]$/g.test(value) || value === '';
     this.setState({
       [`n${index}`]: t ? value : ''
     });
+
+    if(t && value !== '' && index !== 4) { // Auto jump to next input filed.
+      document.getElementById('selfSelectNumberGroup').querySelectorAll(`input`)[index].focus();
+    }
   }
 
   onChangeMachineCode = e => {
@@ -401,11 +409,11 @@ class IndexPage extends Component {
           <div className={style.centerContainer}>
             <div className={style.normal}>
               <p><span className={style.highlight}>Self Selection</span></p>
-              <div className={style['input-wrap']}>
-                <input key={1} placeholder="0 - 9" value={this.state.n1} onChange={e => { this.onChangeCode(1, e.target.value) }} />
-                <input key={2} placeholder="0 - 9" value={this.state.n2} onChange={e => { this.onChangeCode(2, e.target.value) }} />
-                <input key={3} placeholder="0 - 9" value={this.state.n3} onChange={e => { this.onChangeCode(3, e.target.value) }} />
-                <input key={4} placeholder="0 - 9" value={this.state.n4} onChange={e => { this.onChangeCode(4, e.target.value) }} />
+              <div id="selfSelectNumberGroup" className={style['input-wrap']}>
+                <input type="text" placeholder="0 - 9" value={this.state.n1} onChange={e => { this.onChangeCode(1, e.target.value) }} />
+                <input type="text" placeholder="0 - 9" value={this.state.n2} onChange={e => { this.onChangeCode(2, e.target.value) }} />
+                <input type="text" placeholder="0 - 9" value={this.state.n3} onChange={e => { this.onChangeCode(3, e.target.value) }} />
+                <input type="text" placeholder="0 - 9" value={this.state.n4} onChange={e => { this.onChangeCode(4, e.target.value) }} />
                 <div className={'guess-button yellowButton'} onClick={this.selfAdd}>ADD</div>
               </div>
             </div>
