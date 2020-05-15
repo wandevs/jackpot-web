@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Form } from 'antd';
+import { Input, Form, message } from 'antd';
 
 export const EditableContext = React.createContext();
 
@@ -31,6 +31,12 @@ export class EditableCell extends React.Component {
       if (error && error[e.currentTarget.id]) {
         return;
       }
+
+      if (!(/^([1-9]|[1-9]\d{1,5}|10{6})$/g.test(values.times))) {
+        message.warning('Please input the number: 1 - 1000000');
+        return;
+      }
+
       this.toggleEdit();
       handleSave({ ...record, ...values });
     });

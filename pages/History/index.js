@@ -8,8 +8,8 @@ import BigNumber from 'bignumber.js';
 import RefundPrincipalModal from '../../components/RefundPrincipalModal';
 import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt, WalletButtonLong } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
-import { alertAntd, toUnitAmount, formatRaffleNumber } from '../../utils/utils.js';
-import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
+import { alertAntd, toUnitAmount, formatRaffleNumber, keepOneDecimal } from '../../utils/utils.js';
+import { web3, lotterySC, lotterySCAddr, lotteryClosed } from '../../utils/contract.js';
 import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
 
@@ -63,9 +63,12 @@ class History extends Component {
       render: text => (<span className={'price'}>{text} WAN</span>)
     },
     {
-      title: "FROM",
-      dataIndex: "from",
-      key: "from",
+      title: "STATUS",
+      dataIndex: "exit",
+      key: "exit",
+      render: text => {
+        return text ? 'Quitting' : 'Normal'
+      }
     },
   ]
 
@@ -116,23 +119,40 @@ class History extends Component {
 
   getHistoryData = async (address) => {
     let ret = await lotterySC.methods.getUserCodeList(address).call();
-    let { amounts, codes } = ret;
+    // console.log('ret:', ret);
+    let { amounts, codes, exits } = ret;
     let data = amounts.map((v, i) => ({
       key: i + 1,
       code: codes[i],
       times: web3.utils.fromWei(v) / price,
       from: address,
-      price: web3.utils.fromWei(v)
+      price: web3.utils.fromWei(v),
+      exit: exits[i] === '1'
     }));
     return data;
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
+    console.log('rows:', selectedRows);
     this.setState({ selectedRowKeys, selectedRows });
   }
 
-  refundPrincipal = () => {
-    this.setState({ modalVisible: true })
+  refundPrincipal = async () => {
+    let closed = await lotteryClosed();
+    if(closed) {
+      return;
+    }
+
+    if(this.state.selectedRowKeys.length === 0) {
+      message.warning('Please select one or more raffle number to redeem.');
+      return false;
+    }
+
+    if(this.state.selectedRows.every(r => r.exit === false)) {
+      this.setState({ modalVisible: true })
+    } else {
+      message.warning('Contains quitting number.');
+    }
   }
 
   hideModal = () => {
@@ -242,7 +262,12 @@ class History extends Component {
     }
   }
 
-  onWithdrawPrize = () => {
+  onWithdrawPrize = async () => {
+    let closed = await lotteryClosed();
+    if(closed) {
+      return;
+    }
+
     const { totalPrize } = this.state;
     if (totalPrize === 0) {
       message.warning('There is no sufficient prize to withdraw!');
@@ -308,8 +333,7 @@ class History extends Component {
       hideDefaultSelections: false,
       fixed: true,
     }
-    console.log('historyList:', historyList);
-    console.log('raffleCount, totalStake, totalPrize:', raffleCount, totalStake, totalPrize);
+
     return (
       <div className={style.normal}>
 
@@ -325,7 +349,7 @@ class History extends Component {
             </Col>
             <Col span={12}>
               <p className={style.label}>You Have Won:</p>
-              <p className={`${style.value} ${style.totalPrize}`}>{totalPrize} WAN <span className={style.withdraw} onClick={this.onWithdrawPrize}>[ Withdraw ]</span></p>
+              <p className={`${style.value} ${style.totalPrize}`}>{keepOneDecimal(totalPrize)} WAN <span className={style.withdraw} onClick={this.onWithdrawPrize}>[ Withdraw ]</span></p>
             </Col>
           </Row>
         </Spin>

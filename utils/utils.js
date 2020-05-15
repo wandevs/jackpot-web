@@ -14,7 +14,7 @@ export const alertAntd = (info) => {
     } else if (info.hasOwnProperty('tip')) {
       message.info(info.tip, 5);
     } else {
-      message.info(JSON.stringify(info), 10);
+      message.warning(JSON.stringify(info), 10);
     }
   }
 }
@@ -22,4 +22,8 @@ export const alertAntd = (info) => {
 export const formatRaffleNumber = (num, len = 4) => {
   num = num.toString();
   return num.length === 4 ? num : num.padStart(len, '0');
+}
+
+export const keepOneDecimal = (num) => {
+  return new BigNumber(num).decimalPlaces(1).toString();
 }

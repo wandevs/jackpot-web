@@ -9,7 +9,7 @@ import "wan-dex-sdk-wallet/index.css";
 import style from './index.less';
 import sleep from 'ko-sleep';
 import { alertAntd, toUnitAmount, formatRaffleNumber } from '../../utils/utils.js';
-import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
+import { web3, lotterySC, lotterySCAddr, lotteryClosed } from '../../utils/contract.js';
 import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
 
@@ -96,7 +96,7 @@ class IndexPage extends Component {
       render: (text, record) => {
         return (
           <span>
-            <a className={style.deleteAction} onClick={() => {this.deleteOne(record)}}>Delete</a>
+            <button className={style.deleteAction} onClick={() => { this.deleteOne(record) }}>Delete</button>
           </span>
         );
       }
@@ -138,7 +138,6 @@ class IndexPage extends Component {
     const { selectedAccount, selectedWallet, wanBalance } = this.props;
     const address = selectedAccount ? selectedAccount.get('address') : null;
     selectUp[1] = selectUp[1].map(v => web3.utils.toWei(v.toString()));
-    console.log('wanBalance:', wanBalance);
 
     if (wanBalance <= amount) {
       alertAntd('Out of balance.');
@@ -200,54 +199,47 @@ class IndexPage extends Component {
   }
 
   onChangeCode = (index, value) => {
-    if (value < 10) {
-      switch (index) {
-        case 1:
-          this.setState({ n1: value });
-          break;
-        case 2:
-          this.setState({ n2: value });
-          break;
-        case 3:
-          this.setState({ n3: value });
-          break;
-        case 4:
-          this.setState({ n4: value });
-          break;
-        default:
-          break;
-      }
-    }
+    let t = /^[0-9]$/g.test(value) || value === '';
+    this.setState({
+      [`n${index}`]: t ? value : ''
+    });
+  }
+
+  onChangeMachineCode = e => {
+    let value = e.target.value;
+    let reg = /^([1-9]{1}|[1-4]{1}[0-9]{1}|(50){1})$/g;
+    this.setState({ machineCnt: (value === '' || reg.test(value)) ? value : '' });
   }
 
   selfAdd = async () => {
+    let closed = await lotteryClosed();
+    if(closed) {
+      return;
+    }
+
     if (this.props.selectedAccount == null) {
-      message.info("The page is not ready, please try later.");
+      message.warning("The page is not ready, please try later.");
       return false;
     }
 
     const { selectedCodes, n1, n2, n3, n4 } = this.state;
     const code = Number(n1).toFixed(0) + Number(n2).toFixed(0) + Number(n3).toFixed(0) + Number(n4).toFixed(0);
-
     for (let i = 0; i < selectedCodes.length; i++) {
       if (selectedCodes[i].code === code) {
-        message.info("The same raffle number already exists, please modify it directly in the table.");
+        message.warning("The same raffle number already exists, please modify it directly in the table.");
         return;
       }
     }
-
     if (!(await this.checkRaffleCount([code]))) {
-      message.info("The count of Raffle number should not over 50.");
+      message.warning("The count of Raffle number should not over 50.");
       return false;
     }
-
     let value = {
       key: selectedCodes.length + 1,
       code,
       times: 1,
       price: price,
     }
-
     let data = selectedCodes.slice();
     data.push(value);
     this.setState({ selectedCodes: data });
@@ -257,17 +249,24 @@ class IndexPage extends Component {
   }
 
   randomAdd = async () => {
+    let closed = await lotteryClosed();
+    if(closed) {
+      return;
+    }
+
+    const { selectedCodes, machineCnt } = this.state;
+    console.log('machineCnt:', machineCnt);
+    
     if (this.props.selectedAccount == null) {
-      message.info("The page is not ready, please try later.");
+      message.warning("The page is not ready, please try later.");
       return false;
     }
 
-    let cnt = Number(this.state.machineCnt);
-    if (cnt > 50 || cnt < 0) {
-      message.info("The count of number is invalid.");
+    let cnt = Number(machineCnt);
+    if (cnt > 50 || cnt < 1) {
+      message.warning("The count of number is invalid.");
       return false;
     }
-    const { selectedCodes } = this.state;
 
     if (cnt < 1) {
       message.warn("Count must >= 1");
@@ -288,7 +287,7 @@ class IndexPage extends Component {
     }
 
     if (!(await this.checkRaffleCount(codes))) {
-      message.info("The count of Raffle number should not over 50.");
+      message.warning("The count of Raffle number should not over 50.");
       return false;
     }
 
@@ -360,7 +359,6 @@ class IndexPage extends Component {
   }
 
   handleSave = row => {
-    console.log('row:', row);
     const newData = [...this.state.selectedCodes];
     const index = newData.findIndex(item => row.key === item.key);
     const item = newData[index];
@@ -404,16 +402,16 @@ class IndexPage extends Component {
             <div className={style.normal}>
               <p><span className={style.highlight}>Self Selection</span></p>
               <div className={style['input-wrap']}>
-                <input type="number" min='0' max='9' placeholder="0 - 9" value={this.state.n1} onChange={e => this.onChangeCode(1, e.target.value)} />
-                <input type="number" min='0' max='9' placeholder="0 - 9" value={this.state.n2} onChange={e => this.onChangeCode(2, e.target.value)} />
-                <input type="number" min='0' max='9' placeholder="0 - 9" value={this.state.n3} onChange={e => this.onChangeCode(3, e.target.value)} />
-                <input type="number" min='0' max='9' placeholder="0 - 9" value={this.state.n4} onChange={e => this.onChangeCode(4, e.target.value)} />
+                <input key={1} placeholder="0 - 9" value={this.state.n1} onChange={e => { this.onChangeCode(1, e.target.value) }} />
+                <input key={2} placeholder="0 - 9" value={this.state.n2} onChange={e => { this.onChangeCode(2, e.target.value) }} />
+                <input key={3} placeholder="0 - 9" value={this.state.n3} onChange={e => { this.onChangeCode(3, e.target.value) }} />
+                <input key={4} placeholder="0 - 9" value={this.state.n4} onChange={e => { this.onChangeCode(4, e.target.value) }} />
                 <div className={'guess-button yellowButton'} onClick={this.selfAdd}>ADD</div>
               </div>
             </div>
             <div className={style.normal}>
               <p><span className={style.highlight}>Machine Selection</span></p>
-              <input className={style.randomInput} type="number" min='1' max='50' placeholder="1 - 50" value={this.state.machineCnt} onChange={e => { if (e.target.value <= 50) { this.setState({ machineCnt: e.target.value }) } }} />
+              <input className={style.randomInput} placeholder="1 - 50" value={this.state.machineCnt} onChange={this.onChangeMachineCode} />
               <div className={'guess-button greenButton'} onClick={this.randomAdd}>ADD</div>
             </div>
           </div>

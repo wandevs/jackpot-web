@@ -6,7 +6,7 @@ import { Wallet, getSelectedAccount, WalletButton, getSelectedAccountWallet } fr
 import "wan-dex-sdk-wallet/index.css";
 import style from './index.less';
 import "../pages/global.less";
-import { alertAntd, toUnitAmount } from '../utils/utils.js';
+import { toUnitAmount, keepOneDecimal } from '../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../utils/contract.js';
 import { networkId, nodeUrl } from '../conf/config.js';
 import sleep from 'ko-sleep';
@@ -48,7 +48,7 @@ class Layout extends Component {
           totalPool: total,
         });
       }
-      
+
       updatePoolInf();
       this.timer = setInterval(() => {
         updatePoolInf();
@@ -130,19 +130,18 @@ class Layout extends Component {
         <div className={style.mainContainer}>
           <div className={style.top}>
             <Row className={style.block1}>
-              <Col xs={12} sm={12} md={11} lg={11} xl={11} className={style.leftPart}></Col>
-              <Col xs={12} sm={12} md={13} lg={12} xl={13} className={style.rightPart}>
+              <Col span={11} className={style.leftPart}></Col>
+              <Col span={13} className={style.rightPart}>
                 {/* <Tooltip title={tooltipText}> </Tooltip> */}
                 <div className={style.totalPool}>
                   <div className={style.label1}>Pool</div>
-                  <div className={`${style.value} ${style.totalPoolValue}`}><img src={require('@/static/images/flag.png')} /><span>{totalPool}</span><span> WAN</span></div>
+                  <div className={`${style.value} ${style.totalPoolValue}`}><img src={require('@/static/images/flag.png')} /><span>{keepOneDecimal(totalPool)}</span><span> WAN</span></div>
                 </div>
                 <div className={style.prizePool}>
                   <div className={style.label2}>Jackpot:</div>
-                  <div className={`${style.value} ${style.prizePoolValue}`}><img src={require('@/static/images/trophy.png')} /><span>{prizePool}</span><span> WAN</span></div>
+                  <div className={`${style.value} ${style.prizePoolValue}`}><img src={require('@/static/images/trophy.png')} /><span>{keepOneDecimal(prizePool)}</span><span> WAN</span></div>
                 </div>
                 <div className={style.drawTime}>Next Draw Time: <span>{nextDraw}</span></div>
-                <div className={style.drawClose}>Draw Entry Close: 24 hour before the draw time</div>
               </Col>
             </Row>
           </div>

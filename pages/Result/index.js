@@ -7,8 +7,9 @@ import sleep from 'ko-sleep';
 
 import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
-import { alertAntd, toUnitAmount, formatRaffleNumber } from '../../utils/utils.js';
+import { toUnitAmount, formatRaffleNumber, keepOneDecimal } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
+import { defaultStartBlock } from '../../conf/config.js';
 
 const prefix = 'jackpot';
 
@@ -58,7 +59,6 @@ class Result extends Component {
     if (startBlock && startBlock.length > 0) {
       return Number(startBlock);
     }
-    let defaultStartBlock = 6000000;
     return defaultStartBlock;
   }
 
@@ -98,6 +98,9 @@ class Result extends Component {
       dataIndex: 'time',
       key: 'draw',
       align: 'center',
+      sorter: (a, b) => {
+        return new Date(b.time).getTime() - new Date(a.time).getTime();
+      },
     },
     {
       title: 'JACKPOT',
@@ -117,7 +120,7 @@ class Result extends Component {
       dataIndex: 'amount',
       key: 'prize',
       align: 'center',
-      render: text => (<span className={'price'}>{text} WAN</span>)
+      render: text => (<span className={'price'}>{keepOneDecimal(text)} WAN</span>)
     },
     {
       title: 'WINNER',
@@ -129,7 +132,6 @@ class Result extends Component {
 
   render() {
     const { resultLoading, resultList } = this.state;
-
     return (
       <div className={style.normal}>
         <div className={'title'}>

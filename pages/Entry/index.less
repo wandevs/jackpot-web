@@ -84,11 +84,6 @@
         margin-right: 10px;
     }
 
-    .input-wrap {
-        overflow: hidden;
-        position: relative;
-    }
-
     .randomInput {
         width: 510px;
         height: 45px;
@@ -108,13 +103,18 @@
 }
 
 .input-wrap {
+    // overflow: hidden;
+    position: relative;
+
+    :global(.ant-input-number),
     input {
         width: 120px;
         height: 45px;
         background: rgba(32, 34, 66, 1);
-        border: 1px solid rgba(77, 78, 113, 1);
+        // border: 1px solid rgba(77, 78, 113, 1);
         border-radius: 4px;
         margin: auto 5px;
+        border: none;
     }
 
     input:first-child {
@@ -129,7 +129,7 @@
 }
 
 .app input {
-    border: none;
+    border: 1px solid #4d4e71;
     outline: none;
     height: 45px;
     line-height: 45px;
@@ -147,4 +147,12 @@
 
 .deleteAction {
     cursor: pointer;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    background-color: #5b739f;
+
+    &:hover {
+        background-color: #0045c3;
+    }
 }
