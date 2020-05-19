@@ -1,4 +1,4 @@
-@hover_color: rgb(64, 68, 158);
+@hover_color: rgba(38, 40, 82, 1);
 
 :global {
     .ant-table table {
@@ -19,7 +19,7 @@
         }
 
         .ant-table-tbody>tr {
-            background: rgba(38, 40, 82, 1);
+            background: rgba(31, 33, 70, 1);
             border-radius: 4px;
         }
 
@@ -30,10 +30,6 @@
             border-bottom-width: 10px;
             border-color: rgba(25, 26, 56, 1);
         }
-
-        /* .ant-table-tbody>tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)>td {
-            background-color: @hover_color;
-        } */
 
         .ant-table-tbody>tr.ant-table-row-selected td {
             background-color: @hover_color  !important;
@@ -113,6 +109,10 @@
             color: rgba(255, 255, 255, 0.2);
         }
 
+        .ant-pagination-item-ellipsis {
+            color: rgba(255, 255, 255, 0.2) !important;
+        }
+
         .ant-pagination-item-active {
             background: rgba(45, 47, 104, 1);
         }
@@ -127,6 +127,10 @@
             border: none;
             border-radius: 6px;
             color: rgba(255, 255, 255, 0.5);
+        }
+
+        .ant-pagination-jump-next:hover svg, .ant-pagination-jump-prev:hover svg {
+            color: rgba(255, 255, 255, 1) !important;
         }
     }
 
@@ -206,6 +210,10 @@
         font-weight: bold;
         color: rgba(255, 255, 255, 1);
         line-height: 46px;
+
+        &:hover {
+            background: linear-gradient(90deg, rgba(221, 166, 47, 1) 0%, rgba(227, 209, 12, 1) 100%);
+        }
     }
 
     .greenButton {
@@ -215,6 +223,10 @@
         font-weight: bold;
         color: rgba(255, 255, 255, 1);
         line-height: 46px;
+
+        &:hover {
+            background: linear-gradient(90deg, #03ffa9 0%, #308f80 100%);
+        }
     }
 
     .ellipsoidalButton {
@@ -226,6 +238,10 @@
         color: rgba(255, 255, 255, 1);
         line-height: 40px;
         border-radius: 20px !important;
+
+        &:hover {
+            background: linear-gradient(90deg, rgba(221, 166, 47, 1) 0%, rgba(227, 209, 12, 1) 100%);
+        }
     }
 
     input[type=number]::-webkit-inner-spin-button {

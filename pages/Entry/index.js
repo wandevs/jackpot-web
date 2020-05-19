@@ -138,7 +138,6 @@ class IndexPage extends Component {
     const { selectedAccount, selectedWallet, wanBalance } = this.props;
     const address = selectedAccount ? selectedAccount.get('address') : null;
     selectUp[1] = selectUp[1].map(v => web3.utils.toWei(v.toString()));
-
     if (wanBalance <= amount) {
       alertAntd('Out of balance.');
       return false;
@@ -147,6 +146,15 @@ class IndexPage extends Component {
     if (!address || address.length < 20) {
       alertAntd('Please select a wallet address first.');
       return false
+    }
+
+    
+    const history = await this.getHistoryData();
+    for(let i = 0; i < history.codes.length; i++) {
+      if(selectUp[0].includes(history.codes[i]) && history.exits[i] === '1') {
+        message.warning("Can not stake the exiting raffle number.");
+        return;
+      }
     }
 
     const value = web3.utils.toWei(amount.toString());
@@ -175,7 +183,6 @@ class IndexPage extends Component {
       let transactionID = await selectedWallet.sendTransaction(params);
       // console.log('Tx ID:', transactionID);
       watchTransactionStatus(transactionID, (ret) => {
-        console.log('status:', ret)
         if (ret) {
           alertAntd('Success');
           this.setState({
@@ -263,7 +270,6 @@ class IndexPage extends Component {
     }
 
     const { selectedCodes, machineCnt } = this.state;
-    console.log('machineCnt:', machineCnt);
     
     if (this.props.selectedAccount == null) {
       message.warning("The page is not ready, please try later.");
@@ -285,10 +291,12 @@ class IndexPage extends Component {
       cnt = 50 - selectedCodes.length;
     }
 
+    const history = await this.getHistoryData();
+    const selected = selectedCodes.map(v => v.code);
     let codes = [];
     for (; codes.length < cnt;) {
-      let r = Math.floor(Math.random() * 9999) + 1; //get a four number random code.
-      while (codes.includes(r)) {
+      let r = Math.floor(Math.random() * 9999) + 1;
+      while (codes.includes(r) || history.codes.includes(r) || selected.includes(formatRaffleNumber(r))) {
         r = Math.floor(Math.random() * 9999) + 1;
       }
       codes.push(formatRaffleNumber(r));
@@ -327,12 +335,12 @@ class IndexPage extends Component {
   }
 
   getHistoryData = async () => {
-
     let address = this.props.selectedAccount.get('address');
     let ret = await lotterySC.methods.getUserCodeList(address).call();
     return {
       amounts: ret.amounts,
-      codes: ret.codes
+      codes: ret.codes,
+      exits: ret.exits,
     };
   }
 
@@ -430,7 +438,7 @@ class IndexPage extends Component {
 
         <div className={'title'}>
           <img src={require('../../static/images/coupon.png')} />
-          <span>Selected Number</span>
+          <span>Ticket Selection</span>
         </div>
 
         <div className={'table'} id="selectedNumberTable">
@@ -441,7 +449,7 @@ class IndexPage extends Component {
             bordered={false}
             dataSource={this.state.selectedCodes} />
           <div className={style['centerLine']}>
-            <div className={'guess-button ellipsoidalButton'} onClick={this.onConfirm}>Buy</div>
+            <div className={'guess-button ellipsoidalButton'} onClick={this.onConfirm}>Stake</div>
             <div className={'guess-button ellipsoidalButton'} onClick={this.clearRaffleNumber}>Clear</div>
           </div>
         </div>

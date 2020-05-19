@@ -112,14 +112,13 @@ class History extends Component {
     this.setState({
       historyList: historyData,
       totalStake,
-      totalPrize,
+      totalPrize: toUnitAmount(totalPrize, 18),
       raffleCount,
     });
   }
 
   getHistoryData = async (address) => {
     let ret = await lotterySC.methods.getUserCodeList(address).call();
-    // console.log('ret:', ret);
     let { amounts, codes, exits } = ret;
     let data = amounts.map((v, i) => ({
       key: i + 1,
@@ -133,7 +132,6 @@ class History extends Component {
   }
 
   onSelectChange = (selectedRowKeys, selectedRows) => {
-    console.log('rows:', selectedRows);
     this.setState({ selectedRowKeys, selectedRows });
   }
 
@@ -333,30 +331,29 @@ class History extends Component {
       hideDefaultSelections: false,
       fixed: true,
     }
-
     return (
       <div className={style.normal}>
 
         <Spin spinning={stakerInfoLoading}>
           <Row className={style.block}>
-            <Col span={6}>
+            <Col span={8}>
               <p className={style.label}>Tickets You Have</p>
               <p className={style.value}>{raffleCount}</p>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
               <p className={style.label}>Jack's Pot Stake</p>
               <p className={style.value}>{totalStake} WAN</p>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <p className={style.label}>You Have Won:</p>
-              <p className={`${style.value} ${style.totalPrize}`}>{keepOneDecimal(totalPrize)} WAN <span className={style.withdraw} onClick={this.onWithdrawPrize}>[ Withdraw ]</span></p>
+              <p className={`${style.value} ${style.totalPrize}`}>{keepOneDecimal(totalPrize)} WAN <span className={style.withdraw} onClick={this.onWithdrawPrize}>[ Claim ]</span></p>
             </Col>
           </Row>
         </Spin>
         <div className={'title'}>
           <img src={require('../../static/images/coupon.png')} />
           <span>My Raffle Number</span>
-          <div className={'guess-button ellipsoidalButton'} /* loading={principalButtonLoading} */ onClick={this.refundPrincipal}>Redeem</div>
+          <div className={'guess-button ellipsoidalButton'} /* loading={principalButtonLoading} */ onClick={this.refundPrincipal}>Withdraw</div>
         </div>
         <div className={'table' + ' ' + style.table}>
           <Table rowSelection={rowSelection} columns={this.myDrawColumns} dataSource={historyList} loading={historyLoading} pagination={{ defaultCurrent: 1, showSizeChanger: true, pageSizeOptions: ['10', '20', '50'] }} />

@@ -26,7 +26,7 @@
 }
 
 .title {
-    width: 200px;
+    // width: 200px;
     text-align: left;
     height: 14px;
     font-size: 18px;
@@ -37,6 +37,22 @@
     margin: 7px;
     position: absolute;
     left: 24px;
+}
+
+.howToPlay {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 14px;
+    padding: 0px 16px;
+    margin-right: 6px;
+    cursor: pointer;
+
+    &:hover {
+        color: rgba(255, 255, 255, 1);
+        border: 2px solid rgba(255, 255, 255, 1);
+    }
 }
 
 .mainContainer {
@@ -235,6 +251,12 @@
         .ant-tabs-ink-bar {
             background:rgba(65,78,221,1);
         }
+
+        .ant-tabs-nav-wrap {
+            .ant-tabs-tab {
+                min-width: 150px;
+            }
+        }
     }
 }
 
@@ -258,7 +280,7 @@
     .ruleContents {
         max-width: 1000px;
         text-align: left;
-        line-height: 18px;
+        line-height: 1.5;
         font-size: 16px;
         font-family: Roboto Condensed;
         color: rgba(0, 98, 231, 1);
@@ -269,6 +291,6 @@
     }
 
     .text {
-        color: rgba(152, 154, 192, 0.8);
+        color: rgb(211, 211, 211);
     }
 }

@@ -78,7 +78,7 @@ class RefundPrincipalModal extends Component {
               <WalletButton />
             </Form.Item>
           </Form>
-          <div className={style['totalContainer']}>Total Redeem: {this.amount}</div>
+          <div className={style['totalContainer']}>Total Redeem: <span>{this.amount} WAN</span></div>
           <Table
             className={style['selectedRaffleList']}
             columns={this.columns}

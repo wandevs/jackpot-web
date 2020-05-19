@@ -4,7 +4,37 @@
 
   :global {
     .ant-table-row-expand-icon {
-      color: black;
+      background-color: #404b88;
+      border: 1px solid #3e3e6a;
+      border-radius: 25%;
+      color: white;
+    }
+
+    .ant-table-row-collapsed::after {
+      line-height: 15px;
+    }
+
+    .table {
+      .ant-select {
+        color: white;
+      }
+
+      .ant-select-selection {
+        background-color: #1f2046;
+        border-color: #454767;
+      }
+
+      .ant-select-arrow .ant-select-arrow-icon svg {
+        color: white;
+      }
+
+      .ant-table-wrapper {
+        margin-bottom: 8px;
+      }
+    }
+
+    .title {
+      border-top: none;
     }
   }
 }
@@ -49,5 +79,69 @@ h1 {
 }
 
 .detailList {
-    list-style: none;
+  list-style: none;
+}
+
+.expandedTable {
+  margin: auto !important;
+  background-color: #484b5d;
+  border: 1px solid rgba(97, 99, 110, 0);
+  border-radius: 2px;
+  position: relative;
+  left: -26px;
+
+  :global {
+
+    .ant-table-thead>tr>th,
+    .ant-table-tbody>tr>td {
+      padding: 6px 16px;
+    }
+
+    .ant-table-tbody>tr:only-child>td {
+      margin: 10px 0px;
+    }
+
+    .ant-table table .ant-table-thead>tr>th {
+      color: white;
+    }
+
+    .ant-table table .ant-table-tbody>tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)>td {
+      background-color: #2d2f5c !important;
+    }
+  }
+}
+
+.searchAddress {
+  margin: auto;
+  float: right;
+  margin-right: 40px;
+
+  :global {
+    .ant-input {
+      display: inline-block;
+    }
+
+    .ant-input-wrapper {
+      margin: 0px;
+    }
+
+    .ant-input-group>.ant-input:first-child {
+      position: relative;
+      top: 13px;
+    }
+
+    .ant-input-group-addon {
+      background: rgba(255, 255, 255, 0);
+    }
+
+    .ant-btn-primary {
+      background-color: #2f3f98;
+      border-color: #2f3f98;
+
+      &:hover {
+        background-color: #3F51B5;
+        border-color: #3F51B5;
+      }
+    }
+  }
 }

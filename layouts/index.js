@@ -115,6 +115,13 @@ class Layout extends Component {
     this.setState({ tabKeyNow: activeKey });
   }
 
+  howToPlay = () => {
+    document.getElementById('gameRule').scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+  }
+
   render() {
     let { prizePool, totalPool, tabKeyNow, nextDraw } = this.state;
     return (
@@ -122,7 +129,8 @@ class Layout extends Component {
         <div className={style.header}>
           <Wallet title="Wan Game" nodeUrl={nodeUrl} />
           {/* <img className={style.logo} width="28px" height="28px" src={logo} alt="Logo" /> */}
-          <div className={style.title}>Jack's Pot</div>
+          <div className={style.title}>Jack's Pot&nbsp;&nbsp;&nbsp;&nbsp;- The Wanchain based no loss lottery</div>
+          <div className={style.howToPlay} onClick={this.howToPlay}>How to play</div>
           <img style={{ height: "25px", margin: "3px 8px 3px 3px" }} src={networkLogo} />
           <WalletButton />
         </div>
@@ -147,7 +155,7 @@ class Layout extends Component {
           </div>
 
           <div className={style.mainTab}>
-            <Tabs /* defaultActiveKey="1" */ onChange={this.onTabChange} activeKey={this.state.tabKeyNow} size={'large'}>
+            <Tabs onChange={this.onTabChange} activeKey={this.state.tabKeyNow} size={'large'}>
               <TabPane tab="Select Here" key="1">
                 {
                   tabKeyNow === '1' ? <Entry /> : <div></div>
@@ -171,13 +179,18 @@ class Layout extends Component {
             <span>Game Rules</span>
           </div>
 
-          <div className={style['gameRule']}>
-            <h1 className={style['ruleTitle']}>Jack’s Pot is a no-loss lottery game built on Wanchain which draws from the design of the Ethereum based PoolTogether game while introducing novel game mechanics.</h1>
+          <div id="gameRule" className={style['gameRule']}>
+            <h1 className={style['ruleTitle']}>Jack’s Pot is a no-loss lottery game built on Wanchain</h1>
             <ul className={style['ruleContents']}>
-              <li><span className={style['text']}>To play the game, participants deposit WAN while also guessing a number between 0 and 9 inclusive.</span></li>
-              <li><span className={style['text']}>Participants' WAN deposits are delegated to POS verification nodes, and the accrued consensus rewards are pooled into a prize pot.</span></li>
-              <li><span className={style['text']}>Every Friday a winning number is selected at random using Wanchain’s true random number generation, and the reward will be awarded proportionally to participants who guessed the winning number.</span></li>
+              <li><span className={style['text']}>To play the game, users stake one or more tickets with a four digit number on each ticket.</span></li>
+              <li><span className={style['text']}>Users may either choose a specific four digit number through “Self Selection”, or they may generate multiple tickets with randomly four chosen four digit numbers using “Machine Selection”.</span></li>
+              <li><span className={style['text']}>In order to stake a ticket, users must supply 10 WAN for each ticket. This WAN will be locked up in a Wanchain validator node during the duration of the game, and users may withdraw this WAN when they are finished playing.</span></li>
+              <li><span className={style['text']}>The WAN used by staking tickets is delegated to Wanchain’s validator nodes, and the accrued consensus rewards are pooled into the Jackpot.</span></li>
+              <li><span className={style['text']}>Every Friday a winning four digit number is selected at random using Wanchain’s true random number generation, and the reward will be awarded to any users who are currently staking a winning number. If multiple users have tickets staked with the winning number, the Jackpot will be split proportionally amongst all tickets with the winning number.</span></li>
+              <li><span className={style['text']}>The lottery closes at 00:00 UTC on Friday, lottery results are settled at 23:00 UTC on Friday, and the lottery re-opens at 00:00 UTC on Friday.</span></li>
               <li><span className={style['text']}>If there is no winner, the prize pot will automatically accumulate to the next cycle.</span></li>
+              <li><span className={style['text']}>If you do not withdraw your tickets, those tickets will automatically participate in the next cycle with your chosen numbers.</span></li>
+              {/* <li><span className={style['text']}></span></li> */}
             </ul>
           </div>
         </div>

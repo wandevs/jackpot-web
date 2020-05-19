@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import React from 'react';
-import { Table, message } from 'antd';
+import { Table, message, Input } from 'antd';
 import style from './index.less';
 import { Component } from '../../components/base';
 import sleep from 'ko-sleep';
@@ -12,6 +12,8 @@ import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
 import { defaultStartBlock } from '../../conf/config.js';
 
 const prefix = 'jackpot';
+const Result_length = 200;
+const { Search } = Input;
 
 class Result extends Component {
   constructor(props) {
@@ -19,6 +21,7 @@ class Result extends Component {
     this.checkSCUpdate();
     this.state = {
       resultLoading: true,
+      winnerFilter: false,
       resultList: [],
     }
   }
@@ -48,33 +51,35 @@ class Result extends Component {
   checkSCUpdate() {
     let scOld = window.localStorage.getItem(prefix + '_SC');
     if (!scOld || scOld !== lotterySCAddr) {
-      // console.log('Detect smart contract update.');
       window.localStorage.setItem(`${prefix}_SC`, lotterySCAddr);
-      window.localStorage.removeItem(`${prefix}_historyStartBlock`);
+      window.localStorage.removeItem(`${prefix}_resultStartBlock`);
+      window.localStorage.removeItem(`${prefix}_resultList`);
     }
   }
 
   getHistoryStartBlock = () => {
-    let startBlock = window.localStorage.getItem(`${prefix}_historyStartBlock`);
+    let startBlock = window.localStorage.getItem(`${prefix}_resultStartBlock`);
     if (startBlock && startBlock.length > 0) {
-      return Number(startBlock);
+      return Number(startBlock) + 1;
     }
     return defaultStartBlock;
   }
 
   updateDrawResult = async () => {
     let blockNumber = await web3.eth.getBlockNumber();
+    let fromBlock = this.getHistoryStartBlock();
     let events = await lotterySC.getPastEvents('LotteryResult', {
-      fromBlock: this.getHistoryStartBlock(),
+      fromBlock: fromBlock < blockNumber ? fromBlock : blockNumber,
       toBlock: blockNumber
     });
-    let data = [];
+    let oldData = window.localStorage.getItem(`${prefix}_resultList`);
+    events.sort((a, b) => b.blockNumber - a.blockNumber);
+    let newData = [];
     if (events && events.length > 0) {
-      // console.log('events:', events);
       for (let i = 0; i < events.length; i++) {
         let block = await web3.eth.getBlock(events[i].blockNumber);
         let hasWinner = events[i].returnValues.amounts.length !== 1 || events[i].returnValues.amounts[0] !== '0';
-        data.push({
+        newData.push({
           key: events[i].blockNumber,
           blockNumber: events[i].blockNumber,
           time: (new Date(Number(block.timestamp) * 1000)).toLocaleDateString(),
@@ -86,10 +91,13 @@ class Result extends Component {
         })
       }
     }
+    let allData = newData.concat(oldData ? JSON.parse(oldData) : []);
     this.setState({
-      resultList: data.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()),
+      resultList: allData.slice(0, Result_length), // Limit result list length.
       resultLoading: false,
-    })
+    });
+    window.localStorage.setItem(`${prefix}_resultStartBlock`, blockNumber);
+    window.localStorage.setItem(`${prefix}_resultList`, JSON.stringify(allData));
   }
 
   pastDrawResults = [
@@ -127,28 +135,74 @@ class Result extends Component {
     },
   ]
 
+  expandColumns = [
+    {
+      title: 'Address',
+      dataIndex: 'winner',
+      key: 'winner',
+      align: 'center',
+      // render: text => (<span className={'price'}>{keepOneDecimal(text)} WAN</span>)
+    },
+    {
+      title: 'Prize',
+      dataIndex: 'prize',
+      key: 'prize',
+      align: 'center',
+      render: text => (<span className={'price'}>{text} WAN</span>)
+    },
+  ]
+
+  onSearch = (v) => {
+    console.log('onSearch:', v);
+    this.setState({
+      winnerFilter: v.trim().length > 0 ? v : false
+    })
+  }
+
   render() {
-    const { resultLoading, resultList } = this.state;
+    const { resultLoading, resultList, winnerFilter } = this.state;
+    let data = [];
+    if (winnerFilter) {
+      for (let i = 0; i < resultList.length; i++) {
+        let item = resultList[i];
+        if ((item.winners instanceof Array) && (item.winners.includes(winnerFilter))) {
+          data.push(item);
+        }
+      }
+    } else {
+      data = resultList;
+    }
+
     return (
       <div className={style.normal}>
         <div className={'title'}>
           <img src={require('../../static/images/coupon.png')} />
           <span>Past Draw Results</span>
+          <Search className={style.searchAddress} placeholder="input search text" style={{ width: 300 }} onSearch={this.onSearch} enterButton />
         </div>
 
         <div style={{ height: "20px" }}></div>
         <div className={'table'}>
           <Table
             columns={this.pastDrawResults}
-            dataSource={resultList}
+            dataSource={data}
             loading={resultLoading}
+            pagination={{ defaultCurrent: 1, /* position: 'both', */ showSizeChanger: true, pageSizeOptions: ['10', '20', '50'] }}
             expandedRowRender={record => {
               if (typeof record.winners === 'string') {
                 return <p style={{ margin: 0 }}>{record.winners}</p>;
               } else {
-                return (<ul className={style.detailList}>
-                  {record.winners.map((v, i) => <li key={v}>Winner: {v} &nbsp;&nbsp;&nbsp;&nbsp; Prize: {web3.utils.fromWei(record.amounts[i])} WAN</li>)}
-                </ul>)
+                let data = record.winners.map((v, i) => ({
+                  winner: v,
+                  prize: keepOneDecimal(web3.utils.fromWei(record.amounts[i]))
+                }))
+                return (<Table
+                  rowKey="winner"
+                  className={style.expandedTable}
+                  columns={this.expandColumns}
+                  dataSource={data}
+                  pagination={false}
+                />)
               }
             }}
           />
