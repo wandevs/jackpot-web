@@ -166,8 +166,13 @@ class Result extends Component {
     if (winnerFilter) {
       for (let i = 0; i < resultList.length; i++) {
         let item = resultList[i];
-        if ((item.winners instanceof Array) && (item.winners.includes(winnerFilter))) {
-          data.push(item);
+        if (item.winners instanceof Array) {
+          for(let j = 0; j < item.winners.length; j ++) {
+            if (item.winners[j].toLowerCase() === winnerFilter.toLowerCase()) {
+              data.push(item);
+              break;
+            }
+          }
         }
       }
     } else {

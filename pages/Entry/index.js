@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import React from 'react';
 import { Component } from "../../components/base";
-import { Row, Col, Divider, Table, message, Modal } from 'antd';
+import { Table, message, Modal, Button } from 'antd';
 import SendModal from '../../components/SendModal';
 import { EditableCell, EditableFormRow } from "../../components/EditableRow";
 import { getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
@@ -26,7 +26,9 @@ class IndexPage extends Component {
       machineCnt: '',
       selectedCodes: [],
       modalVisible: false,
-      scrollY: 0
+      scrollY: 0,
+      selfAdd_loading: false,
+      machineAdd_loading: false,
     };
 
     Date.prototype.format = function (fmt) {
@@ -227,13 +229,16 @@ class IndexPage extends Component {
   }
 
   selfAdd = async () => {
+    this.setState({ selfAdd_loading: true });
     let closed = await lotteryClosed();
     if(closed) {
+      this.setState({ selfAdd_loading: false });
       return;
     }
 
     if (this.props.selectedAccount == null) {
       message.warning("The page is not ready, please try later.");
+      this.setState({ selfAdd_loading: false });
       return false;
     }
 
@@ -242,11 +247,13 @@ class IndexPage extends Component {
     for (let i = 0; i < selectedCodes.length; i++) {
       if (selectedCodes[i].code === code) {
         message.warning("The same raffle number already exists, please modify it directly in the table.");
+        this.setState({ selfAdd_loading: false });
         return;
       }
     }
     if (!(await this.checkRaffleCount([code]))) {
       message.warning("The count of Raffle number should not over 50.");
+      this.setState({ selfAdd_loading: false });
       return false;
     }
     let value = {
@@ -257,15 +264,17 @@ class IndexPage extends Component {
     }
     let data = selectedCodes.slice();
     data.push(value);
-    this.setState({ selectedCodes: data });
+    this.setState({ selectedCodes: data, selfAdd_loading: false });
     document.getElementById('selectedNumberTable').scrollIntoView({
       block: 'center'
     });
   }
 
   randomAdd = async () => {
+    this.setState({ machineAdd_loading: true });
     let closed = await lotteryClosed();
     if(closed) {
+      this.setState({ machineAdd_loading: false });
       return;
     }
 
@@ -273,17 +282,20 @@ class IndexPage extends Component {
     
     if (this.props.selectedAccount == null) {
       message.warning("The page is not ready, please try later.");
+      this.setState({ machineAdd_loading: false });
       return false;
     }
 
     let cnt = Number(machineCnt);
     if (cnt > 50 || cnt < 1) {
       message.warning("The count of number is invalid.");
+      this.setState({ machineAdd_loading: false });
       return false;
     }
 
     if (cnt < 1) {
       message.warn("Count must >= 1");
+      this.setState({ machineAdd_loading: false });
       return;
     }
 
@@ -304,6 +316,7 @@ class IndexPage extends Component {
 
     if (!(await this.checkRaffleCount(codes))) {
       message.warning("The count of Raffle number should not over 50.");
+      this.setState({ machineAdd_loading: false });
       return false;
     }
 
@@ -317,7 +330,7 @@ class IndexPage extends Component {
       }
       data.push(value);
     }
-    this.setState({ selectedCodes: data });
+    this.setState({ selectedCodes: data, machineAdd_loading: false });
     document.getElementById('selectedNumberTable').scrollIntoView({
       block: 'center'
     });
@@ -386,6 +399,7 @@ class IndexPage extends Component {
   }
 
   render() {
+    const { selfAdd_loading, machineAdd_loading } = this.state;
     const components = {
       body: {
         row: EditableFormRow,
@@ -422,13 +436,13 @@ class IndexPage extends Component {
                 <input type="text" placeholder="0 - 9" value={this.state.n2} onChange={e => { this.onChangeCode(2, e.target.value) }} />
                 <input type="text" placeholder="0 - 9" value={this.state.n3} onChange={e => { this.onChangeCode(3, e.target.value) }} />
                 <input type="text" placeholder="0 - 9" value={this.state.n4} onChange={e => { this.onChangeCode(4, e.target.value) }} />
-                <div className={'guess-button yellowButton'} onClick={this.selfAdd}>ADD</div>
+                <Button className={'guess-button yellowButton'} onClick={this.selfAdd} loading={selfAdd_loading}>ADD</Button>
               </div>
             </div>
             <div className={style.normal}>
               <p><span className={style.highlight}>Machine Selection</span></p>
               <input className={style.randomInput} placeholder="1 - 50" value={this.state.machineCnt} onChange={this.onChangeMachineCode} />
-              <div className={'guess-button greenButton'} onClick={this.randomAdd}>ADD</div>
+              <Button className={'guess-button greenButton'} onClick={this.randomAdd} loading={machineAdd_loading}>ADD</Button>
             </div>
           </div>
           <div className={style.rightWing}>

@@ -201,6 +201,11 @@
         cursor: pointer;
         user-select: none;
         padding: 0px 16px;
+        border: none;
+
+        &:hover, &:focus {
+            color: rgba(255, 255, 255, 1);
+        }
     }
 
     .yellowButton {
@@ -214,6 +219,10 @@
         &:hover {
             background: linear-gradient(90deg, rgba(221, 166, 47, 1) 0%, rgba(227, 209, 12, 1) 100%);
         }
+
+        &:focus {
+            background: linear-gradient(90deg, #dda62f 0%, #a2982e 100%);
+        }
     }
 
     .greenButton {
@@ -226,6 +235,10 @@
 
         &:hover {
             background: linear-gradient(90deg, #03ffa9 0%, #308f80 100%);
+        }
+
+        &:focus {
+            background: linear-gradient(90deg, rgba(0, 206, 136, 1) 0%, rgba(37, 121, 108, 1) 100%);
         }
     }
 
