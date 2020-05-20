@@ -192,17 +192,33 @@ class Result extends Component {
               if (typeof record.winners === 'string') {
                 return <p style={{ margin: 0 }}>{record.winners}</p>;
               } else {
+                // console.log('record:', record);
                 let data = record.winners.map((v, i) => ({
                   winner: v,
                   prize: keepOneDecimal(web3.utils.fromWei(record.amounts[i]))
                 }))
-                return (<Table
-                  rowKey="winner"
-                  className={style.expandedTable}
-                  columns={this.expandColumns}
-                  dataSource={data}
-                  pagination={false}
-                />)
+                return (
+                  <Table
+                    rowKey="winner"
+                    className={style.expandedTable}
+                    columns={this.expandColumns}
+                    dataSource={data}
+                    pagination={false}
+                    size="small"
+                  />
+                )
+
+                /* return (
+                  <div className={style['expand_container']}>
+                    <div className={style['expand_tr']}>
+                      <div className={style['expand_left']}>Address</div>
+                      <div className={style['expand_right']}>Prize</div>
+                    </div>
+                    {
+                      data.map(v => (<div className={style['expand_tr']}><div className={style['expand_left']}>{v.winner}</div><div className={style['expand_right']}>{v.prize}</div></div>))
+                    }
+                  </div>
+                ) */
               }
             }}
           />

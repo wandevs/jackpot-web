@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import React from 'react';
-import { Table, Row, Col, message, Spin } from 'antd';
+import { Table, Row, Col, message, Spin, Popconfirm } from 'antd';
 import style from './index.less';
 import { Component } from '../../components/base';
 import sleep from 'ko-sleep';
@@ -137,16 +137,16 @@ class History extends Component {
 
   refundPrincipal = async () => {
     let closed = await lotteryClosed();
-    if(closed) {
+    if (closed) {
       return;
     }
 
-    if(this.state.selectedRowKeys.length === 0) {
+    if (this.state.selectedRowKeys.length === 0) {
       message.warning('Please select one or more raffle number to redeem.');
       return false;
     }
 
-    if(this.state.selectedRows.every(r => r.exit === false)) {
+    if (this.state.selectedRows.every(r => r.exit === false)) {
       this.setState({ modalVisible: true })
     } else {
       message.warning('Contains quitting number.');
@@ -262,7 +262,7 @@ class History extends Component {
 
   onWithdrawPrize = async () => {
     let closed = await lotteryClosed();
-    if(closed) {
+    if (closed) {
       return;
     }
 
@@ -271,6 +271,7 @@ class History extends Component {
       message.warning('There is no sufficient prize to withdraw!');
       return false;
     }
+    console.log('totalPrize:', totalPrize);
     confirm({
       title: 'Do you Want to withdraw the prize?',
       content: `${totalPrize} WAN`,
@@ -280,6 +281,24 @@ class History extends Component {
       onCancel() {
       },
     });
+  }
+
+  confirmClaim = async () => {
+    let closed = await lotteryClosed();
+    if (closed) {
+      return;
+    }
+
+    const { totalPrize } = this.state;
+    if (totalPrize === 0) {
+      message.warning('There is no sufficient prize to withdraw!');
+      return false;
+    }
+    this.withdrawPrize();
+  }
+
+  cancelClaim = () => {
+
   }
 
   withdrawPrize = async () => {
@@ -309,6 +328,7 @@ class History extends Component {
     try {
       let transactionID = await selectedWallet.sendTransaction(params);
       watchTransactionStatus(transactionID, (ret) => {
+        console.log('ret:', ret);
         if (ret) {
           alertAntd('Withdraw success');
         } else {
@@ -346,7 +366,16 @@ class History extends Component {
             </Col>
             <Col span={8}>
               <p className={style.label}>You Have Won:</p>
-              <p className={`${style.value} ${style.totalPrize}`}>{keepOneDecimal(totalPrize)} WAN <span className={style.withdraw} onClick={this.onWithdrawPrize}>[ Claim ]</span></p>
+              <p className={`${style.value} ${style.totalPrize}`}>{keepOneDecimal(totalPrize)} WAN
+                <Popconfirm
+                  title="Are you sure to claim prize?"
+                  onConfirm={this.confirmClaim}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <span className={style.withdraw} /* onClick={this.onWithdrawPrize} */>[ Claim ]</span>
+                </Popconfirm>
+              </p>
             </Col>
           </Row>
         </Spin>

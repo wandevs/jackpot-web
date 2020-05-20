@@ -140,7 +140,6 @@ class Layout extends Component {
             <Row className={style.block1}>
               <Col span={11} className={style.leftPart}></Col>
               <Col span={13} className={style.rightPart}>
-                {/* <Tooltip title={tooltipText}> </Tooltip> */}
                 <div className={style.totalPool}>
                   <div className={style.label1}>Pool</div>
                   <div className={`${style.value} ${style.totalPoolValue}`}><img src={require('@/static/images/flag.png')} /><span>{keepOneDecimal(totalPool)}</span><span> WAN</span></div>
