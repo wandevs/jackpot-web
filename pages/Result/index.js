@@ -140,20 +140,21 @@ class Result extends Component {
       title: 'Address',
       dataIndex: 'winner',
       key: 'winner',
-      align: 'center',
+      align: 'left',
+      width: '50%',
       // render: text => (<span className={'price'}>{keepOneDecimal(text)} WAN</span>)
     },
     {
       title: 'Prize',
       dataIndex: 'prize',
       key: 'prize',
-      align: 'center',
+      align: 'left',
+      width: '50%',
       render: text => (<span className={'price'}>{text} WAN</span>)
     },
   ]
 
   onSearch = (v) => {
-    console.log('onSearch:', v);
     this.setState({
       winnerFilter: v.trim().length > 0 ? v : false
     })
@@ -192,7 +193,6 @@ class Result extends Component {
               if (typeof record.winners === 'string') {
                 return <p style={{ margin: 0 }}>{record.winners}</p>;
               } else {
-                // console.log('record:', record);
                 let data = record.winners.map((v, i) => ({
                   winner: v,
                   prize: keepOneDecimal(web3.utils.fromWei(record.amounts[i]))
@@ -207,18 +207,6 @@ class Result extends Component {
                     size="small"
                   />
                 )
-
-                /* return (
-                  <div className={style['expand_container']}>
-                    <div className={style['expand_tr']}>
-                      <div className={style['expand_left']}>Address</div>
-                      <div className={style['expand_right']}>Prize</div>
-                    </div>
-                    {
-                      data.map(v => (<div className={style['expand_tr']}><div className={style['expand_left']}>{v.winner}</div><div className={style['expand_right']}>{v.prize}</div></div>))
-                    }
-                  </div>
-                ) */
               }
             }}
           />

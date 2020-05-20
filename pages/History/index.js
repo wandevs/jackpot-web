@@ -97,23 +97,25 @@ class History extends Component {
     clearInterval(this.resultTimer);
   }
 
-  setStakerInfo = async (address) => {
+  setStakerInfo = async () => {
+    let address = this.props.selectedAccount.get('address');
     let { prize, codeCount } = await lotterySC.methods.userInfoMap(address).call();
-    return [parseInt(prize), parseInt(codeCount)];
+    this.setState({
+      totalPrize: toUnitAmount(parseInt(prize), 18),
+      raffleCount: parseInt(codeCount),
+    });
   }
 
   resetData = async () => {
     let address = this.props.selectedAccount.get('address');
     let historyData = await this.getHistoryData(address);
-    let [totalPrize, raffleCount] = await this.setStakerInfo(address);
+    this.setStakerInfo();
     let totalStake = historyData.reduce((t, n) => {
       return new BigNumber(t).plus(n.price);
     }, 0).toString();
     this.setState({
       historyList: historyData,
       totalStake,
-      totalPrize: toUnitAmount(totalPrize, 18),
-      raffleCount,
     });
   }
 
@@ -271,7 +273,7 @@ class History extends Component {
       message.warning('There is no sufficient prize to withdraw!');
       return false;
     }
-    console.log('totalPrize:', totalPrize);
+
     confirm({
       title: 'Do you Want to withdraw the prize?',
       content: `${totalPrize} WAN`,
@@ -331,6 +333,7 @@ class History extends Component {
         console.log('ret:', ret);
         if (ret) {
           alertAntd('Withdraw success');
+          this.setStakerInfo();
         } else {
           alertAntd('Withdraw failed');
         }

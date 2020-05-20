@@ -6,9 +6,9 @@ import { Wallet, getSelectedAccount, WalletButton, getSelectedAccountWallet } fr
 import "wan-dex-sdk-wallet/index.css";
 import style from './index.less';
 import "../pages/global.less";
-import { toUnitAmount, keepOneDecimal } from '../utils/utils.js';
+import { toUnitAmount, keepOneDecimal, formatRaffleNumber } from '../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../utils/contract.js';
-import { networkId, nodeUrl } from '../conf/config.js';
+import { networkId, nodeUrl, defaultStartBlock } from '../conf/config.js';
 import sleep from 'ko-sleep';
 import BigNumber from 'bignumber.js';
 
@@ -26,18 +26,24 @@ class Layout extends Component {
     this.state = {
       totalPool: 0,
       prizePool: 0,
-      nextDraw: '2020-04-25 07:00:00 (UTC+8)',
-      closeHours: 24,
-      raffleCount: 0,
-      totalStake: 0,
-      totalPrize: 0,
-      tabKeyNow: '1'
+      // nextDraw: '2020-04-25 07:00:00 (UTC+8)',
+      tabKeyNow: '1',
+      jackpot: '0000',
+      showCounter: false,
+      timeToClose: {
+        d: '00',
+        h: '00',
+        m: '00',
+        s: '00',
+      },
     };
   }
 
   async componentDidMount() {
     try {
-      this.setNextDraw();
+      this.setTimeToClose();
+      this.resetLatestDrawResult();
+      this.timer1 = setInterval(this.setTimeToClose, 1000);
 
       let updatePoolInf = async () => {
         let ret = await lotterySC.methods.poolInfo().call();
@@ -50,7 +56,7 @@ class Layout extends Component {
       }
 
       updatePoolInf();
-      this.timer = setInterval(() => {
+      this.timer2 = setInterval(() => {
         updatePoolInf();
       }, 30000);
     } catch (err) {
@@ -59,13 +65,15 @@ class Layout extends Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.timer);
+    clearInterval(this.timer1);
+    clearInterval(this.timer2);
   }
 
-  setNextDraw = () => {
+  setTimeToClose = () => {
+    const { showCounter } = this.state;
     let n = new Date();
     let time1 = n.getTime();
-    n.setUTCHours(23);
+    n.setUTCHours(0);
     n.setUTCMinutes(0);
     n.setUTCSeconds(0);
     n.setUTCMilliseconds(0);
@@ -73,19 +81,56 @@ class Layout extends Component {
     const UTC_Day = n.getUTCDay();
     let time = 0;
     if (UTC_Day < 5) {
-      time = new BigNumber(5 - UTC_Day).times(24).times(3600000).plus(time2).toNumber();
+      time = new BigNumber(5 - UTC_Day).times(24).times(3600000).plus(time2).minus(time1).toNumber();
     } else if (UTC_Day === 5) {
       if (time1 < time2) {
-        time = time2;
+        time = time2 - time1;
       } else {
-        time = new BigNumber(7).times(24).times(3600000).plus(time2).toNumber();
+        time = new BigNumber(7).times(24).times(3600000).plus(time2).minus(time1).toNumber();
       }
     } else if (UTC_Day > 5) {
-      time = new BigNumber(5 + 7 - UTC_Day).times(24).times(3600000).plus(time2).toNumber();
+      time = new BigNumber(5 + 7 - UTC_Day).times(24).times(3600000).plus(time2).minus(time1).toNumber();
     }
+
+    time = parseInt(time / 1000);
+
+    const past = (7 * 24 * 3600 - time);
+
+    if (past > 23 * 3600 && !showCounter) {
+      this.setState({
+        showCounter: true
+      });
+    } else if (past > 0 && past < 23 * 3600 && showCounter) {
+      this.setState({
+        showCounter: false
+      });
+    } else if (past === 0) {
+      this.setState({
+        showCounter: false
+      });
+    } else if (past === 23 * 3600) {
+      this.resetLatestDrawResult();
+      this.setState({
+        showCounter: true
+      });
+    }
+
+    const d = parseInt(time / 24 / 3600);
+    time = time % (24 * 3600);
+    const h = parseInt(time / 3600);
+    time = time % 3600;
+    const m = parseInt(time / 60);
+    time = time % 60;
+    const s = time;
+
     this.setState({
-      nextDraw: new Date(time).toString()
-    })
+      timeToClose: {
+        d: d.toString().padStart(2, '0'),
+        h: h.toString().padStart(2, '0'),
+        m: m.toString().padStart(2, '0'),
+        s: s.toString().padStart(2, '0'),
+      }
+    });
   }
 
   chooseRaffleNum = () => {
@@ -122,8 +167,37 @@ class Layout extends Component {
     });
   }
 
+  getHistoryStartBlock = () => {
+    const prefix = 'jackpot';
+    let startBlock = window.localStorage.getItem(`${prefix}_resultStartBlock`);
+    if (startBlock && startBlock.length > 0) {
+      return Number(startBlock) + 1;
+    }
+    return defaultStartBlock;
+  }
+
+  resetLatestDrawResult = async () => {
+    const prefix = 'jackpot';
+    let blockNumber = await web3.eth.getBlockNumber();
+    let fromBlock = this.getHistoryStartBlock();
+    let events = await lotterySC.getPastEvents('LotteryResult', {
+      fromBlock: fromBlock < blockNumber ? fromBlock : blockNumber,
+      toBlock: blockNumber
+    });
+    let jackpot = '0000';
+    if (events.length > 0) {
+      events.sort((a, b) => b.blockNumber - a.blockNumber);
+      jackpot = formatRaffleNumber(events[0].returnValues.winnerCode);
+    } else if (window.localStorage.getItem(`${prefix}_resultList`) !== null) {
+      let oldData = JSON.parse(window.localStorage.getItem(`${prefix}_resultList`));
+      jackpot = formatRaffleNumber(oldData[0].jackpot);
+    }
+    this.setState({ jackpot });
+  }
+
   render() {
-    let { prizePool, totalPool, tabKeyNow, nextDraw } = this.state;
+    let { prizePool, totalPool, tabKeyNow, jackpot, timeToClose, showCounter } = this.state;
+
     return (
       <div className={style.layout}>
         <div className={style.header}>
@@ -138,7 +212,18 @@ class Layout extends Component {
         <div className={style.mainContainer}>
           <div className={style.top}>
             <Row className={style.block1}>
-              <Col span={11} className={style.leftPart}></Col>
+              <Col span={11} className={style.leftPart}>
+                <div className={style.slogan}>
+                  PICK THE RIGHT NUMBER TO WIN!
+                  FREE TO PLAY!
+                </div>
+                <div className={style.rafflePanel}>
+                  {
+                    jackpot.split('').map((v, i) => <span key={i} className={style.raffleNumber}>{v}</span>)
+                  }
+                </div>
+                <div className={style.raffleTip}>Drawing number for this period</div>
+              </Col>
               <Col span={13} className={style.rightPart}>
                 <div className={style.totalPool}>
                   <div className={style.label1}>Pool</div>
@@ -148,7 +233,34 @@ class Layout extends Component {
                   <div className={style.label2}>Jackpot:</div>
                   <div className={`${style.value} ${style.prizePoolValue}`}><img src={require('@/static/images/trophy.png')} /><span>{keepOneDecimal(prizePool)}</span><span> WAN</span></div>
                 </div>
-                <div className={style.drawTime}>Next Draw Time: <span>{nextDraw}</span></div>
+                {/* <div className={style.drawTime}>Next Draw Time: <span>{nextDraw}</span></div> */}
+                {
+                  showCounter ? <React.Fragment>
+                    <div className={style.drawTime}>Draw Entry Close: 23 hour before the draw time</div>
+                    <div className={style.timer}>
+                      <div className={style.timeLeft}>
+                        <div className={style.timeValue}>{timeToClose.d}</div>
+                        <div className={style.timeUnit}>days</div>
+                      </div>
+                      <div className={style.colon}></div>
+                      <div className={style.timeLeft}>
+                        <div className={style.timeValue}>{timeToClose.h}</div>
+                        <div className={style.timeUnit}>hours</div>
+                      </div>
+                      <div className={style.colon}></div>
+                      <div className={style.timeLeft}>
+                        <div className={style.timeValue}>{timeToClose.m}</div>
+                        <div className={style.timeUnit}>minutes</div>
+                      </div>
+                      <div className={style.colon}></div>
+                      <div className={style.timeLeft}>
+                        <div className={style.timeValue}>{timeToClose.s}</div>
+                        <div className={style.timeUnit}>seconds</div>
+                      </div>
+                    </div>
+                  </React.Fragment> : <div className={style.openTip}>This round of lucky draw will start at 23:00 UTC on Friday</div>
+                }
+
               </Col>
             </Row>
           </div>
@@ -186,7 +298,7 @@ class Layout extends Component {
               <li><span className={style['text']}>In order to stake a ticket, users must supply 10 WAN for each ticket. This WAN will be locked up in a Wanchain validator node during the duration of the game, and users may withdraw this WAN when they are finished playing.</span></li>
               <li><span className={style['text']}>The WAN used by staking tickets is delegated to Wanchain’s validator nodes, and the accrued consensus rewards are pooled into the Jackpot.</span></li>
               <li><span className={style['text']}>Every Friday a winning four digit number is selected at random using Wanchain’s true random number generation, and the reward will be awarded to any users who are currently staking a winning number. If multiple users have tickets staked with the winning number, the Jackpot will be split proportionally amongst all tickets with the winning number.</span></li>
-              <li><span className={style['text']}>The lottery closes at 00:00 UTC on Friday, lottery results are settled at 23:00 UTC on Friday, and the lottery re-opens at 00:00 UTC on Friday.</span></li>
+              <li><span className={style['text']}>The lottery closes at 00:00 UTC on Friday, lottery results are settled at 23:00 UTC on Friday, and the lottery re-opens at 00:00 UTC on Saturday.</span></li>
               <li><span className={style['text']}>If there is no winner, the prize pot will automatically accumulate to the next cycle.</span></li>
               <li><span className={style['text']}>If you do not withdraw your tickets, those tickets will automatically participate in the next cycle with your chosen numbers.</span></li>
               {/* <li><span className={style['text']}></span></li> */}

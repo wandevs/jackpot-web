@@ -71,19 +71,14 @@
 
         .block1 {
             flex: 1;
+            background: linear-gradient(69deg, rgb(41, 30, 85) 0%, rgb(21, 35, 109) 100%);
 
             .leftPart {
                 height: 100%;
-                // display: flex;
-                // flex-direction: column;
-                // justify-content: center;
-                // align-items: center;
-                // background-image: url('../static/images/bg1.png');
                 background-image: url('../static/images/bg1.png');
                 background-repeat: no-repeat;
-                background-size: contain;
-                // background-attachment:fixed;
-                // background-position:center; 
+                background-size: cover;
+                position: relative;
 
                 :global(p) {
                     margin: 0px;
@@ -94,6 +89,70 @@
                     line-height: 39px;
                     text-shadow: 0px 3px 20px rgba(0, 0, 0, 0.47);
                     -webkit-text-stroke: 5px undefined;
+                }
+
+                .slogan {
+                    color: white;
+                    text-align: center;
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin: auto;
+                    position: absolute;
+                    top: -14%;
+                    bottom: 0px;
+                    left: -24%;
+                    right: 0px;
+                    width: 8em;
+                    height: 100px;
+                    overflow: visible;
+                    text-shadow: 0px 0px 8px #0d00ff;
+                }
+
+                .rafflePanel {
+                    width: 250px;
+                    height: 46px;
+                    background-image: url('../static/images/bar.png');
+                    background-size: cover;
+                    background-repeat: no-repeat;
+                    margin: auto;
+                    position: absolute;
+                    left: -20%;
+                    right: 0;
+                    bottom: 60px;
+                    display: flex;
+                    justify-content: center;
+                    padding: 5px 0px;
+
+                    .raffleNumber {
+                        width: 36px;
+                        height: 36px;
+                        font-size: 24px;
+                        line-height: 36px;
+                        display: inline-block;
+                        margin: 0px 6px;
+                        background-image: url('../static/images/circle3.png');
+                        background-size: cover;
+                        text-align: center;
+                        font-size: 24px;
+                        font-family: Roboto Condensed;
+                        font-weight: bold;
+                        color: rgba(255, 255, 255, 1);
+                        text-shadow: 0px 0px 10px #008eff;
+                    }
+                }
+
+                .raffleTip {
+                    margin: auto;
+                    position: absolute;
+                    left: -20%;
+                    right: 0;
+                    bottom: 32px;
+                    text-align: center;
+                    font-size: 12px;
+                    font-family: Roboto Condensed;
+                    font-weight: bold;
+                    color: rgba(234, 203, 90, 1);
+                    line-height: 24px;
                 }
             }
 
@@ -204,9 +263,10 @@
                     font-size: 14px;
                     font-family: Microsoft YaHei;
                     font-weight: 400;
-                    color: rgba(255, 255, 255, 1);
+                    color: rgba(255, 255, 255, 0.6);
                     line-height: 19px;
                     padding-left: 10px;
+                    margin-top: 20px;
                     margin-bottom: 6px;
 
                     :global(span) {
@@ -223,6 +283,64 @@
                     opacity: 0.5;
                     padding-left: 10px;
                 }
+
+                .timer {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    padding-left: 10px;
+
+                    .timeLeft {
+                        display: inline-block;
+
+                        .timeValue {
+                            width: 56px;
+                            height: 66px;
+                            background-image: url('../static/images/square_bg.png');
+                            background-repeat: no-repeat;
+                            background-size: contain;
+                            font-size: 30px;
+                            font-family: Roboto Condensed;
+                            font-weight: bold;
+                            color: rgba(255, 255, 255, 1);
+                            text-align: center;
+                            padding-top: 18px;
+                        }
+
+                        .timeUnit {
+                            font-size: 14px;
+                            font-family: Roboto Condensed;
+                            font-weight: 400;
+                            color: rgba(255, 255, 255, 0.5);
+                            text-align: center;
+                            margin-top: 2px;
+                        }
+                    }
+
+                    .colon {
+                        width: 5px;
+                        height: 30px;
+                        display: inline-block;
+                        background-image: url('../static/images/colon.png');
+                        background-repeat: no-repeat;
+                        background-size: contain;
+                        margin: 0px 10px 0px 10px;
+                        
+                    }
+                }
+
+                .openTip {
+                    font-size: 18px;
+                    font-weight: 400;
+                    color: rgba(255, 255, 255, 0.8);
+                    line-height: 19px;
+                    padding-left: 10px;
+                    // margin-top: 20px;
+                    margin-bottom: 6px;
+                    margin-left: 10px;
+                    padding: 10px;
+                    background-color: rgba(0, 0, 0, 0.26);
+                }
             }
         }
     }
@@ -233,7 +351,7 @@
         .ant-tabs-nav-scroll {
             text-align: center;
         }
-        
+
         .ant-tabs {
             color: rgba(255, 255, 255, 0.3);
         }
@@ -247,7 +365,7 @@
         }
 
         .ant-tabs-ink-bar {
-            background:rgba(65,78,221,1);
+            background: rgba(65, 78, 221, 1);
         }
 
         .ant-tabs-nav-wrap {
