@@ -12,6 +12,7 @@ import { alertAntd, toUnitAmount, formatRaffleNumber } from '../../utils/utils.j
 import { web3, lotterySC, lotterySCAddr, lotteryClosed } from '../../utils/contract.js';
 import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
+import Lang from '../../conf/language.js';
 
 const { confirm } = Modal;
 
@@ -54,6 +55,7 @@ class IndexPage extends Component {
   }
 
   async componentDidMount() {
+    console.log('languages;', Lang);
   }
 
   componentWillUnmount() {
@@ -141,12 +143,12 @@ class IndexPage extends Component {
     const address = selectedAccount ? selectedAccount.get('address') : null;
     selectUp[1] = selectUp[1].map(v => web3.utils.toWei(v.toString()));
     if (wanBalance <= amount) {
-      alertAntd('Out of balance.');
+      alertAntd(Lang.entry.outOfBalance);
       return false;
     }
 
     if (!address || address.length < 20) {
-      alertAntd('Please select a wallet address first.');
+      alertAntd(Lang.entry.selectAddress);
       return false
     }
 
@@ -154,7 +156,7 @@ class IndexPage extends Component {
     const history = await this.getHistoryData();
     for(let i = 0; i < history.codes.length; i++) {
       if(selectUp[0].includes(history.codes[i]) && history.exits[i] === '1') {
-        message.warning("Can not stake the exiting raffle number.");
+        message.warning(Lang.entry.exitingNumber);
         return;
       }
     }
@@ -177,7 +179,7 @@ class IndexPage extends Component {
     }
 
     if (params.gasLimit == -1) {
-      alertAntd('Estimate Gas Error. Maybe out of time range.');
+      alertAntd(Lang.entry.estimateError);
       return false;
     }
 
@@ -186,12 +188,12 @@ class IndexPage extends Component {
       // console.log('Tx ID:', transactionID);
       watchTransactionStatus(transactionID, (ret) => {
         if (ret) {
-          alertAntd('Success');
+          alertAntd(Lang.entry.success);
           this.setState({
             selectedCodes: []
           });
         } else {
-          alertAntd('Failed');
+          alertAntd(Lang.entry.failed);
         }
         this.hideModal();
       });
@@ -237,7 +239,7 @@ class IndexPage extends Component {
     }
 
     if (this.props.selectedAccount == null) {
-      message.warning("The page is not ready, please try later.");
+      message.warning(Lang.entry.notReady);
       this.setState({ selfAdd_loading: false });
       return false;
     }
@@ -246,13 +248,13 @@ class IndexPage extends Component {
     const code = Number(n1).toFixed(0) + Number(n2).toFixed(0) + Number(n3).toFixed(0) + Number(n4).toFixed(0);
     for (let i = 0; i < selectedCodes.length; i++) {
       if (selectedCodes[i].code === code) {
-        message.warning("The same raffle number already exists, please modify it directly in the table.");
+        message.warning(Lang.entry.sameNumberExist);
         this.setState({ selfAdd_loading: false });
         return;
       }
     }
     if (!(await this.checkRaffleCount([code]))) {
-      message.warning("The count of Raffle number should not over 50.");
+      message.warning(Lang.entry.raffleOverflow);
       this.setState({ selfAdd_loading: false });
       return false;
     }
@@ -281,14 +283,14 @@ class IndexPage extends Component {
     const { selectedCodes, machineCnt } = this.state;
     
     if (this.props.selectedAccount == null) {
-      message.warning("The page is not ready, please try later.");
+      message.warning(Lang.entry.notReady);
       this.setState({ machineAdd_loading: false });
       return false;
     }
 
     let cnt = Number(machineCnt);
     if (cnt > 50 || cnt < 1) {
-      message.warning("The count of number is invalid.");
+      message.warning(Lang.entry.invalidNumber);
       this.setState({ machineAdd_loading: false });
       return false;
     }
@@ -315,7 +317,7 @@ class IndexPage extends Component {
     }
 
     if (!(await this.checkRaffleCount(codes))) {
-      message.warning("The count of Raffle number should not over 50.");
+      message.warning(Lang.entry.raffleOverflow);
       this.setState({ machineAdd_loading: false });
       return false;
     }
@@ -359,7 +361,6 @@ class IndexPage extends Component {
 
   hideModal = () => {
     this.setState({ modalVisible: false });
-    window.scrollTo(0, this.state.scrollY);
   }
 
   onConfirm = () => {
@@ -377,8 +378,8 @@ class IndexPage extends Component {
     }
 
     confirm({
-      title: 'Do you Want to clear all raffle number?',
-      content: 'Clear confirm.',
+      title: Lang.entry.clearAllRaffle,
+      content: Lang.entry.clearConfim,
       onOk: () => {
         this.setState({ selectedCodes: [] });
       },

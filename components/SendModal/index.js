@@ -2,12 +2,12 @@ import { Component } from "react";
 import { Modal, Form, Input, Icon, Table } from 'antd';
 import style from './style.less';
 import { alertAntd } from '../../utils/utils.js';
+import Lang from '../../conf/language.js';
 
 class SendModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ModalText: 'Content of the modal',
       confirmLoading: false,
     };
 
@@ -58,12 +58,12 @@ class SendModal extends Component {
     });
 
     if (ret) {
-      alertAntd('Transaction Success!');
+      alertAntd(Lang.sendModal.txSuccess);
       if (ret) {
         this.props.hideModal();
       }
     } else {
-      alertAntd('Error: Transaction Failed!');
+      alertAntd(Lang.sendModal.txFailed);
     }
   }
 

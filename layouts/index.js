@@ -233,7 +233,6 @@ class Layout extends Component {
                   <div className={style.label2}>Jackpot:</div>
                   <div className={`${style.value} ${style.prizePoolValue}`}><img src={require('@/static/images/trophy.png')} /><span>{keepOneDecimal(prizePool)}</span><span> WAN</span></div>
                 </div>
-                {/* <div className={style.drawTime}>Next Draw Time: <span>{nextDraw}</span></div> */}
                 {
                   showCounter ? <React.Fragment>
                     <div className={style.drawTime}>This round closes in:</div>

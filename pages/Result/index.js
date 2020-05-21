@@ -30,7 +30,7 @@ class Result extends Component {
     let timer = 0;
     while (this.props.selectedAccount === null) {
       if (timer > 10) {
-        message.info('Account is not found.');
+        message.info(Lang.result.accountUnfounded);
         this.setState({
           resultLoading: false,
         });
@@ -184,7 +184,7 @@ class Result extends Component {
         <div className={'title'}>
           <img src={require('../../static/images/coupon.png')} />
           <span>Past Draw Results</span>
-          <Search className={style.searchAddress} placeholder="input search text" style={{ width: 300 }} onSearch={this.onSearch} enterButton />
+          <Search className={style.searchAddress} placeholder="Search by address" style={{ width: 300 }} onSearch={this.onSearch} enterButton />
         </div>
 
         <div style={{ height: "20px" }}></div>
@@ -193,7 +193,7 @@ class Result extends Component {
             columns={this.pastDrawResults}
             dataSource={data}
             loading={resultLoading}
-            pagination={{ defaultCurrent: 1, /* position: 'both', */ showSizeChanger: true, pageSizeOptions: ['10', '20', '50'] }}
+            pagination={{ defaultCurrent: 1, showSizeChanger: true, pageSizeOptions: ['10', '20', '50'] }}
             expandedRowRender={record => {
               if (typeof record.winners === 'string') {
                 return <p style={{ margin: 0 }}>{record.winners}</p>;

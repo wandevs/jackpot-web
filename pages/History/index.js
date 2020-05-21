@@ -12,6 +12,7 @@ import { alertAntd, toUnitAmount, formatRaffleNumber, keepOneDecimal } from '../
 import { web3, lotterySC, lotterySCAddr, lotteryClosed } from '../../utils/contract.js';
 import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
+import Lang from '../../conf/language.js';
 
 class History extends Component {
   constructor(props) {
@@ -76,7 +77,7 @@ class History extends Component {
     let timer = 0;
     while (this.props.selectedAccount === null) {
       if (timer > 10) {
-        message.info('Account is not found.');
+        message.info(Lang.history.accountUnfounded);
         this.setState({
           historyLoading: false,
           stakerInfoLoading: false,
@@ -144,14 +145,14 @@ class History extends Component {
     }
 
     if (this.state.selectedRowKeys.length === 0) {
-      message.warning('Please select one or more raffle number to redeem.');
+      message.warning(Lang.history.selectRaffleToRedeem);
       return false;
     }
 
     if (this.state.selectedRows.every(r => r.exit === false)) {
       this.setState({ modalVisible: true })
     } else {
-      message.warning('Contains quitting number.');
+      message.warning(Lang.history.exitingNumber);
     }
   }
 
@@ -167,12 +168,12 @@ class History extends Component {
     const address = selectedAccount ? selectedAccount.get('address') : null;
 
     if (codes.length === 0) {
-      alertAntd('Please select at least one row to redeem.');
+      alertAntd(Lang.history.selectRow);
       return false
     }
 
     if (!address || address.length < 20) {
-      alertAntd('Please select a wallet address first.');
+      alertAntd(Lang.history.selectAddress);
       return false
     }
 
@@ -198,7 +199,7 @@ class History extends Component {
     }
 
     if (params.gasLimit == -1) {
-      alertAntd('Estimate Gas Error. Maybe out of time range.');
+      alertAntd(Lang.history.estimateGasError);
       return false;
     }
 
@@ -208,9 +209,9 @@ class History extends Component {
       let transactionID = await selectedWallet.sendTransaction(params);
       watchTransactionStatus(transactionID, async (ret) => {
         if (ret) {
-          alertAntd('Redeem success');
+          alertAntd(Lang.history.redeemSuccess);
         } else {
-          alertAntd('Redeem failed');
+          alertAntd(Lang.history.redeemFailed);
         }
         await this.resetData();
         this.setState({
@@ -270,12 +271,12 @@ class History extends Component {
 
     const { totalPrize } = this.state;
     if (totalPrize === 0) {
-      message.warning('There is no sufficient prize to withdraw!');
+      message.warning(Lang.history.noPrize);
       return false;
     }
 
     confirm({
-      title: 'Do you Want to withdraw the prize?',
+      title: Lang.history.withdrawConfirmation,
       content: `${totalPrize} WAN`,
       onOk: () => {
         this.withdrawPrize();
@@ -293,7 +294,7 @@ class History extends Component {
 
     const { totalPrize } = this.state;
     if (totalPrize === 0) {
-      message.warning('There is no sufficient prize to withdraw!');
+      message.warning(Lang.history.noPrize);
       return false;
     }
     this.withdrawPrize();
@@ -323,7 +324,7 @@ class History extends Component {
     }
 
     if (params.gasLimit == -1) {
-      alertAntd('Estimate Gas Error. Maybe out of time range.');
+      alertAntd(Lang.history.estimateGasError);
       return false;
     }
 
@@ -332,10 +333,10 @@ class History extends Component {
       watchTransactionStatus(transactionID, (ret) => {
         console.log('ret:', ret);
         if (ret) {
-          alertAntd('Withdraw success');
+          alertAntd(Lang.history.widhdrawSuccess);
           this.setStakerInfo();
         } else {
-          alertAntd('Withdraw failed');
+          alertAntd(Lang.history.widhdrawFailed);
         }
       });
       return transactionID;
@@ -371,12 +372,12 @@ class History extends Component {
               <p className={style.label}>You Have Won:</p>
               <p className={`${style.value} ${style.totalPrize}`}>{keepOneDecimal(totalPrize)} WAN
                 <Popconfirm
-                  title="Are you sure to claim prize?"
+                  title={Lang.history.claimConfirmation}
                   onConfirm={this.confirmClaim}
                   okText="Yes"
                   cancelText="No"
                 >
-                  <span className={style.withdraw} /* onClick={this.onWithdrawPrize} */>[ Claim ]</span>
+                  <span className={style.withdraw} >[ Claim ]</span>
                 </Popconfirm>
               </p>
             </Col>

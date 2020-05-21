@@ -19,12 +19,6 @@ class RefundPrincipalModal extends Component {
     });
   }
 
-  componentDidMount() {
-  }
-
-  componentWillUnmount() {
-  }
-
   columns = [
     {
       title: 'INDEX',
