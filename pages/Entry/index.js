@@ -54,13 +54,6 @@ class IndexPage extends Component {
     }
   }
 
-  async componentDidMount() {
-    console.log('languages;', Lang);
-  }
-
-  componentWillUnmount() {
-  }
-
   columns = [
     {
       title: 'INDEX',

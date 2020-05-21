@@ -185,12 +185,16 @@ class Layout extends Component {
       toBlock: blockNumber
     });
     let jackpot = '0000';
+    let localeData = window.localStorage.getItem(`${prefix}_resultList`);
     if (events.length > 0) {
       events.sort((a, b) => b.blockNumber - a.blockNumber);
       jackpot = formatRaffleNumber(events[0].returnValues.winnerCode);
-    } else if (window.localStorage.getItem(`${prefix}_resultList`) !== null) {
-      let oldData = JSON.parse(window.localStorage.getItem(`${prefix}_resultList`));
-      jackpot = formatRaffleNumber(oldData[0].jackpot);
+    } else if (localeData !== null) {
+      let oldData = JSON.parse(localeData);
+      if(oldData && typeof(oldData) === 'object' && oldData.length > 0 && 'jackpot' in oldData[0]) {
+        jackpot = oldData[0].jackpot
+      }
+      jackpot = formatRaffleNumber(jackpot);
     }
     this.setState({ jackpot });
   }
