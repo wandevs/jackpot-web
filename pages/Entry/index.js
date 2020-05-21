@@ -195,7 +195,7 @@ class IndexPage extends Component {
         } else {
           alertAntd(Lang.entry.failed);
         }
-        this.hideModal();
+        this.setState({ modalVisible: false });
       });
       return transactionID;
     } catch (err) {
@@ -361,6 +361,7 @@ class IndexPage extends Component {
 
   hideModal = () => {
     this.setState({ modalVisible: false });
+    window.scrollTo(0, this.state.scrollY);
   }
 
   onConfirm = () => {

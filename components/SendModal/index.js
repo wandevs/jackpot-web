@@ -59,9 +59,9 @@ class SendModal extends Component {
 
     if (ret) {
       alertAntd(Lang.sendModal.txSuccess);
-      if (ret) {
+      /* if (ret) {
         this.props.hideModal();
-      }
+      } */
     } else {
       alertAntd(Lang.sendModal.txFailed);
     }
