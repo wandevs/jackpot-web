@@ -222,7 +222,7 @@ class Layout extends Component {
                     jackpot.split('').map((v, i) => <span key={i} className={style.raffleNumber}>{v}</span>)
                   }
                 </div>
-                <div className={style.raffleTip}>Drawing number for this period</div>
+                <div className={style.raffleTip}>Winning number this round</div>
               </Col>
               <Col span={13} className={style.rightPart}>
                 <div className={style.totalPool}>
@@ -236,7 +236,7 @@ class Layout extends Component {
                 {/* <div className={style.drawTime}>Next Draw Time: <span>{nextDraw}</span></div> */}
                 {
                   showCounter ? <React.Fragment>
-                    <div className={style.drawTime}>Draw Entry Close: 23 hour before the draw time</div>
+                    <div className={style.drawTime}>This round closes in:</div>
                     <div className={style.timer}>
                       <div className={style.timeLeft}>
                         <div className={style.timeValue}>{timeToClose.d}</div>
@@ -258,6 +258,7 @@ class Layout extends Component {
                         <div className={style.timeUnit}>seconds</div>
                       </div>
                     </div>
+                    <div className={style.drawTime}>(Winnings are settled 23 hours after closing time)</div>
                   </React.Fragment> : <div className={style.openTip}>This round of lucky draw will start at 23:00 UTC on Friday</div>
                 }
 
