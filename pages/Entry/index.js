@@ -373,7 +373,8 @@ class IndexPage extends Component {
 
     confirm({
       title: Lang.entry.clearAllRaffle,
-      content: Lang.entry.clearConfim,
+      content: '',
+      className: 'confirmModal',
       onOk: () => {
         this.setState({ selectedCodes: [] });
       },

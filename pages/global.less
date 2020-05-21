@@ -129,7 +129,8 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
-        .ant-pagination-jump-next:hover svg, .ant-pagination-jump-prev:hover svg {
+        .ant-pagination-jump-next:hover svg,
+        .ant-pagination-jump-prev:hover svg {
             color: rgba(255, 255, 255, 1) !important;
         }
     }
@@ -203,7 +204,8 @@
         padding: 0px 16px;
         border: none;
 
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
             color: rgba(255, 255, 255, 1);
         }
     }
@@ -259,5 +261,29 @@
 
     input[type=number]::-webkit-inner-spin-button {
         display: none;
+    }
+
+    .confirmModal {
+        .ant-modal-body {
+            background-color: #272840;
+            color: white;
+
+            .ant-modal-confirm-title {
+                color: white;
+            }
+        }
+    }
+
+    .ant-popover {
+        .ant-popover-arrow {
+            border-color: #272840 !important;
+        }
+        .ant-popover-inner {
+            background-color: #272840;
+
+            .ant-popover-message {
+                color: white;
+            }
+        }
     }
 }

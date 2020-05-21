@@ -300,10 +300,6 @@ class History extends Component {
     this.withdrawPrize();
   }
 
-  cancelClaim = () => {
-
-  }
-
   withdrawPrize = async () => {
     const { selectedAccount, selectedWallet } = this.props;
     const encoded = await lotterySC.methods.prizeWithdraw().encodeABI();

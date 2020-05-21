@@ -10,8 +10,7 @@ const language = {
         sameNumberExist: 'The same raffle number already exists, please modify it directly in the table.',
         raffleOverflow: 'The count of Raffle number should not over 50.',
         invalidNumber: 'The count of number is invalid.',
-        clearAllRaffle: 'Do you Want to clear all raffle number?',
-        clearConfim: 'Clear confirm.',
+        clearAllRaffle: 'Do you Want to clear all tickets?',
     },
     sendModal: {
         txSuccess: 'Transaction Success!',
