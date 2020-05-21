@@ -10,6 +10,7 @@ import "wan-dex-sdk-wallet/index.css";
 import { toUnitAmount, formatRaffleNumber, keepOneDecimal } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
 import { defaultStartBlock } from '../../conf/config.js';
+import Lang from '../../conf/language.js';
 
 const prefix = 'jackpot';
 const Result_length = 200;
