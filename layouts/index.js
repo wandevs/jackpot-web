@@ -216,7 +216,7 @@ class Layout extends Component {
         <div className={style.mainContainer}>
           <div className={style.top}>
             <Row className={style.block1}>
-              <Col span={11} className={style.leftPart}>
+              <Col span={12} className={style.leftPart}>
                 <div className={style.slogan}>
                   PICK THE RIGHT NUMBER TO WIN!
                   FREE TO PLAY!
@@ -228,7 +228,7 @@ class Layout extends Component {
                 </div>
                 <div className={style.raffleTip}>Winning number this round</div>
               </Col>
-              <Col span={13} className={style.rightPart}>
+              <Col span={12} className={style.rightPart}>
                 <div className={style.totalPool}>
                   <div className={style.label1}>Pool</div>
                   <div className={`${style.value} ${style.totalPoolValue}`}><img src={require('@/static/images/flag.png')} /><span>{keepOneDecimal(totalPool)}</span><span> WAN</span></div>
@@ -238,7 +238,7 @@ class Layout extends Component {
                   <div className={`${style.value} ${style.prizePoolValue}`}><img src={require('@/static/images/trophy.png')} /><span>{keepOneDecimal(prizePool)}</span><span> WAN</span></div>
                 </div>
                 {
-                  showCounter ? <React.Fragment>
+                  !showCounter ? <React.Fragment>
                     <div className={style.drawTime}>This round closes in:</div>
                     <div className={style.timer}>
                       <div className={style.timeLeft}>

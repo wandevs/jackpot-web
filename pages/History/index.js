@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import React from 'react';
-import { Table, Row, Col, message, Spin, Popconfirm } from 'antd';
+import { Table, Row, Col, message, Spin, Modal } from 'antd';
 import style from './index.less';
 import { Component } from '../../components/base';
 import sleep from 'ko-sleep';
@@ -13,6 +13,8 @@ import { web3, lotterySC, lotterySCAddr, lotteryClosed } from '../../utils/contr
 import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
 import Lang from '../../conf/language.js';
+
+const { confirm } = Modal;
 
 class History extends Component {
   constructor(props) {
@@ -297,7 +299,15 @@ class History extends Component {
       message.warning(Lang.history.noPrize);
       return false;
     }
-    this.withdrawPrize();
+
+    confirm({
+      title: Lang.history.claimConfirmation,
+      content: '',
+      className: 'confirmModal',
+      onOk: () => {
+        this.withdrawPrize();
+      }
+    });
   }
 
   withdrawPrize = async () => {
@@ -367,14 +377,7 @@ class History extends Component {
             <Col span={8}>
               <p className={style.label}>You Have Won:</p>
               <p className={`${style.value} ${style.totalPrize}`}>{keepOneDecimal(totalPrize)} WAN
-                <Popconfirm
-                  title={Lang.history.claimConfirmation}
-                  onConfirm={this.confirmClaim}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <span className={style.withdraw} >[&nbsp;CLAIM&nbsp;]</span>
-                </Popconfirm>
+                  <span className={style.withdraw} onClick={this.confirmClaim}>[&nbsp;CLAIM&nbsp;]</span>
               </p>
             </Col>
           </Row>
