@@ -46,7 +46,7 @@ class SendModal extends Component {
       editable: true,
     },
     {
-      title: 'AMOUNT (WAN)',
+      title: 'VALUE (WAN)',
       dataIndex: 'price',
       key: 'price',
     },

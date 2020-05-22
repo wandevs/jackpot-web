@@ -207,7 +207,7 @@ class Layout extends Component {
         <div className={style.header}>
           <Wallet title="Wan Game" nodeUrl={nodeUrl} />
           {/* <img className={style.logo} width="28px" height="28px" src={logo} alt="Logo" /> */}
-          <div className={style.title}>Jack's Pot&nbsp;&nbsp;&nbsp;&nbsp;- The Wanchain based no loss lottery</div>
+          <div className={style.title}>Jack's Pot&nbsp;&nbsp;-&nbsp;&nbsp;The Wanchain based no loss lottery</div>
           <div className={style.howToPlay} onClick={this.howToPlay}>How to play</div>
           <img style={{ height: "25px", margin: "3px 8px 3px 3px" }} src={networkLogo} />
           <WalletButton />
@@ -230,7 +230,7 @@ class Layout extends Component {
               </Col>
               <Col span={13} className={style.rightPart}>
                 <div className={style.totalPool}>
-                  <div className={style.label1}>Pool</div>
+                  <div className={style.label1}>Pool:</div>
                   <div className={`${style.value} ${style.totalPoolValue}`}><img src={require('@/static/images/flag.png')} /><span>{keepOneDecimal(totalPool)}</span><span> WAN</span></div>
                 </div>
                 <div className={style.prizePool}>
@@ -262,7 +262,7 @@ class Layout extends Component {
                       </div>
                     </div>
                     <div className={style.drawTime}>(Winnings are settled 23 hours after closing time)</div>
-                  </React.Fragment> : <div className={style.openTip}>This round of lucky draw will start at 23:00 UTC on Friday</div>
+                  </React.Fragment> : <div className={style.openTip}>This round of Jack's Pot has closed. Winnings will be settled at 23:00 UTC on Friday, and the next round begins at 00:00 UTC on Saturday.</div>
                 }
 
               </Col>

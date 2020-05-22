@@ -57,7 +57,7 @@ class History extends Component {
       align: 'center'
     },
     {
-      title: "AMOUNT",
+      title: "VALUE",
       dataIndex: "price",
       key: "price",
       align: 'center',

@@ -81,7 +81,7 @@ class IndexPage extends Component {
       width: 200
     },
     {
-      title: 'AMOUNT',
+      title: 'VALUE',
       dataIndex: 'price',
       key: 'price',
       render: text => (<span className={'price'}>{text} WAN</span>)
