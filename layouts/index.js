@@ -230,11 +230,11 @@ class Layout extends Component {
               </Col>
               <Col span={13} className={style.rightPart}>
                 <div className={style.totalPool}>
-                  <div className={style.label1}>Pool:</div>
+                  <div className={style.label1}>Pool</div>
                   <div className={`${style.value} ${style.totalPoolValue}`}><img src={require('@/static/images/flag.png')} /><span>{keepOneDecimal(totalPool)}</span><span> WAN</span></div>
                 </div>
                 <div className={style.prizePool}>
-                  <div className={style.label2}>Jackpot:</div>
+                  <div className={style.label2}>Jackpot</div>
                   <div className={`${style.value} ${style.prizePoolValue}`}><img src={require('@/static/images/trophy.png')} /><span>{keepOneDecimal(prizePool)}</span><span> WAN</span></div>
                 </div>
                 {

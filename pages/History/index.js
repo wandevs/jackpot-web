@@ -373,7 +373,7 @@ class History extends Component {
                   okText="Yes"
                   cancelText="No"
                 >
-                  <span className={style.withdraw} >[ Claim ]</span>
+                  <span className={style.withdraw} >[&nbsp;CLAIM&nbsp;]</span>
                 </Popconfirm>
               </p>
             </Col>
