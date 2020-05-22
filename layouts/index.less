@@ -3,6 +3,8 @@
     src: url('../static/fonts/UnidreamLED.ttf');
 }
 
+@leftPartOffset: -18%;
+
 .layout {
     width: 1000px;
     overflow: auto;
@@ -36,7 +38,7 @@
     line-height: 15px;
     margin: 7px;
     position: absolute;
-    left: 24px;
+    left: 44px;
 }
 
 .howToPlay {
@@ -100,7 +102,7 @@
                     position: absolute;
                     top: -14%;
                     bottom: 0px;
-                    left: -24%;
+                    left: @leftPartOffset;
                     right: 0px;
                     width: 8em;
                     height: 100px;
@@ -116,7 +118,7 @@
                     background-repeat: no-repeat;
                     margin: auto;
                     position: absolute;
-                    left: -26%;
+                    left: @leftPartOffset;
                     right: 0;
                     bottom: 60px;
                     display: flex;
@@ -144,7 +146,7 @@
                 .raffleTip {
                     margin: auto;
                     position: absolute;
-                    left: -26%;
+                    left: @leftPartOffset;
                     right: 0;
                     bottom: 32px;
                     text-align: center;
@@ -268,10 +270,17 @@
                     padding-left: 10px;
                     margin-top: 20px;
                     margin-bottom: 6px;
+                }
 
-                    :global(span) {
-                        color: rgba(255, 210, 89, 1)
-                    }
+                .drawTimeTip {
+                    font-size: 12px;
+                    font-family: Microsoft YaHei;
+                    font-weight: 400;
+                    color: rgba(255, 255, 255, 0.47);
+                    line-height: 19px;
+                    margin-left: 10px;
+                    margin-top: 20px;
+                    margin-bottom: 6px;
                 }
 
                 .drawClose {

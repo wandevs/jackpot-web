@@ -206,7 +206,7 @@ class Layout extends Component {
       <div className={style.layout}>
         <div className={style.header}>
           <Wallet title="Wan Game" nodeUrl={nodeUrl} />
-          {/* <img className={style.logo} width="28px" height="28px" src={logo} alt="Logo" /> */}
+          <img className={style.logo} width="28px" height="28px" src={require('@/static/images/logo.png')} alt="Logo" />
           <div className={style.title}>Jack's Pot&nbsp;&nbsp;-&nbsp;&nbsp;The Wanchain based no loss lottery</div>
           <div className={style.howToPlay} onClick={this.howToPlay}>How to play</div>
           <img style={{ height: "25px", margin: "3px 8px 3px 3px" }} src={networkLogo} />
@@ -238,7 +238,7 @@ class Layout extends Component {
                   <div className={`${style.value} ${style.prizePoolValue}`}><img src={require('@/static/images/trophy.png')} /><span>{keepOneDecimal(prizePool)}</span><span> WAN</span></div>
                 </div>
                 {
-                  !showCounter ? <React.Fragment>
+                  showCounter ? <React.Fragment>
                     <div className={style.drawTime}>This round closes in:</div>
                     <div className={style.timer}>
                       <div className={style.timeLeft}>
@@ -261,7 +261,7 @@ class Layout extends Component {
                         <div className={style.timeUnit}>seconds</div>
                       </div>
                     </div>
-                    <div className={style.drawTime}>(Winnings are settled 23 hours after closing time)</div>
+                    <div className={style.drawTimeTip}>Winnings are settled 23 hours after closing time</div>
                   </React.Fragment> : <div className={style.openTip}>This round of Jack's Pot has closed. Winnings will be settled at 23:00 UTC on Friday, and the next round begins at 00:00 UTC on Saturday.</div>
                 }
 
