@@ -301,17 +301,21 @@ class IndexPage extends Component {
 
     if ((cnt + selectedCodes.length) >= 50) {
       cnt = 50 - selectedCodes.length;
+      if(cnt <= 0) {
+        message.warning(Lang.entry.raffleOverflow);
+        return false;
+      }
     }
 
     const history = await this.getHistoryData();
     const selected = selectedCodes.map(v => v.code);
     let codes = [];
     for (; codes.length < cnt;) {
-      let r = Math.floor(Math.random() * 9999) + 1;
-      while (codes.includes(r) || history.codes.includes(r) || selected.includes(formatRaffleNumber(r))) {
-        r = Math.floor(Math.random() * 9999) + 1;
+      let r = formatRaffleNumber(Math.floor(Math.random() * 9999) + 1);
+      while (codes.includes(r) || selected.includes(formatRaffleNumber(r)) || history.codes.includes(r)) {
+        r = formatRaffleNumber(Math.floor(Math.random() * 9999) + 1);
       }
-      codes.push(formatRaffleNumber(r));
+      codes.push(r);
     }
 
     if (!(await this.checkRaffleCount(codes))) {
