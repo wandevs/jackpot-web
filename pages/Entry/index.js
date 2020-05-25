@@ -366,7 +366,12 @@ class IndexPage extends Component {
     window.scrollTo(0, this.state.scrollY);
   }
 
-  onConfirm = () => {
+  onConfirm = async () => {
+    let closed = await lotteryClosed();
+    if (closed) {
+      return;
+    }
+
     const Y = window.scrollY;
     if (this.state.selectedCodes.length === 0) {
       return false;
