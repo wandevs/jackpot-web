@@ -109,7 +109,7 @@ class SendModal extends Component {
             bordered={false}
             pagination={false}
             dataSource={data} />
-          <div style={{ color: '#880' }}>* We will use the lowest gas charge by default, around 0.002~0.03 WAN.</div>
+          <div style={{ color: '#880' }}>* We will use the lowest gas charge by default, around 0.0002~0.03 WAN.</div>
         </Modal>
       </div>
     );
