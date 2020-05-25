@@ -309,7 +309,7 @@ class Layout extends Component {
               <li><span className={style['text']}>The lottery closes at 24:00 UTC Thursday, lottery results are settled at 23:00 UTC on Friday, and the lottery re-opens at 00:00 UTC on Saturday.</span></li>
               <li><span className={style['text']}>If there is no winner, the prize pot will automatically accumulate to the next cycle.</span></li>
               <li><span className={style['text']}>If you do not withdraw your tickets, those tickets will automatically participate in the next cycle with your chosen numbers.</span></li>
-              <li><span className={style['text']}>Smart Contract Open Source:&nbsp;&nbsp;<a onClick={this.openSC} href="javascript:void(0)">https://github.com/wandevs/jackpot-smart-contracts</a></span></li>
+              <li><span className={style['text']}>Smart Contract Open Source:&nbsp;&nbsp;<a onClick={this.openSC} href="#">https://github.com/wandevs/jackpot-smart-contracts</a></span></li>
             </ul>
           </div>
         </div>
