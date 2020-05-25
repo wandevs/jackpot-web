@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import React from 'react';
 import { Component } from "../../components/base";
-import { Table, message, Modal, Button } from 'antd';
+import { Table, message, Modal, Button, Tooltip } from 'antd';
 import SendModal from '../../components/SendModal';
 import { EditableCell, EditableFormRow } from "../../components/EditableRow";
 import { getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
@@ -145,10 +145,10 @@ class IndexPage extends Component {
       return false
     }
 
-    
+
     const history = await this.getHistoryData();
-    for(let i = 0; i < history.codes.length; i++) {
-      if(selectUp[0].includes(history.codes[i]) && history.exits[i] === '1') {
+    for (let i = 0; i < history.codes.length; i++) {
+      if (selectUp[0].includes(history.codes[i]) && history.exits[i] === '1') {
         message.warning(Lang.entry.exitingNumber);
         return;
       }
@@ -212,7 +212,7 @@ class IndexPage extends Component {
       [`n${index}`]: t ? value : ''
     });
 
-    if(t && value !== '' && index !== 4) { // Auto jump to next input filed.
+    if (t && value !== '' && index !== 4) { // Auto jump to next input filed.
       document.getElementById('selfSelectNumberGroup').querySelectorAll(`input`)[index].focus();
     }
   }
@@ -226,7 +226,7 @@ class IndexPage extends Component {
   selfAdd = async () => {
     this.setState({ selfAdd_loading: true });
     let closed = await lotteryClosed();
-    if(closed) {
+    if (closed) {
       this.setState({ selfAdd_loading: false });
       return;
     }
@@ -238,6 +238,11 @@ class IndexPage extends Component {
     }
 
     const { selectedCodes, n1, n2, n3, n4 } = this.state;
+    if (!(n1 && n2 && n3 && n4)) {
+      message.warning(Lang.entry.numberRequired);
+      this.setState({ selfAdd_loading: false });
+      return ;
+    }
     const code = Number(n1).toFixed(0) + Number(n2).toFixed(0) + Number(n3).toFixed(0) + Number(n4).toFixed(0);
     for (let i = 0; i < selectedCodes.length; i++) {
       if (selectedCodes[i].code === code) {
@@ -268,13 +273,13 @@ class IndexPage extends Component {
   randomAdd = async () => {
     this.setState({ machineAdd_loading: true });
     let closed = await lotteryClosed();
-    if(closed) {
+    if (closed) {
       this.setState({ machineAdd_loading: false });
       return;
     }
 
     const { selectedCodes, machineCnt } = this.state;
-    
+
     if (this.props.selectedAccount == null) {
       message.warning(Lang.entry.notReady);
       this.setState({ machineAdd_loading: false });
@@ -437,7 +442,9 @@ class IndexPage extends Component {
             </div>
             <div className={style.normal}>
               <p><span className={style.highlight}>Machine Selection</span></p>
-              <input className={style.randomInput} placeholder="1 - 50" value={this.state.machineCnt} onChange={this.onChangeMachineCode} />
+              <Tooltip title="Enter a number of tickets you want the machine to select for you" placement="topRight">
+                <input className={style.randomInput} placeholder="1 - 50" value={this.state.machineCnt} onChange={this.onChangeMachineCode} />
+              </Tooltip>
               <Button className={'guess-button greenButton'} onClick={this.randomAdd} loading={machineAdd_loading}>ADD</Button>
             </div>
           </div>

@@ -199,6 +199,10 @@ class Layout extends Component {
     this.setState({ jackpot });
   }
 
+  openSC = () => {
+    window.open('https://github.com/wandevs/jackpot-smart-contracts');
+  }
+
   render() {
     let { prizePool, totalPool, tabKeyNow, jackpot, timeToClose, showCounter } = this.state;
 
@@ -226,7 +230,7 @@ class Layout extends Component {
                     jackpot.split('').map((v, i) => <span key={i} className={style.raffleNumber}>{v}</span>)
                   }
                 </div>
-                <div className={style.raffleTip}>Winning number this round</div>
+                <div className={style.raffleTip}>Winning number last round</div>
               </Col>
               <Col span={12} className={style.rightPart}>
                 <div className={style.totalPool}>
@@ -302,10 +306,10 @@ class Layout extends Component {
               <li><span className={style['text']}>In order to stake a ticket, users must supply 10 WAN for each ticket. This WAN will be locked up in a Wanchain validator node during the duration of the game, and users may withdraw this WAN when they are finished playing.</span></li>
               <li><span className={style['text']}>The WAN used by staking tickets is delegated to Wanchain’s validator nodes, and the accrued consensus rewards are pooled into the Jackpot.</span></li>
               <li><span className={style['text']}>Every Friday a winning four digit number is selected at random using Wanchain’s true random number generation, and the reward will be awarded to any users who are currently staking a winning number. If multiple users have tickets staked with the winning number, the Jackpot will be split proportionally amongst all tickets with the winning number.</span></li>
-              <li><span className={style['text']}>The lottery closes at 00:00 UTC on Friday, lottery results are settled at 23:00 UTC on Friday, and the lottery re-opens at 00:00 UTC on Saturday.</span></li>
+              <li><span className={style['text']}>The lottery closes at 24:00 UTC Thursday, lottery results are settled at 23:00 UTC on Friday, and the lottery re-opens at 00:00 UTC on Saturday.</span></li>
               <li><span className={style['text']}>If there is no winner, the prize pot will automatically accumulate to the next cycle.</span></li>
               <li><span className={style['text']}>If you do not withdraw your tickets, those tickets will automatically participate in the next cycle with your chosen numbers.</span></li>
-              <li><span className={style['text']}>Smart Contract Open Source:&nbsp;&nbsp;<a target="_blank" href="https://github.com/wandevs/jackpot-smart-contracts">https://github.com/wandevs/jackpot-smart-contracts</a></span></li>
+              <li><span className={style['text']}>Smart Contract Open Source:&nbsp;&nbsp;<a onClick={this.openSC} href="javascript:void(0)">https://github.com/wandevs/jackpot-smart-contracts</a></span></li>
             </ul>
           </div>
         </div>

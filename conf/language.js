@@ -11,6 +11,7 @@ const language = {
         raffleOverflow: 'The count of Raffle number should not over 50.',
         invalidNumber: 'The count of number is invalid.',
         clearAllRaffle: 'Do you Want to clear all tickets?',
+        numberRequired: 'Numbers are required.',
     },
     sendModal: {
         txSuccess: 'Transaction Success!',
