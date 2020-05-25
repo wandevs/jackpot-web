@@ -1,6 +1,6 @@
 
 export const mainnetSCAddr = '';//mainnet 8 hours smart contract
-export const testnetSCAddr = '0xA4F58A2441Fe820D68571AAEDee176B7D08970F6';//testnet 8 hours smart contract
+export const testnetSCAddr = '0x9c6F5b86595DA99a769217af38B6599ebA1806EF';//testnet 8 hours smart contract
 
 // change networkId to switch network
 export const networkId = 3; //1:mainnet, 3:testnet;
