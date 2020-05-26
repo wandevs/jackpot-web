@@ -3,7 +3,6 @@ import React from 'react';
 import { Table, message, Input } from 'antd';
 import style from './index.less';
 import { Component } from '../../components/base';
-import sleep from 'ko-sleep';
 
 import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
 import "wan-dex-sdk-wallet/index.css";
@@ -28,19 +27,6 @@ class Result extends Component {
   }
 
   async componentDidMount() {
-    let timer = 0;
-    while (this.props.selectedAccount === null) {
-      if (timer > 10) {
-        message.info(Lang.result.accountUnfounded);
-        this.setState({
-          resultLoading: false,
-        });
-        return false;
-      }
-      await sleep(500);
-      timer++;
-    }
-
     this.updateDrawResult();
     this.resultTimer = setInterval(this.updateDrawResult, 20000);
   }

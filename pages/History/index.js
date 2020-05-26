@@ -100,6 +100,19 @@ class History extends Component {
     clearInterval(this.resultTimer);
   }
 
+  componentDidUpdate(pre) {
+    if(!pre.selectedAccount) {
+      return;
+    }
+    let preAddr = pre.selectedAccount.get('address');
+    if(this.props.selectedAccount) {
+      let currentAddr = this.props.selectedAccount.get('address');
+      if(preAddr !== currentAddr) {
+        this.resetData();
+      }
+    }
+  }
+
   setStakerInfo = async () => {
     let address = this.props.selectedAccount.get('address');
     let { prize, codeCount } = await lotterySC.methods.userInfoMap(address).call();
