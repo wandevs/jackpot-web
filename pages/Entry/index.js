@@ -263,9 +263,9 @@ class IndexPage extends Component {
       price: price,
     }
     let data = selectedCodes.slice();
-    data.push(value);
+    data.unshift(value);
     this.setState({ selectedCodes: data, selfAdd_loading: false });
-    document.getElementById('selectedNumberTable').scrollIntoView({
+    document.getElementsByClassName('title')[0].scrollIntoView({
       block: 'center'
     });
   }
@@ -332,10 +332,10 @@ class IndexPage extends Component {
         times: 1,
         price: price,
       }
-      data.push(value);
+      data.unshift(value);
     }
     this.setState({ selectedCodes: data, machineAdd_loading: false });
-    document.getElementById('selectedNumberTable').scrollIntoView({
+    document.getElementsByClassName('title')[0].scrollIntoView({
       block: 'center'
     });
   }
