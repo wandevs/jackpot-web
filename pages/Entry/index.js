@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import React from 'react';
 import { Component } from "../../components/base";
-import { Table, message, Modal, Button, Tooltip } from 'antd';
+import { Table, message, Modal, Tooltip } from 'antd';
 import SendModal from '../../components/SendModal';
 import { EditableCell, EditableFormRow } from "../../components/EditableRow";
 import { getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
@@ -446,7 +446,7 @@ class IndexPage extends Component {
                 <input type="text" placeholder="0 - 9" value={this.state.n2} onChange={e => { this.onChangeCode(2, e.target.value) }} />
                 <input type="text" placeholder="0 - 9" value={this.state.n3} onChange={e => { this.onChangeCode(3, e.target.value) }} />
                 <input type="text" placeholder="0 - 9" value={this.state.n4} onChange={e => { this.onChangeCode(4, e.target.value) }} />
-                <Button className={'guess-button yellowButton'} onClick={this.selfAdd} loading={selfAdd_loading}>ADD</Button>
+                <button className={'guess-button yellowButton'} onClick={this.selfAdd} loading={selfAdd_loading}>ADD</button>
               </div>
             </div>
             <div className={style.normal}>
@@ -454,7 +454,7 @@ class IndexPage extends Component {
               <Tooltip title="Enter a number of tickets you want the machine to select for you" placement="topRight">
                 <input className={style.randomInput} placeholder="1 - 50" value={this.state.machineCnt} onChange={this.onChangeMachineCode} />
               </Tooltip>
-              <Button className={'guess-button greenButton'} onClick={this.randomAdd} loading={machineAdd_loading}>ADD</Button>
+              <button className={'guess-button greenButton'} onClick={this.randomAdd} loading={machineAdd_loading}>ADD</button>
             </div>
           </div>
           <div className={style.rightWing}>
