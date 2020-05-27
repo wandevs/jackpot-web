@@ -9,16 +9,13 @@ import "../pages/global.less";
 import { toUnitAmount, keepOneDecimal, formatRaffleNumber } from '../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../utils/contract.js';
 import { networkId, nodeUrl, defaultStartBlock } from '../conf/config.js';
-import sleep from 'ko-sleep';
 import BigNumber from 'bignumber.js';
 
 import Entry from '../pages/Entry';
 import History from '../pages/History';
 import Result from '../pages/Result';
-
-const networkLogo = networkId == 1 ? 'https://img.shields.io/badge/Wanchain-Mainnet-green.svg' : 'https://img.shields.io/badge/Wanchain-Testnet-green.svg';
+const networkLogo = networkId == 1 ? require('@/static/images/mainnet.svg') : require('@/static/images/testnet.svg');
 const { TabPane } = Tabs;
-const { confirm } = Modal;
 
 class Layout extends Component {
   constructor(props) {
@@ -191,7 +188,7 @@ class Layout extends Component {
       jackpot = formatRaffleNumber(events[0].returnValues.winnerCode);
     } else if (localeData !== null) {
       let oldData = JSON.parse(localeData);
-      if(oldData && typeof(oldData) === 'object' && oldData.length > 0 && 'jackpot' in oldData[0]) {
+      if (oldData && typeof (oldData) === 'object' && oldData.length > 0 && 'jackpot' in oldData[0]) {
         jackpot = oldData[0].jackpot
       }
       jackpot = formatRaffleNumber(jackpot);

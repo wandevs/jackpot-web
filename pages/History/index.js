@@ -29,7 +29,8 @@ class History extends Component {
       modalVisible: false,
       raffleCount: 0,
       totalStake: 0,
-      totalPrize: 0,
+      totalPrize: '0',
+      showClaim: false
     }
   }
 
@@ -101,13 +102,13 @@ class History extends Component {
   }
 
   componentDidUpdate(pre) {
-    if(!pre.selectedAccount) {
+    if (!pre.selectedAccount) {
       return;
     }
     let preAddr = pre.selectedAccount.get('address');
-    if(this.props.selectedAccount) {
+    if (this.props.selectedAccount) {
       let currentAddr = this.props.selectedAccount.get('address');
-      if(preAddr !== currentAddr) {
+      if (preAddr !== currentAddr) {
         this.resetData();
       }
     }
@@ -116,9 +117,14 @@ class History extends Component {
   setStakerInfo = async () => {
     let address = this.props.selectedAccount.get('address');
     let { prize, codeCount } = await lotterySC.methods.userInfoMap(address).call();
+    let pending = await lotterySC.methods.isUserPrizeWithdrawPending(address).call();
+    console.log('isUserPrizeWithdrawPending:', pending);
+    console.log(prize, codeCount);
+    const totalPrize = toUnitAmount(parseInt(prize), 18).toString();
     this.setState({
-      totalPrize: toUnitAmount(parseInt(prize), 18),
+      totalPrize: totalPrize,
       raffleCount: parseInt(codeCount),
+      showClaim: !pending && totalPrize !== '0'
     });
   }
 
@@ -285,7 +291,7 @@ class History extends Component {
     }
 
     const { totalPrize } = this.state;
-    if (totalPrize === 0) {
+    if (totalPrize === '0') {
       message.warning(Lang.history.noPrize);
       return false;
     }
@@ -308,7 +314,7 @@ class History extends Component {
     }
 
     const { totalPrize } = this.state;
-    if (totalPrize === 0) {
+    if (totalPrize === '0') {
       message.warning(Lang.history.noPrize);
       return false;
     }
@@ -367,7 +373,7 @@ class History extends Component {
   }
 
   render() {
-    const { selectedRowKeys, historyLoading, principalButtonLoading, historyList, raffleCount, totalStake, totalPrize, stakerInfoLoading } = this.state;
+    const { selectedRowKeys, historyLoading, principalButtonLoading, historyList, raffleCount, totalStake, totalPrize, stakerInfoLoading, showClaim } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -390,7 +396,9 @@ class History extends Component {
             <Col span={8}>
               <p className={style.label}>You Have Won:</p>
               <p className={`${style.value} ${style.totalPrize}`}>{keepOneDecimal(totalPrize)} WAN
-                  <span className={style.withdraw} onClick={this.confirmClaim}>[&nbsp;CLAIM&nbsp;]</span>
+                {
+                  showClaim && <span className={style.withdraw} onClick={this.confirmClaim}>[&nbsp;CLAIM&nbsp;]</span>
+                }
               </p>
             </Col>
           </Row>
