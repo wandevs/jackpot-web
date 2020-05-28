@@ -118,8 +118,6 @@ class History extends Component {
     let address = this.props.selectedAccount.get('address');
     let { prize, codeCount } = await lotterySC.methods.userInfoMap(address).call();
     let pending = await lotterySC.methods.isUserPrizeWithdrawPending(address).call();
-    console.log('isUserPrizeWithdrawPending:', pending);
-    console.log(prize, codeCount);
     const totalPrize = toUnitAmount(parseInt(prize), 18).toString();
     this.setState({
       totalPrize: totalPrize,

@@ -15,17 +15,19 @@ import { price } from '../../conf/config.js';
 import Lang from '../../conf/language.js';
 
 const { confirm } = Modal;
+const prefix = 'jackpot';
 
 class IndexPage extends Component {
   constructor(props) {
     super(props);
+    let localList = window.localStorage.getItem(`${prefix}_selectionList`);
     this.state = {
       n1: '',
       n2: '',
       n3: '',
       n4: '',
       machineCnt: '',
-      selectedCodes: [],
+      selectedCodes: localList ? JSON.parse(localList) : [],
       modalVisible: false,
       scrollY: 0,
       selfAdd_loading: false,
@@ -102,7 +104,9 @@ class IndexPage extends Component {
 
   deleteOne = (record) => {
     const selectedCodes = [...this.state.selectedCodes];
-    this.setState({ selectedCodes: selectedCodes.filter(item => item.key !== record.key) });
+    let arr = selectedCodes.filter(item => item.key !== record.key);
+    this.setState({ selectedCodes: arr });
+    window.localStorage.setItem(`${prefix}_selectionList`, JSON.stringify(arr));
   }
 
   getDataWait = async (dataFunc) => {
@@ -185,6 +189,7 @@ class IndexPage extends Component {
           this.setState({
             selectedCodes: []
           });
+          window.localStorage.removeItem(`${prefix}_selectionList`);
         } else {
           alertAntd(Lang.entry.failed);
         }
@@ -241,7 +246,7 @@ class IndexPage extends Component {
     if (!(n1 && n2 && n3 && n4)) {
       message.warning(Lang.entry.numberRequired);
       this.setState({ selfAdd_loading: false });
-      return ;
+      return;
     }
     const code = Number(n1).toFixed(0) + Number(n2).toFixed(0) + Number(n3).toFixed(0) + Number(n4).toFixed(0);
     for (let i = 0; i < selectedCodes.length; i++) {
@@ -265,6 +270,7 @@ class IndexPage extends Component {
     let data = selectedCodes.slice();
     data.unshift(value);
     this.setState({ selectedCodes: data, selfAdd_loading: false });
+    window.localStorage.setItem(`${prefix}_selectionList`, JSON.stringify(data));
     document.getElementsByClassName('title')[0].scrollIntoView({
       block: 'center'
     });
@@ -301,7 +307,7 @@ class IndexPage extends Component {
 
     if ((cnt + selectedCodes.length) >= 50) {
       cnt = 50 - selectedCodes.length;
-      if(cnt <= 0) {
+      if (cnt <= 0) {
         message.warning(Lang.entry.raffleOverflow);
         return false;
       }
@@ -335,6 +341,7 @@ class IndexPage extends Component {
       data.unshift(value);
     }
     this.setState({ selectedCodes: data, machineAdd_loading: false });
+    window.localStorage.setItem(`${prefix}_selectionList`, JSON.stringify(data));
     document.getElementsByClassName('title')[0].scrollIntoView({
       block: 'center'
     });
@@ -391,6 +398,7 @@ class IndexPage extends Component {
       className: 'confirmModal',
       onOk: () => {
         this.setState({ selectedCodes: [] });
+        window.localStorage.removeItem(`${prefix}_selectionList`);
       },
       onCancel() {
       },
@@ -406,6 +414,7 @@ class IndexPage extends Component {
     this.setState({
       selectedCodes: newData,
     });
+    window.localStorage.setItem(`${prefix}_selectionList`, JSON.stringify(newData));
   }
 
   render() {
@@ -446,7 +455,7 @@ class IndexPage extends Component {
                 <input type="text" placeholder="0 - 9" value={this.state.n2} onChange={e => { this.onChangeCode(2, e.target.value) }} />
                 <input type="text" placeholder="0 - 9" value={this.state.n3} onChange={e => { this.onChangeCode(3, e.target.value) }} />
                 <input type="text" placeholder="0 - 9" value={this.state.n4} onChange={e => { this.onChangeCode(4, e.target.value) }} />
-                <button className={'guess-button yellowButton'} onClick={this.selfAdd} loading={selfAdd_loading}>ADD</button>
+                <button className={'guess-button yellowButton'} onClick={this.selfAdd} disabled={selfAdd_loading}>ADD</button>
               </div>
             </div>
             <div className={style.normal}>
@@ -454,7 +463,7 @@ class IndexPage extends Component {
               <Tooltip title="Enter a number of tickets you want the machine to select for you" placement="topRight">
                 <input className={style.randomInput} placeholder="1 - 50" value={this.state.machineCnt} onChange={this.onChangeMachineCode} />
               </Tooltip>
-              <button className={'guess-button greenButton'} onClick={this.randomAdd} loading={machineAdd_loading}>ADD</button>
+              <button className={'guess-button greenButton'} onClick={this.randomAdd} disabled={machineAdd_loading}>ADD</button>
             </div>
           </div>
           <div className={style.rightWing}>
