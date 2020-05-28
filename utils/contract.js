@@ -5,7 +5,11 @@ import Web3 from 'web3';
 import { message } from 'antd';
 
 let web3 = new Web3();
-web3.setProvider(new Web3.providers.HttpProvider(nodeUrl));
+if (nodeUrl.indexOf('ws') === 0) {
+    web3.setProvider(new Web3.providers.WebsocketProvider(nodeUrl));
+} else {
+    web3.setProvider(new Web3.providers.HttpProvider(nodeUrl));
+}
 const lotterySCAddr = networkId == 1 ? mainnetSCAddr : testnetSCAddr;
 let lotterySC = new web3.eth.Contract(lotteryAbi, lotterySCAddr);
 

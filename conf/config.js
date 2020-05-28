@@ -8,7 +8,9 @@ export const networkId = 3; //1:mainnet, 3:testnet;
 
 // export const nodeUrl = networkId == 1 ? "https://gwan-ssl.wandevs.org:56891" : "http://192.168.1.179:54320";
 // export const nodeUrl = networkId == 1 ? "https://gwan-ssl.wandevs.org:56891" : "https://molin.tech:16666";
-export const nodeUrl = networkId == 1 ? "https://gwan-ssl.wandevs.org:56891" : "https://gwan-ssl.wandevs.org:46891";
+// export const nodeUrl = networkId == 1 ? "https://gwan-ssl.wandevs.org:56891" : "https://gwan-ssl.wandevs.org:46891";
+export const nodeUrl = networkId == 1 ? "wss://api.wanchain.org:8443/ws/v3/627f78bd371c3980a8782a505ffb7ec263ae0031213bb0cd2d10ed32e25b4f29" : "wss://apitest.wanchain.org:8443/ws/v3/627f78bd371c3980a8782a505ffb7ec263ae0031213bb0cd2d10ed32e25b4f29";
+
 // export const nodeUrl = networkId == 1 ? "https://gwan-ssl.wandevs.org:56891" : "https://gwan-ssl.wandevs.org:46891";
 
 // export const nodeUrl = networkId == 1 ? "https://mywanwallet.io/api" : "https://demodex.wandevs.org:48545";
