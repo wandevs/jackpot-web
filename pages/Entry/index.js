@@ -104,7 +104,7 @@ class IndexPage extends Component {
 
   deleteOne = (record) => {
     const selectedCodes = [...this.state.selectedCodes];
-    let arr = selectedCodes.filter(item => item.key !== record.key);
+    let arr = selectedCodes.filter(item => item.code !== record.code);
     this.setState({ selectedCodes: arr });
     window.localStorage.setItem(`${prefix}_selectionList`, JSON.stringify(arr));
   }
@@ -149,7 +149,6 @@ class IndexPage extends Component {
       return false
     }
 
-
     const history = await this.getHistoryData();
     for (let i = 0; i < history.codes.length; i++) {
       if (selectUp[0].includes(history.codes[i]) && history.exits[i] === '1') {
@@ -185,7 +184,6 @@ class IndexPage extends Component {
       // console.log('Tx ID:', transactionID);
       watchTransactionStatus(transactionID, (ret) => {
         if (ret) {
-          alertAntd(Lang.entry.success);
           this.setState({
             selectedCodes: []
           });
@@ -407,7 +405,7 @@ class IndexPage extends Component {
 
   handleSave = row => {
     const newData = [...this.state.selectedCodes];
-    const index = newData.findIndex(item => row.key === item.key);
+    const index = newData.findIndex(item => row.code === item.code);
     const item = newData[index];
     row.price = price * row.times;
     newData.splice(index, 1, { ...item, ...row });
@@ -418,7 +416,7 @@ class IndexPage extends Component {
   }
 
   render() {
-    const { selfAdd_loading, machineAdd_loading } = this.state;
+    const { selfAdd_loading, machineAdd_loading, selectedCodes, modalVisible } = this.state;
     const components = {
       body: {
         row: EditableFormRow,
@@ -437,8 +435,18 @@ class IndexPage extends Component {
           dataIndex: col.dataIndex,
           title: col.title,
           handleSave: this.handleSave,
-        }),
+        })
       };
+    });
+
+    let data = selectedCodes.map((v, i) => {
+      const { code, price, times } = v;
+      return {
+        key: i + 1,
+        code,
+        price,
+        times
+      }
     });
 
     return (
@@ -482,7 +490,7 @@ class IndexPage extends Component {
             columns={columns}
             rowClassName={() => 'editable-row'}
             bordered={false}
-            dataSource={this.state.selectedCodes} />
+            dataSource={data} />
           <div className={style['centerLine']}>
             <div className={'guess-button ellipsoidalButton'} onClick={this.onConfirm}>Stake</div>
             <div className={'guess-button ellipsoidalButton'} onClick={this.clearRaffleNumber}>Clear</div>
@@ -490,11 +498,11 @@ class IndexPage extends Component {
         </div>
 
         {
-          this.state.modalVisible && <SendModal
+          modalVisible && <SendModal
             sendTransaction={this.sendTransaction}
             watchTransactionStatus={watchTransactionStatus}
             hideModal={this.hideModal}
-            data={this.state.selectedCodes}
+            data={data}
             WalletButton={WalletButtonLong} />
         }
       </div>
