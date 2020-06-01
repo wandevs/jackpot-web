@@ -32,6 +32,7 @@ class IndexPage extends Component {
       scrollY: 0,
       selfAdd_loading: false,
       machineAdd_loading: false,
+      placeholder: '',
     };
 
     Date.prototype.format = function (fmt) {
@@ -54,6 +55,19 @@ class IndexPage extends Component {
       }
       return fmt;
     }
+  }
+
+  async componentDidMount() {
+    let timer = 0;
+    while (this.props.selectedAccount === null) {
+      if (timer > 10) {
+        message.info(Lang.history.accountUnfounded);
+        return false;
+      }
+      await sleep(500);
+      timer++;
+    }
+    this.resetPlaceHolder();
   }
 
   columns = [
@@ -105,7 +119,7 @@ class IndexPage extends Component {
   deleteOne = (record) => {
     const selectedCodes = [...this.state.selectedCodes];
     let arr = selectedCodes.filter(item => item.code !== record.code);
-    this.setState({ selectedCodes: arr });
+    this.setState({ selectedCodes: arr }, this.resetPlaceHolder);
     window.localStorage.setItem(`${prefix}_selectionList`, JSON.stringify(arr));
   }
 
@@ -188,6 +202,7 @@ class IndexPage extends Component {
             selectedCodes: []
           });
           window.localStorage.removeItem(`${prefix}_selectionList`);
+          this.resetPlaceHolder();
         } else {
           alertAntd(Lang.entry.failed);
         }
@@ -205,7 +220,7 @@ class IndexPage extends Component {
     window.open("https://github.com/wandevs/wan-game/blob/master/GameRule.md");
   }
 
-  onChangeCode = (index, value) => {
+  onChangeCode = (index, value, e) => {
     if (value.length > 1) {
       value = value.substr(-1);
     }
@@ -217,6 +232,15 @@ class IndexPage extends Component {
 
     if (t && value !== '' && index !== 4) { // Auto jump to next input filed.
       document.getElementById('selfSelectNumberGroup').querySelectorAll(`input`)[index].focus();
+      e.preventDefault();
+    }
+  }
+
+  onKeyDown = (index, e) => {
+    if (e.target.value === '' && e.keyCode === 8 && index !== 1) {
+      setTimeout(() => {
+        document.getElementById('selfSelectNumberGroup').querySelectorAll(`input`)[index - 2].focus();
+      }, 0);
     }
   }
 
@@ -272,6 +296,7 @@ class IndexPage extends Component {
     document.getElementsByClassName('title')[0].scrollIntoView({
       block: 'center'
     });
+    this.resetPlaceHolder();
   }
 
   randomAdd = async () => {
@@ -343,6 +368,7 @@ class IndexPage extends Component {
     document.getElementsByClassName('title')[0].scrollIntoView({
       block: 'center'
     });
+    this.resetPlaceHolder();
   }
 
   checkRaffleCount = async (selected) => {
@@ -397,6 +423,7 @@ class IndexPage extends Component {
       onOk: () => {
         this.setState({ selectedCodes: [] });
         window.localStorage.removeItem(`${prefix}_selectionList`);
+        this.resetPlaceHolder();
       },
       onCancel() {
       },
@@ -415,8 +442,20 @@ class IndexPage extends Component {
     window.localStorage.setItem(`${prefix}_selectionList`, JSON.stringify(newData));
   }
 
+  resetPlaceHolder = async () => {
+    const { selectedCodes } = this.state;
+    let address = this.props.selectedAccount.get('address');
+    let ret = await lotterySC.methods.getUserCodeList(address).call();
+    let { codes } = ret;
+    const t = codes.length + selectedCodes.length;
+    // console.log('t:', t);
+    this.setState({
+      placeholder: t < 49 ? `1 - ${50 -t}` : (t === 49 ? '1' : '0')
+    });
+  }
+
   render() {
-    const { selfAdd_loading, machineAdd_loading, selectedCodes, modalVisible } = this.state;
+    const { selfAdd_loading, machineAdd_loading, selectedCodes, modalVisible, placeholder } = this.state;
     const components = {
       body: {
         row: EditableFormRow,
@@ -459,17 +498,17 @@ class IndexPage extends Component {
             <div className={style.normal}>
               <p><span className={style.highlight}>Self Selection</span></p>
               <div id="selfSelectNumberGroup" className={style['input-wrap']}>
-                <input type="text" placeholder="0 - 9" value={this.state.n1} onChange={e => { this.onChangeCode(1, e.target.value) }} />
-                <input type="text" placeholder="0 - 9" value={this.state.n2} onChange={e => { this.onChangeCode(2, e.target.value) }} />
-                <input type="text" placeholder="0 - 9" value={this.state.n3} onChange={e => { this.onChangeCode(3, e.target.value) }} />
-                <input type="text" placeholder="0 - 9" value={this.state.n4} onChange={e => { this.onChangeCode(4, e.target.value) }} />
+                <input type="text" placeholder="0 - 9" value={this.state.n1} onChange={e => { this.onChangeCode(1, e.target.value, e) }} onKeyDown={e => this.onKeyDown(1, e)} />
+                <input type="text" placeholder="0 - 9" value={this.state.n2} onChange={e => { this.onChangeCode(2, e.target.value, e) }} onKeyDown={e => this.onKeyDown(2, e)} />
+                <input type="text" placeholder="0 - 9" value={this.state.n3} onChange={e => { this.onChangeCode(3, e.target.value, e) }} onKeyDown={e => this.onKeyDown(3, e)} />
+                <input type="text" placeholder="0 - 9" value={this.state.n4} onChange={e => { this.onChangeCode(4, e.target.value, e) }} onKeyDown={e => this.onKeyDown(4, e)} />
                 <button className={'guess-button yellowButton'} onClick={this.selfAdd} disabled={selfAdd_loading}>ADD</button>
               </div>
             </div>
             <div className={style.normal}>
               <p><span className={style.highlight}>Machine Selection</span></p>
               <Tooltip title="Enter a number of tickets you want the machine to select for you" placement="topRight">
-                <input className={style.randomInput} placeholder="1 - 50" value={this.state.machineCnt} onChange={this.onChangeMachineCode} />
+                <input className={style.randomInput} placeholder={placeholder} value={this.state.machineCnt} onChange={this.onChangeMachineCode} />
               </Tooltip>
               <button className={'guess-button greenButton'} onClick={this.randomAdd} disabled={machineAdd_loading}>ADD</button>
             </div>
