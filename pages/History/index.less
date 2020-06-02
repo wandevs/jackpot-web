@@ -95,3 +95,52 @@ h1 {
   text-align: center;
   font-family: PingFangSC-Medium;
 }
+
+@media screen and (max-width: 767px) {
+  .normal {
+    :global {
+      .title>span {
+        max-width: 60vw;
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .table {
+        margin: 0px 3vw;
+      }
+
+      .ant-table table {
+        &>thead>tr>th:nth-child(2) {
+          display: none;
+        }
+
+        &>tbody>tr>td:nth-child(2) {
+          display: none;
+        }
+
+        &>thead>tr>th,
+        &>tbody>tr>td {
+          padding-left: 0px;
+          padding-right: 0px;
+          text-align: center;
+          font-size: 3vw;
+        }
+
+        .ant-table-column-title {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          max-width: 20vw;
+          display: inline-block;
+        }
+      }
+
+      .ellipsoidalButton {
+        min-width: unset;
+        margin: 7px 0px;
+      }
+    }
+  }
+}

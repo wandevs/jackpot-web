@@ -172,3 +172,31 @@
         margin-left: 20px;
     }
 }
+
+@media screen and (max-width: 767px) {
+    .sendModal {
+        :global {
+            .ant-modal-content {
+                width: 100%;
+
+                .ant-modal-header {
+                    padding: 40px 0px 0px 0px;
+                }
+
+                .ant-modal-body {
+                    padding: 4vw 6vw;
+                    
+                    .HydroSDK-button {
+                        width: 100% !important;
+                    }
+                }
+
+                .ant-modal-footer {
+                    .ant-btn {
+                        width: 24vw;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -23,7 +23,6 @@ class Layout extends Component {
     this.state = {
       totalPool: 0,
       prizePool: 0,
-      // nextDraw: '2020-04-25 07:00:00 (UTC+8)',
       tabKeyNow: '1',
       jackpot: '0000',
       showCounter: false,
@@ -210,14 +209,14 @@ class Layout extends Component {
           <img className={style.logo} width="28px" height="28px" src={require('@/static/images/logo.png')} alt="Logo" />
           <div className={style.title}>Jack's Pot&nbsp;&nbsp;-&nbsp;&nbsp;The Wanchain based no loss lottery</div>
           <div className={style.howToPlay} onClick={this.howToPlay}>How to play</div>
-          <img style={{ height: "25px", margin: "3px 8px 3px 3px" }} src={networkLogo} />
+          <img className={style.networkLogo} style={{ height: "25px", margin: "3px 8px 3px 3px" }} src={networkLogo} />
           <WalletButton />
         </div>
 
         <div className={style.mainContainer}>
           <div className={style.top}>
             <Row className={style.block1}>
-              <Col span={12} className={style.leftPart}>
+              <Col md={12} sm={24} xs={24} className={style.leftPart}>
                 <div className={style.slogan}>
                   PICK THE RIGHT NUMBER TO WIN!
                   FREE TO PLAY!
@@ -229,7 +228,7 @@ class Layout extends Component {
                 </div>
                 <div className={style.raffleTip}>Winning number last round</div>
               </Col>
-              <Col span={12} className={style.rightPart}>
+              <Col md={12} sm={24} xs={24} className={style.rightPart}>
                 <div className={style.totalPool}>
                   <div className={style.label1}>Pool</div>
                   <div className={`${style.value} ${style.totalPoolValue}`}><img src={require('@/static/images/flag.png')} /><span>{keepOneDecimal(totalPool)}</span><span> WAN</span></div>

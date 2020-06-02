@@ -146,7 +146,7 @@ h1 {
   :global {
     .ant-input {
       display: inline-block;
-      background: rgba(48,49,71,1);
+      background: rgba(48, 49, 71, 1);
       border: none;
       color: white;
     }
@@ -155,9 +155,10 @@ h1 {
       margin: 0px;
     }
 
-    .ant-input-group>.ant-input:first-child {
+    .ant-input-group .ant-input {
       position: relative;
       top: 13px;
+      right: 36px;
     }
 
     .ant-input-group-addon {
@@ -173,8 +174,72 @@ h1 {
         border-color: #3F51B5;
       }
     }
+
     /* .ant-btn-primary {
       background: linear-gradient(90deg,rgba(65,78,221,1) 0%,rgba(41,48,124,1) 100%);
     } */
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .normal {
+    :global {
+      .title {
+        height: unset;
+        padding: 0px 10px;
+
+        img {
+          position: relative;
+        }
+
+        &>span:nth-child(2) {
+          margin: 0px;
+        }
+      }
+
+      .title span {
+        line-height: unset;
+      }
+
+      .table {
+        margin: 0px 3vw;
+      }
+
+      .ant-table table {
+
+        &>thead>tr>th,
+        &>tbody>tr>td {
+          padding-left: 0px;
+          padding-right: 0px;
+          text-align: center;
+          font-size: 3vw;
+        }
+
+        &>tbody>tr>td:nth-child(2) {
+          max-width: 20vw;
+          word-break: break-all;
+        }
+      }
+    }
+
+    .searchAddress {
+      width: 80vw !important;
+      float: none;
+      margin-left: 7vw;
+      margin-top: 8px;
+      margin-bottom: 8px;
+
+      :global {
+        .ant-input-group .ant-input {
+          position: relative;
+          top: unset;
+          right: unset;
+        }
+
+        .anticon-close-circle {
+          color: white;
+        }
+      }
+    }
   }
 }

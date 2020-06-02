@@ -129,7 +129,6 @@ class Result extends Component {
       key: 'winner',
       align: 'left',
       width: '50%',
-      // render: text => (<span className={'price'}>{keepOneDecimal(text)} WAN</span>)
     },
     {
       title: 'Prize',
@@ -171,7 +170,7 @@ class Result extends Component {
         <div className={'title'}>
           <img src={require('../../static/images/coupon.png')} />
           <span>Past Draw Results</span>
-          <Search className={style.searchAddress} placeholder="Search by address" style={{ width: 300 }} onSearch={this.onSearch} enterButton />
+          <Search className={style.searchAddress} placeholder="Search by address" style={{ width: 300 }} onSearch={this.onSearch} enterButton allowClear={true} />
         </div>
 
         <div style={{ height: "20px" }}></div>

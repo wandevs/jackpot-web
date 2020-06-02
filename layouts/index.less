@@ -419,3 +419,168 @@
         color: rgba(188, 190, 221, 1);
     }
 }
+
+@media screen and (max-width: 767px) {
+    .layout {
+        width: 100%;
+        overflow: auto;
+        margin: auto;
+
+        .header {
+            .title {
+                font-size: 12px;
+                max-width: 45vw;
+                margin-left: 12px;
+            }
+
+            .howToPlay,
+            .networkLogo {
+                display: none;
+            }
+        }
+
+        :global {
+            .HydroSDK-button {
+                max-width: 40vw;
+                overflow: visible;
+                height: unset;
+                font-size: 3vw;
+            }
+
+            .HydroSDK-dialog {
+                width: 90vw;
+                position: absolute;
+                left: 5vw;
+                top: 5vw;
+                bottom: unset;
+                right: unset;
+            }
+        }
+
+        .mainContainer {
+            .top {
+                height: auto;
+
+                .block1 {
+                    height: auto;
+
+                    .leftPart {
+                        min-height: 500px;
+                        background-image: url('../static/images/mobile_bkg_without_circle.png');
+                        background-size: cover;
+
+                        .slogan {
+                            position: absolute;
+                            left: 0px;
+                            right: 0px;
+                            top: -4%;
+                            bottom: 0px;
+                            background-image: url('../static/images/mobile_circle.png');
+                            background-size: contain;
+                            background-repeat: no-repeat;
+                            background-origin: border-box;
+                            background-position: center center;
+                            border: 60px solid transparent;
+                            border-top-width: 90px;
+                            border-bottom-width: 90px;
+                            box-sizing: content-box;
+                        }
+
+                        .rafflePanel {
+                            position: absolute;
+                            left: 0px;
+                            right: 0px;
+                        }
+
+                        .raffleTip {
+                            position: absolute;
+                            left: 0px;
+                            right: 0px;
+                        }
+                    }
+
+                    .rightPart {
+                        .totalPool {
+                            padding-left: 16vw;
+                            background-position: 10px;
+                            border-left: 6vw solid transparent;
+                            background-origin: padding-box;
+
+                            .label1 {
+                                position: relative;
+                                top: 6px;
+                            }
+                        }
+
+                        .prizePool {
+                            padding-left: 16vw;
+                            background-position: 10px;
+                            border-left: 6vw solid transparent;
+                            background-origin: padding-box;
+
+                            .label2 {
+                                position: relative;
+                                top: 6px;
+                            }
+                        }
+
+                        .openTip {
+                            margin: auto;
+                            margin-bottom: 10px;
+                            color: rgba(255, 255, 255, 0.9);
+                            max-width: none;
+                        }
+
+                        .drawTime {
+                            width: 100%;
+                            text-align: center;
+                            padding-left: 0px;
+                        }
+
+                        .timer {
+                            width: 100%;
+                            justify-content: center;
+                        }
+
+                        .drawTimeTip {
+                            margin-left: auto;
+                            width: 100%;
+                            text-align: center;
+                            margin-bottom: 24px;
+                        }
+                    }
+                }
+            }
+
+            .mainTab {
+                :global {
+                    .ant-tabs-nav-wrap .ant-tabs-tab {
+                        min-width: unset;
+                        margin-right: 12px;
+                        padding: 16px 4px;
+                        font-size: 12px;
+                    }
+
+                    .ant-tabs-nav-wrap .ant-tabs-tab:last-child {
+                        margin-right: 0px;
+                    }
+                }
+            }
+
+            .gameRule {
+                padding: 40px 0px 40px 0px;
+
+                .ruleTitle {
+                    text-align: center;
+                    margin-bottom: 30px;
+                    padding: 0px 12px;
+                }
+
+                .ruleContents {
+                    padding-inline-start: 30px;
+                    padding-right: 12px;
+                }
+            }
+        }
+    }
+}
