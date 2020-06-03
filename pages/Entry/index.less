@@ -217,26 +217,26 @@
             }
         }
 
-        :global(.table) {
-            margin: 0px 3vw;
-        }
+        :global {
+            .table {
+                margin: 0px 3vw;
 
-        :global(.ant-table table) {
-            &>thead>tr>th:first-child {
-                display: none;
+                .guess-button {
+                    min-width: unset;
+                }
             }
 
-            &>tbody>tr>td:first-child {
-                display: none;
+            .ant-table table {
+                &>thead>tr>th:first-child {
+                    display: none;
+                }
+
+                &>tbody>tr>td:first-child {
+                    display: none;
+                }
             }
 
-            &>thead>tr>th,
-            &>tbody>tr>td {
-                padding-left: 0px;
-                padding-right: 0px;
-                text-align: center;
-                font-size: 3vw;
-            }
+            
         }
     }
 }

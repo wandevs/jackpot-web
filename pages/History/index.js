@@ -45,6 +45,7 @@ class History extends Component {
       dataIndex: 'code',
       key: 'code',
       align: 'center',
+      className: 'raffle_number',
       render: text => {
         let arr = formatRaffleNumber(text).split('');
         arr = arr.map((s, i) => {

@@ -82,6 +82,7 @@ class IndexPage extends Component {
       dataIndex: 'code',
       key: 'code',
       align: 'center',
+      className: 'raffle_number',
       render: text => {
         let arr = text.split('');
         arr = arr.map((s, i) => (<span key={i} className={i % 2 === 0 ? 'blueCircle' : 'redCircle'}>{s}</span>));

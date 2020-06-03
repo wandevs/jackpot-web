@@ -282,7 +282,8 @@
 
 @media screen and (max-width: 767px) {
     :global {
-        .yellowButton, .greenButton {
+        .yellowButton,
+        .greenButton {
             min-width: 14vw;
         }
 
@@ -290,10 +291,35 @@
             font-size: 4vw !important;
         }
 
-        .redCircle, .blueCircle {
+        .redCircle,
+        .blueCircle {
             width: 8vw;
             height: 8vw;
             line-height: 8vw;
+        }
+
+        .ant-table table {
+            .raffle_number {
+                min-width: 14em;
+            }
+
+            .redCircle {
+                margin: 0px 1vw !important;
+            }
+
+            .redCircle, .blueCircle {
+                width: 3em;
+                height: 3em;
+                line-height: 3em;
+            }
+
+            &>thead>tr>th,
+            &>tbody>tr>td {
+                padding-left: 0px !important;
+                padding-right: 0px !important;
+                text-align: center !important;
+                font-size: 3vw !important;
+            }
         }
     }
 }
