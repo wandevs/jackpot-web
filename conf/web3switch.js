@@ -23,9 +23,9 @@ console.log('ready to new web3...');
 for (let i=0; i<nodeUrls.length; i++) {
     try {
         if (nodeUrls[i].indexOf('ws') === 0) {
-            web3s.push(new Web3(new Web3.providers.WebsocketProvider(nodeUrls[i], {timeout: 5e3})));
+            web3s.push(new Web3(new Web3.providers.WebsocketProvider(nodeUrls[i])));
         } else {
-            web3s.push(new Web3(new Web3.providers.HttpProvider(nodeUrls[i], {timeout: 5e3})));
+            web3s.push(new Web3(new Web3.providers.HttpProvider(nodeUrls[i])));
         }
     } catch (err) {
         console.log(err);
@@ -33,28 +33,38 @@ for (let i=0; i<nodeUrls.length; i++) {
 }
 
 export const getFastWeb3 = async () => {
-    console.log('Search fast web3...');
+    let timeout = 5000;
+
+    console.log('Search fast web3...timeout:', timeout);
     let funcs = [];
-    for (let i=0; i<web3s.length; i++) {
+    for (let i = 0; i < web3s.length; i++) {
         let func = async () => {
             let t0 = Date.now();
+            let tmpFunc = [];
             try {
-                await web3s[i].eth.net.getId();
+                tmpFunc.push(new Promise((resolve, reject) => {
+                    setTimeout(resolve, timeout, 'timeout');
+                }));
+                tmpFunc.push(web3s[i].eth.net.getId());
+
+                let ret = await Promise.race(tmpFunc);
+                if (ret === 'timeout') {
+                    console.log('timeout:', i, nodeUrls[i], Date.now() - t0);
+                    return { delay: 100000, index: i };
+                }
             } catch (err) {
                 console.log('net error:', i, nodeUrls[i]);
-                return {delay: 100000, index: i};
+                return { delay: 100000, index: i };
             }
             let t1 = Date.now() - t0;
-            return {delay: t1, index: i};
+            return { delay: t1, index: i, url: nodeUrls[i] };
         }
-        funcs.push(await func());
+        funcs.push(func());
     }
-    console.log('ready to run...');
     let ret = await Promise.all(funcs);
-    ret.sort((a, b)=>(a.delay - b.delay));
+    ret.sort((a, b) => (a.delay - b.delay));
     console.log(ret);
     web3select = ret[0].index;
-    // web3select = ret.index;
     console.log('web3select', web3select, nodeUrls[web3select]);
     switchFinish = true;
 }
