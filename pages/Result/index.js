@@ -8,6 +8,8 @@ import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt } f
 import "wan-dex-sdk-wallet/index.css";
 import { toUnitAmount, formatRaffleNumber, keepOneDecimal } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
+import { getNodeUrl, isSwitchFinish, getWeb3 } from '../../conf/web3switch.js';
+
 import { defaultStartBlock } from '../../conf/config.js';
 import Lang from '../../conf/language.js';
 
@@ -53,9 +55,9 @@ class Result extends Component {
   }
 
   updateDrawResult = async () => {
-    let blockNumber = await web3.eth.getBlockNumber();
+    let blockNumber = await getWeb3().eth.getBlockNumber();
     let fromBlock = this.getHistoryStartBlock();
-    let events = await lotterySC.getPastEvents('LotteryResult', {
+    let events = await lotterySC().getPastEvents('LotteryResult', {
       fromBlock: fromBlock < blockNumber ? fromBlock : blockNumber,
       toBlock: blockNumber
     });
@@ -64,14 +66,14 @@ class Result extends Component {
     let newData = [];
     if (events && events.length > 0) {
       for (let i = 0; i < events.length; i++) {
-        let block = await web3.eth.getBlock(events[i].blockNumber);
+        let block = await getWeb3().eth.getBlock(events[i].blockNumber);
         let hasWinner = events[i].returnValues.amounts.length !== 1 || events[i].returnValues.amounts[0] !== '0';
         newData.push({
           key: events[i].blockNumber,
           blockNumber: events[i].blockNumber,
           time: (new Date(Number(block.timestamp) * 1000)).toLocaleDateString(),
           jackpot: events[i].returnValues.winnerCode,
-          amount: web3.utils.fromWei(events[i].returnValues.prizePool),
+          amount: getWeb3().utils.fromWei(events[i].returnValues.prizePool),
           winnerCount: hasWinner ? events[i].returnValues.amounts.length : 0,
           winners: hasWinner ? events[i].returnValues.winners : 'No winners.',
           amounts: hasWinner ? events[i].returnValues.amounts : [],
@@ -187,7 +189,7 @@ class Result extends Component {
               } else {
                 let data = record.winners.map((v, i) => ({
                   winner: v,
-                  prize: keepOneDecimal(web3.utils.fromWei(record.amounts[i]))
+                  prize: keepOneDecimal(getWeb3().utils.fromWei(record.amounts[i]))
                 }))
                 return (
                   <Table

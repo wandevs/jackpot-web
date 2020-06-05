@@ -8,12 +8,15 @@ import style from './index.less';
 import "../pages/global.less";
 import { toUnitAmount, keepOneDecimal, formatRaffleNumber } from '../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../utils/contract.js';
-import { networkId, nodeUrl, defaultStartBlock } from '../conf/config.js';
+import { networkId, defaultStartBlock } from '../conf/config.js';
+import { getNodeUrl, isSwitchFinish, getWeb3 } from '../conf/web3switch.js';
 import BigNumber from 'bignumber.js';
+import sleep from 'ko-sleep';
 
 import Entry from '../pages/Entry';
 import History from '../pages/History';
 import Result from '../pages/Result';
+import { selectWalletType } from 'wan-dex-sdk-wallet/build/actions/wallet';
 const networkLogo = networkId == 1 ? require('@/static/images/mainnet.svg') : require('@/static/images/testnet.svg');
 const { TabPane } = Tabs;
 
@@ -37,16 +40,23 @@ class Layout extends Component {
 
   async componentDidMount() {
     try {
+      while(true) {
+        if(isSwitchFinish()) {
+          break;
+        }
+        await sleep(100);
+      }
+
       this.setTimeToClose();
       this.resetLatestDrawResult();
       this.timer1 = setInterval(this.setTimeToClose, 1000);
 
       let updatePoolInf = async () => {
-        let ret = await lotterySC.methods.poolInfo().call();
+        let ret = await lotterySC().methods.poolInfo().call();
         let { prizePool, demandDepositPool, delegatePool } = ret;
-        let total = new BigNumber(web3.utils.fromWei(prizePool)).plus(web3.utils.fromWei(demandDepositPool)).plus(web3.utils.fromWei(delegatePool)).toString();
+        let total = new BigNumber(getWeb3().utils.fromWei(prizePool)).plus(getWeb3().utils.fromWei(demandDepositPool)).plus(getWeb3().utils.fromWei(delegatePool)).toString();
         this.setState({
-          prizePool: web3.utils.fromWei(prizePool),
+          prizePool: getWeb3().utils.fromWei(prizePool),
           totalPool: total,
         });
       }
@@ -174,9 +184,9 @@ class Layout extends Component {
 
   resetLatestDrawResult = async () => {
     const prefix = 'jackpot';
-    let blockNumber = await web3.eth.getBlockNumber();
+    let blockNumber = await getWeb3().eth.getBlockNumber();
     let fromBlock = this.getHistoryStartBlock();
-    let events = await lotterySC.getPastEvents('LotteryResult', {
+    let events = await lotterySC().getPastEvents('LotteryResult', {
       fromBlock: fromBlock < blockNumber ? fromBlock : blockNumber,
       toBlock: blockNumber
     });
@@ -202,10 +212,14 @@ class Layout extends Component {
   render() {
     let { prizePool, totalPool, tabKeyNow, jackpot, timeToClose, showCounter } = this.state;
 
+    if (!isSwitchFinish()){
+      return (<div>Loading...</div>)
+    }
+
     return (
       <div className={style.layout}>
         <div className={style.header}>
-          <Wallet title="Wan Game" nodeUrl={nodeUrl} />
+          <Wallet title="Wan Game" nodeUrl={getNodeUrl()} />
           <img className={style.logo} width="28px" height="28px" src={require('@/static/images/logo.png')} alt="Logo" />
           <div className={style.title}>Jack's Pot&nbsp;&nbsp;-&nbsp;&nbsp;The Wanchain based no loss lottery</div>
           <div className={style.howToPlay} onClick={this.howToPlay}>How to play</div>

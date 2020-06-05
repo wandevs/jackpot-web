@@ -10,6 +10,8 @@ import style from './index.less';
 import sleep from 'ko-sleep';
 import { alertAntd, toUnitAmount, formatRaffleNumber } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr, lotteryClosed } from '../../utils/contract.js';
+import { getNodeUrl, isSwitchFinish, getWeb3 } from '../../conf/web3switch.js';
+
 import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
 import Lang from '../../conf/language.js';
@@ -139,7 +141,7 @@ class IndexPage extends Component {
 
   estimateSendGas = async (value, selectUp, address) => {
     try {
-      let ret = await lotterySC.methods.buy(...selectUp).estimateGas({ gas: 10000000, value, from: address });
+      let ret = await lotterySC().methods.buy(...selectUp).estimateGas({ gas: 10000000, value, from: address });
       if (ret == 10000000) {
         return -1;
       }
@@ -153,7 +155,7 @@ class IndexPage extends Component {
   sendTransaction = async (amount, selectUp) => {
     const { selectedAccount, selectedWallet, wanBalance } = this.props;
     const address = selectedAccount ? selectedAccount.get('address') : null;
-    selectUp[1] = selectUp[1].map(v => web3.utils.toWei(v.toString()));
+    selectUp[1] = selectUp[1].map(v => getWeb3().utils.toWei(v.toString()));
     if (wanBalance <= amount) {
       alertAntd(Lang.entry.outOfBalance);
       return false;
@@ -172,8 +174,8 @@ class IndexPage extends Component {
       }
     }
 
-    const value = web3.utils.toWei(amount.toString());
-    const encoded = await lotterySC.methods.buy(...selectUp).encodeABI();
+    const value = getWeb3().utils.toWei(amount.toString());
+    const encoded = await lotterySC().methods.buy(...selectUp).encodeABI();
     const params = {
       to: lotterySCAddr,
       data: encoded,
@@ -385,7 +387,7 @@ class IndexPage extends Component {
 
   getHistoryData = async () => {
     let address = this.props.selectedAccount.get('address');
-    let ret = await lotterySC.methods.getUserCodeList(address).call();
+    let ret = await lotterySC().methods.getUserCodeList(address).call();
     return {
       amounts: ret.amounts,
       codes: ret.codes,
@@ -446,7 +448,7 @@ class IndexPage extends Component {
   resetPlaceHolder = async () => {
     const { selectedCodes } = this.state;
     let address = this.props.selectedAccount.get('address');
-    let ret = await lotterySC.methods.getUserCodeList(address).call();
+    let ret = await lotterySC().methods.getUserCodeList(address).call();
     let { codes } = ret;
     const t = codes.length + selectedCodes.length;
     // console.log('t:', t);

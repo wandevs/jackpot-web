@@ -10,6 +10,8 @@ import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt, Wa
 import "wan-dex-sdk-wallet/index.css";
 import { alertAntd, toUnitAmount, formatRaffleNumber, keepOneDecimal } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr, lotteryClosed } from '../../utils/contract.js';
+import { getNodeUrl, isSwitchFinish, getWeb3 } from '../../conf/web3switch.js';
+
 import { watchTransactionStatus } from '../../utils/common.js';
 import { price } from '../../conf/config.js';
 import Lang from '../../conf/language.js';
@@ -117,8 +119,8 @@ class History extends Component {
 
   setStakerInfo = async () => {
     let address = this.props.selectedAccount.get('address');
-    let { prize, codeCount } = await lotterySC.methods.userInfoMap(address).call();
-    let pending = await lotterySC.methods.isUserPrizeWithdrawPending(address).call();
+    let { prize, codeCount } = await lotterySC().methods.userInfoMap(address).call();
+    let pending = await lotterySC().methods.isUserPrizeWithdrawPending(address).call();
     const totalPrize = toUnitAmount(parseInt(prize), 18).toString();
     this.setState({
       totalPrize: totalPrize,
@@ -141,14 +143,14 @@ class History extends Component {
   }
 
   getHistoryData = async (address) => {
-    let ret = await lotterySC.methods.getUserCodeList(address).call();
+    let ret = await lotterySC().methods.getUserCodeList(address).call();
     let { amounts, codes, exits } = ret;
     let data = amounts.map((v, i) => ({
       key: i + 1,
       code: codes[i],
-      times: web3.utils.fromWei(v) / price,
+      times: getWeb3().utils.fromWei(v) / price,
       from: address,
-      price: web3.utils.fromWei(v),
+      price: getWeb3().utils.fromWei(v),
       exit: exits[i] === '1'
     }));
     return data;
@@ -184,7 +186,7 @@ class History extends Component {
     const { selectedRows } = this.state;
     const { selectedAccount, selectedWallet } = this.props;
     const codes = selectedRows.map(v => Number(v.code));
-    const encoded = await lotterySC.methods.redeem(codes).encodeABI();
+    const encoded = await lotterySC().methods.redeem(codes).encodeABI();
     const address = selectedAccount ? selectedAccount.get('address') : null;
 
     if (codes.length === 0) {
@@ -259,7 +261,7 @@ class History extends Component {
 
   estimateSendGas = async (value, selectUp, address) => {
     try {
-      let ret = await lotterySC.methods.redeem(selectUp).estimateGas({ gas: 10000000, value, from: address });
+      let ret = await lotterySC().methods.redeem(selectUp).estimateGas({ gas: 10000000, value, from: address });
       if (ret == 10000000) {
         return -1;
       }
@@ -272,7 +274,7 @@ class History extends Component {
 
   estimateSendGas2 = async (value, address) => {
     try {
-      let ret = await lotterySC.methods.prizeWithdraw().estimateGas({ gas: 10000000, value, from: address });
+      let ret = await lotterySC().methods.prizeWithdraw().estimateGas({ gas: 10000000, value, from: address });
       if (ret == 10000000) {
         return -1;
       }
@@ -330,7 +332,7 @@ class History extends Component {
 
   withdrawPrize = async () => {
     const { selectedAccount, selectedWallet } = this.props;
-    const encoded = await lotterySC.methods.prizeWithdraw().encodeABI();
+    const encoded = await lotterySC().methods.prizeWithdraw().encodeABI();
     const address = selectedAccount ? selectedAccount.get('address') : null;
     const value = 0;
     let params = {
