@@ -97,7 +97,6 @@ class IndexPage extends Component {
       key: 'times',
       editable: true,
       align: 'center',
-      width: 200
     },
     {
       title: 'VALUE',
