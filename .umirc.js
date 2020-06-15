@@ -13,6 +13,7 @@ export default {
   ],
   routes: [
     { path: '/', component: '../layouts' },
-  ]
+  ],
+  targets: { android: 7 }
 };
 

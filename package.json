@@ -20,7 +20,7 @@
     "macaca-datahub": "2",
     "macaca-electron": "2",
     "macaca-wd": "*",
-    "umi": "^2.2.8",
+    "umi": "^2.13.13",
     "umi-plugin-react": "^1.2.3"
   },
   "scripts": {
