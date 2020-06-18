@@ -1,4 +1,3 @@
-
 export default {
   history: 'hash',
   plugins: [
@@ -14,6 +13,10 @@ export default {
   routes: [
     { path: '/', component: '../layouts' },
   ],
-  targets: { android: 7 }
-};
-
+  chainWebpack(config, { webpack }) {
+    config.module
+      .rule('js')
+      .exclude
+      .clear();
+  }
+}
