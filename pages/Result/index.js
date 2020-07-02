@@ -156,7 +156,7 @@ class Result extends Component {
       for (let i = 0; i < resultList.length; i++) {
         let item = resultList[i];
         if (item.winners instanceof Array) {
-          for(let j = 0; j < item.winners.length; j ++) {
+          for (let j = 0; j < item.winners.length; j++) {
             if (item.winners[j].toLowerCase() === winnerFilter.toLowerCase()) {
               data.push(item);
               break;
@@ -173,7 +173,9 @@ class Result extends Component {
         <div className={'title'}>
           <img src={require('../../static/images/coupon.png')} />
           <span>Past Draw Results</span>
-          <Search className={style.searchAddress} placeholder="Search by address" style={{ width: 300 }} onSearch={this.onSearch} enterButton allowClear={true} />
+          <div className={style.searchAddress}>
+            <Search placeholder="Search by address" style={{ width: 300 }} onSearch={this.onSearch} enterButton allowClear={true} />
+          </div>
         </div>
 
         <div style={{ height: "20px" }}></div>

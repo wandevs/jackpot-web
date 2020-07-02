@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import React from 'react';
-import { Table, Row, Col, message, Spin, Modal } from 'antd';
+import { Table, Row, Col, message, Spin, Modal, Input } from 'antd';
 import style from './index.less';
 import { Component } from '../../components/base';
 import sleep from 'ko-sleep';
@@ -17,6 +17,7 @@ import { price } from '../../conf/config.js';
 import Lang from '../../conf/language.js';
 
 const { confirm } = Modal;
+const { Search } = Input;
 
 class History extends Component {
   constructor(props) {
@@ -32,7 +33,8 @@ class History extends Component {
       raffleCount: 0,
       totalStake: 0,
       totalPrize: '0',
-      showClaim: false
+      showClaim: false,
+      ticketFilter: false,
     }
   }
 
@@ -373,14 +375,32 @@ class History extends Component {
     }
   }
 
+  onSearch = (v) => {
+    this.setState({
+      ticketFilter: v.trim().length > 0 ? v : false
+    })
+  }
+
   render() {
-    const { selectedRowKeys, historyLoading, principalButtonLoading, historyList, raffleCount, totalStake, totalPrize, stakerInfoLoading, showClaim } = this.state;
+    const { selectedRowKeys, historyLoading, historyList, raffleCount, totalStake, totalPrize, stakerInfoLoading, showClaim, ticketFilter } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
       hideDefaultSelections: false,
       fixed: true,
     }
+    let data = [];
+    if (ticketFilter) {
+      for (let i = 0; i < historyList.length; i++) {
+        let item = historyList[i];
+        if (item.code === ticketFilter) {
+          data.push(item);
+        }
+      }
+    } else {
+      data = historyList;
+    }
+
     return (
       <div className={style.normal}>
 
@@ -407,10 +427,13 @@ class History extends Component {
         <div className={'title'}>
           <img src={require('../../static/images/coupon.png')} />
           <span>My Raffle Number</span>
-          <div className={'guess-button ellipsoidalButton'} /* loading={principalButtonLoading} */ onClick={this.refundPrincipal}>Withdraw</div>
+          <div className={style['searchTicket']}>
+            <Search placeholder="Search by ticket" enterButton size="default" style={{ width: 300 }} onSearch={this.onSearch} allowClear={true} />
+          </div>
+          <div className={'guess-button ellipsoidalButton'} onClick={this.refundPrincipal}>Withdraw</div>
         </div>
         <div className={'table' + ' ' + style.table}>
-          <Table rowSelection={rowSelection} columns={this.myDrawColumns} dataSource={historyList} loading={historyLoading} pagination={{ defaultCurrent: 1, showSizeChanger: true, pageSizeOptions: ['10', '20', '50'] }} />
+          <Table rowSelection={rowSelection} columns={this.myDrawColumns} dataSource={data} loading={historyLoading} pagination={{ defaultCurrent: 1, showSizeChanger: true, pageSizeOptions: ['10', '20', '50'] }} />
         </div>
 
         {

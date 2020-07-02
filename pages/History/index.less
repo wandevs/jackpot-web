@@ -59,6 +59,40 @@
       }
     }
   }
+
+  .searchTicket {
+    display: inline-block;
+    position: relative;
+    top: -8px;
+    left: 300px;
+
+    :global {
+      .ant-input {
+        display: inline-block;
+        background: rgba(48, 49, 71, 1);
+        border: none;
+        color: white;
+      }
+  
+      .ant-input-wrapper {
+        margin: 0px;
+      }
+  
+      .ant-input-group-addon {
+        background: rgba(255, 255, 255, 0);
+      }
+  
+      .ant-btn-primary {
+        background-color: #2f3f98;
+        border-color: #2f3f98;
+  
+        &:hover {
+          background-color: #3F51B5;
+          border-color: #3F51B5;
+        }
+      }
+    }
+  }
 }
 
 .table {
