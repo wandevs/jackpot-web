@@ -61,10 +61,10 @@
   }
 
   .searchTicket {
-    display: inline-block;
+    float: right;
     position: relative;
-    top: -8px;
-    left: 300px;
+    top: 12px;
+    right: 160px;
 
     :global {
       .ant-input {
@@ -73,19 +73,19 @@
         border: none;
         color: white;
       }
-  
+
       .ant-input-wrapper {
         margin: 0px;
       }
-  
+
       .ant-input-group-addon {
         background: rgba(255, 255, 255, 0);
       }
-  
+
       .ant-btn-primary {
         background-color: #2f3f98;
         border-color: #2f3f98;
-  
+
         &:hover {
           background-color: #3F51B5;
           border-color: #3F51B5;
@@ -133,12 +133,28 @@ h1 {
 @media screen and (max-width: 767px) {
   .normal {
     :global {
+      .title {
+        height: unset;
+        padding: 0px 10px;
+
+        .ellipsoidalButton {
+          margin: 0px;
+          margin-top: 6px;
+        }
+      }
+
       .title>span {
         max-width: 60vw;
         display: inline-block;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
+        line-height: unset;
+        margin: 10px 12px 0px 32px;
+      }
+
+      .title>img {
+        margin: 10px 12px 0px 12px;
       }
 
       .table {
@@ -167,6 +183,31 @@ h1 {
         min-width: unset;
         margin: 7px 0px;
         font-size: 1em;
+      }
+    }
+
+    .searchTicket {
+      width: 80vw !important;
+      float: none;
+      position: relative;
+      top: 0px;
+      right: 0px;
+      left: 0px;
+      bottom: 0px;
+      margin: auto;
+      margin-bottom: 8px;
+      margin-top: 8px;
+
+      :global {
+        .ant-input-group .ant-input {
+          position: relative;
+          top: unset;
+          right: unset;
+        }
+
+        .anticon-close-circle {
+          color: white;
+        }
       }
     }
   }
