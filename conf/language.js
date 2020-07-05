@@ -7,7 +7,7 @@ const language = {
         success: 'Success',
         failed: 'Failed',
         notReady: 'The page is not ready, please try later.',
-        sameNumberExist: 'The same raffle number already exists, please modify it directly in the table.',
+        sameNumberExist: `The same raffle number already exists, please modify 'DRAWS' directly in 'Ticket Selection'.`,
         raffleOverflow: 'The count of Raffle number should not over 50.',
         invalidNumber: 'The count of number is invalid.',
         clearAllRaffle: 'Do you Want to clear all tickets?',
