@@ -227,7 +227,7 @@ class History extends Component {
       return false;
     }
 
-    console.log('params:', params);
+    // console.log('params:', params);
 
     try {
       let transactionID = await selectedWallet.sendTransaction(params);
@@ -248,7 +248,7 @@ class History extends Component {
       });
       return transactionID;
     } catch (err) {
-      console.log(err.message);
+      // console.log(err.message);
       alertAntd(err.message);
       this.setState({
         principalButtonLoading: false,
@@ -359,7 +359,7 @@ class History extends Component {
     try {
       let transactionID = await selectedWallet.sendTransaction(params);
       watchTransactionStatus(transactionID, (ret) => {
-        console.log('ret:', ret);
+        // console.log('ret:', ret);
         if (ret) {
           alertAntd(Lang.history.widhdrawSuccess);
           this.setStakerInfo();
@@ -369,7 +369,7 @@ class History extends Component {
       });
       return transactionID;
     } catch (err) {
-      console.log(err.message);
+      // console.log(err.message);
       alertAntd(err.message);
       return false;
     }
@@ -382,7 +382,7 @@ class History extends Component {
   }
 
   onChange = (e) => {
-    let value = e.target.value
+    let value = e.target.value;
     this.setState({
       ticketFilter: value.trim().length > 0 ? value : false
     });
@@ -400,7 +400,7 @@ class History extends Component {
     if (ticketFilter) {
       for (let i = 0; i < historyList.length; i++) {
         let item = historyList[i];
-        if (item.code.indexOf(ticketFilter) !== -1) {
+        if (formatRaffleNumber(item.code).indexOf(ticketFilter) !== -1) {
           data.push(item);
         }
       }
