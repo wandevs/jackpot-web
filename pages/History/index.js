@@ -381,6 +381,13 @@ class History extends Component {
     })
   }
 
+  onChange = (e) => {
+    let value = e.target.value
+    this.setState({
+      ticketFilter: value.trim().length > 0 ? value : false
+    });
+  }
+
   render() {
     const { selectedRowKeys, historyLoading, historyList, raffleCount, totalStake, totalPrize, stakerInfoLoading, showClaim, ticketFilter } = this.state;
     const rowSelection = {
@@ -393,7 +400,7 @@ class History extends Component {
     if (ticketFilter) {
       for (let i = 0; i < historyList.length; i++) {
         let item = historyList[i];
-        if (item.code === ticketFilter) {
+        if (item.code.indexOf(ticketFilter) !== -1) {
           data.push(item);
         }
       }
@@ -428,12 +435,12 @@ class History extends Component {
           <img src={require('../../static/images/coupon.png')} />
           <span>My Raffle Number</span>
           <div className={style['searchTicket']}>
-            <Search placeholder="Search by ticket" enterButton size="default" style={{ width: 300 }} onSearch={this.onSearch} allowClear={true} />
+            <Search placeholder="Search by ticket" enterButton size="default" style={{ width: 300 }} onSearch={this.onSearch} onChange={this.onChange} allowClear={true} />
           </div>
           <div className={'guess-button ellipsoidalButton'} onClick={this.refundPrincipal}>Withdraw</div>
         </div>
         <div className={'table' + ' ' + style.table}>
-          <Table rowSelection={rowSelection} columns={this.myDrawColumns} dataSource={data} loading={historyLoading} pagination={{ defaultCurrent: 1, showSizeChanger: true, pageSizeOptions: ['10', '20', '50'] }} />
+          <Table rowSelection={rowSelection} columns={this.myDrawColumns} dataSource={data} loading={historyLoading} pagination={{ defaultCurrent: 1, showSizeChanger: true, pageSizeOptions: ['10', '20', '50'], position: 'top' }} />
         </div>
 
         {
