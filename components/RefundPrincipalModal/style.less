@@ -87,12 +87,13 @@
             background: rgba(31, 32, 52, 1);
             border: 1px solid red;
         }
-        
+
         .ant-form-item {
             margin-bottom: 16px;
         }
 
-        .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+        .ant-table-thead>tr>th,
+        .ant-table-tbody>tr>td {
             padding: 4px 16px;
         }
     }
@@ -174,6 +175,21 @@
     }
 }
 
+.account {
+    background: #1f2034;
+    border-radius: 20px;
+    text-align: center;
+
+    &[disabled] {
+        color: white;
+        background: #1f2034;
+        height: 44px;
+        line-height: 44px;
+        border: none;
+        font-size: 16px;
+    }
+}
+
 @media screen and (max-width: 767px) {
     .sendModal {
         :global {
@@ -186,7 +202,7 @@
 
                 .ant-modal-body {
                     padding: 4vw 6vw;
-                    
+
                     .HydroSDK-button {
                         width: 100% !important;
                         height: auto;

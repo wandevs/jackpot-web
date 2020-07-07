@@ -56,7 +56,7 @@ class RefundPrincipalModal extends Component {
 
   render() {
     const { confirmLoading } = this.state;
-    const { data, WalletButton } = this.props;
+    const { data, WalletButton, account } = this.props;
     return (
       <div>
         <Modal
@@ -69,7 +69,7 @@ class RefundPrincipalModal extends Component {
         >
           <Form layout={'vertical'}>
             <Form.Item label="To Address:">
-              <WalletButton />
+              <Input className={style.account} placeholder="Account" value={account} disabled/>
             </Form.Item>
           </Form>
           <div className={style['totalContainer']}>Total Redeem: <span>{this.amount} WAN</span></div>

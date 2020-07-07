@@ -192,12 +192,12 @@ class History extends Component {
     const address = selectedAccount ? selectedAccount.get('address') : null;
 
     if (codes.length === 0) {
-      alertAntd(Lang.history.selectRow);
+      message.warn(Lang.history.selectRow);
       return false
     }
 
     if (!address || address.length < 20) {
-      alertAntd(Lang.history.selectAddress);
+      message.warn(Lang.history.selectAddress);
       return false
     }
 
@@ -223,7 +223,7 @@ class History extends Component {
     }
 
     if (params.gasLimit == -1) {
-      alertAntd(Lang.history.estimateGasError);
+      message.error(Lang.history.estimateGasError);
       return false;
     }
 
@@ -235,7 +235,7 @@ class History extends Component {
         if (ret) {
           alertAntd(Lang.history.redeemSuccess);
         } else {
-          alertAntd(Lang.history.redeemFailed);
+          message.error(Lang.history.redeemFailed);
         }
         await this.resetData();
         this.setState({
@@ -248,8 +248,7 @@ class History extends Component {
       });
       return transactionID;
     } catch (err) {
-      // console.log(err.message);
-      alertAntd(err.message);
+      message.error(err.message);
       this.setState({
         principalButtonLoading: false,
         historyLoading: false,
@@ -352,25 +351,24 @@ class History extends Component {
     }
 
     if (params.gasLimit == -1) {
-      alertAntd(Lang.history.estimateGasError);
+      message.error(Lang.history.estimateGasError);
       return false;
     }
 
     try {
       let transactionID = await selectedWallet.sendTransaction(params);
       watchTransactionStatus(transactionID, (ret) => {
-        // console.log('ret:', ret);
         if (ret) {
           alertAntd(Lang.history.widhdrawSuccess);
           this.setStakerInfo();
         } else {
-          alertAntd(Lang.history.widhdrawFailed);
+          message.error(Lang.history.widhdrawFailed);
         }
       });
       return transactionID;
     } catch (err) {
       // console.log(err.message);
-      alertAntd(err.message);
+      message.error(err.message);
       return false;
     }
   }
@@ -448,6 +446,7 @@ class History extends Component {
             sendTransaction={this.sendRefundPrincipalTx}
             hideModal={this.hideModal}
             data={this.state.selectedRows}
+            account={this.props.selectedAccount.get('address')}
             WalletButton={WalletButtonLong} />
         }
       </div>

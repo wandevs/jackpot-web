@@ -156,12 +156,12 @@ class IndexPage extends Component {
     const address = selectedAccount ? selectedAccount.get('address') : null;
     selectUp[1] = selectUp[1].map(v => getWeb3().utils.toWei(v.toString()));
     if (wanBalance <= amount) {
-      alertAntd(Lang.entry.outOfBalance);
+      message.warn(Lang.entry.outOfBalance);
       return false;
     }
 
     if (!address || address.length < 20) {
-      alertAntd(Lang.entry.selectAddress);
+      message.warn(Lang.entry.selectAddress);
       return false
     }
 
@@ -191,7 +191,7 @@ class IndexPage extends Component {
     }
 
     if (params.gasLimit == -1) {
-      alertAntd(Lang.entry.estimateError);
+      message.warn(Lang.entry.estimateError);
       return false;
     }
 
@@ -206,14 +206,14 @@ class IndexPage extends Component {
           window.localStorage.removeItem(`${prefix}_selectionList`);
           this.resetPlaceHolder();
         } else {
-          alertAntd(Lang.entry.failed);
+          message.error(Lang.entry.failed);
         }
         this.setState({ modalVisible: false });
       });
       return transactionID;
     } catch (err) {
       console.log(err);
-      alertAntd(err);
+      message.error(err);
       return false;
     }
   }
