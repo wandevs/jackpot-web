@@ -209,10 +209,6 @@ class Layout extends Component {
     window.open('https://github.com/wandevs/jackpot-smart-contracts');
   }
 
-  openInsight = () => {
-    window.open('https://jacks-pot-chart.now.sh/');
-  }
-
   render() {
     let { prizePool, totalPool, tabKeyNow, jackpot, timeToClose, showCounter } = this.state;
 
@@ -324,7 +320,6 @@ class Layout extends Component {
               <li><span className={style['text']}>If there is no winner, the prize pot will automatically accumulate to the next cycle.</span></li>
               <li><span className={style['text']}>If you do not withdraw your tickets, those tickets will automatically participate in the next cycle with your chosen numbers.</span></li>
               <li><span className={style['text']}>Smart Contract Open Source:&nbsp;&nbsp;<a onClick={this.openSC} href="#">https://github.com/wandevs/jackpot-smart-contracts</a></span></li>
-              <li><span className={style['text']}>Jack's Pot Insight:&nbsp;&nbsp;<a onClick={this.openInsight} href="#">https://jacks-pot-chart.now.sh/</a></span></li>
             </ul>
           </div>
         </div>
