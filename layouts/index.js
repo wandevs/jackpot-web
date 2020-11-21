@@ -212,19 +212,31 @@ class Layout extends Component {
   render() {
     let { prizePool, totalPool, tabKeyNow, jackpot, timeToClose, showCounter } = this.state;
 
-    if (!isSwitchFinish()){
-      return (<div>Loading...</div>)
-    }
+    // if (!isSwitchFinish()){
+    //   return (<div>Loading...</div>)
+    // }
+
+    const walletReady = isSwitchFinish();
 
     return (
       <div className={style.layout}>
         <div className={style.header}>
-          <Wallet title="Wan Game" nodeUrl={getNodeUrl()} />
+          {
+            walletReady
+            ? <Wallet title="Wan Game" nodeUrl={getNodeUrl()} />
+            : null
+          }
+          
           <img className={style.logo} width="28px" height="28px" src={require('@/static/images/logo.png')} alt="Logo" />
           <div className={style.title}>Jack's Pot&nbsp;&nbsp;-&nbsp;&nbsp;The Wanchain based no loss lottery</div>
           <div className={style.howToPlay} onClick={this.howToPlay}>How to play</div>
           <img className={style.networkLogo} style={{ height: "25px", margin: "3px 8px 3px 3px" }} src={networkLogo} />
-          <WalletButton />
+          {
+            walletReady
+            ? <WalletButton />
+            : <div style={{marginTop: "5px"}}>Initializing wallet...</div>
+          }
+          
         </div>
 
         <div className={style.mainContainer}>
