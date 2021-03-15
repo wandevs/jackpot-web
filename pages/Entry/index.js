@@ -62,7 +62,7 @@ class IndexPage extends Component {
   async componentDidMount() {
     let timer = 0;
     while (this.props.selectedAccount === null) {
-      if (timer > 10) {
+      if (timer > 100) {
         message.info(Lang.history.accountUnfounded);
         return false;
       }
