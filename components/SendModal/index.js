@@ -69,6 +69,8 @@ class SendModal extends Component {
 
   handleOk = async (e) => {
     e.preventDefault();
+    alertAntd("Sorry, out of service. we will come back soon.");
+    return;
     this.setState({
       confirmLoading: true,
     });
