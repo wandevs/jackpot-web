@@ -16,7 +16,6 @@ import History from '../pages/History';
 import Result from '../pages/Result';
 
 import Wallet from '../components/Wallet';
-import styled from 'styled-components';
 
 
 const networkLogo = networkId == 1 ? require('@/static/images/mainnet.svg') : require('@/static/images/testnet.svg');
@@ -232,7 +231,7 @@ class Layout extends Component {
           <div className={style.title}>Jack's Pot&nbsp;&nbsp;-&nbsp;&nbsp;The Wanchain based no loss lottery</div>
           <div className={style.howToPlay} onClick={this.howToPlay}>How to play</div>
           <img className={style.networkLogo} style={{ height: "25px", margin: "3px 8px 3px 3px" }} src={networkLogo} />
-          <div className={style.howToPlay} onClick={() => {
+          <div className={style.walletButton} onClick={() => {
             wallet.resetApp().then(wallet.connect);
           }}>{!wallet.connected ? "Connect Wallet" : (wallet.address.slice(0, 6) + '...' + wallet.address.slice(-6))}</div>
         </div>
@@ -338,18 +337,5 @@ class Layout extends Component {
     );
   }
 }
-
-const WalletButton = styled.span`
-  border-radius: 15px;
-  background: #dcdcdc;
-  color: black;
-  height: 40px;
-  width: 160px;
-  padding: 8px;
-  margin: 5px;
-  float: right;
-  text-align: center;
-  cursor: pointer;
-`;
 
 export default Layout;

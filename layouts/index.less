@@ -57,11 +57,23 @@
     }
 }
 
-.mainContainer {
-    // width: 1200px;
-    // overflow: auto;
-    // margin: auto;
+.walletButton {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 14px;
+    padding: 0px 16px;
+    margin-right: 6px;
+    cursor: pointer;
 
+    &:hover {
+        color: rgba(255, 255, 255, 1);
+        border: 2px solid rgba(255, 255, 255, 1);
+    }
+}
+
+.mainContainer {
     .top {
         width: 100%;
         height: 500px;
@@ -437,23 +449,11 @@
             .networkLogo {
                 display: none;
             }
-        }
 
-        :global {
-            .HydroSDK-button {
+            .walletButton {
                 max-width: 40vw;
                 overflow: visible;
                 height: unset;
-                font-size: 3vw;
-            }
-
-            .HydroSDK-dialog {
-                width: 90vw;
-                position: absolute;
-                left: 5vw;
-                top: 5vw;
-                bottom: unset;
-                right: unset;
             }
         }
 
