@@ -157,6 +157,7 @@ class IndexPage extends Component {
 
     if (Number(balance)/1e18 <= amount) {
       message.warn(Lang.entry.outOfBalance);
+      callback(false);
       return false;
     }
 
