@@ -153,12 +153,12 @@ class IndexPage extends Component {
     const address = this.props.wallet.address;
     selectUp[1] = selectUp[1].map(v => getWeb3().utils.toWei(v.toString()));
 
-    this.props.wallet.web3.eth.getBalance(address).then(ret=>{
-      if (Number(ret)/1e18 <= amount) {
-        message.warn(Lang.entry.outOfBalance);
-        return false;
-      }
-    });
+    let balance = await this.props.wallet.web3.eth.getBalance(address);
+
+    if (Number(balance)/1e18 <= amount) {
+      message.warn(Lang.entry.outOfBalance);
+      return false;
+    }
 
     if (!address || address.length < 20) {
       message.warn(Lang.entry.selectAddress);
