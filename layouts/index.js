@@ -2,8 +2,6 @@ import { Component } from 'react';
 import withRouter from 'umi/withRouter';
 import { connect } from 'react-redux';
 import { Tabs, Row, Col, Modal } from 'antd';
-import { Wallet, getSelectedAccount, WalletButton, getSelectedAccountWallet } from "wan-dex-sdk-wallet";
-import "wan-dex-sdk-wallet/index.css";
 import style from './index.less';
 import "../pages/global.less";
 import { toUnitAmount, keepOneDecimal, formatRaffleNumber } from '../utils/utils.js';
@@ -16,9 +14,15 @@ import sleep from 'ko-sleep';
 import Entry from '../pages/Entry';
 import History from '../pages/History';
 import Result from '../pages/Result';
-import { selectWalletType } from 'wan-dex-sdk-wallet/build/actions/wallet';
+
+import Wallet from '../components/Wallet';
+import styled from 'styled-components';
+
+
 const networkLogo = networkId == 1 ? require('@/static/images/mainnet.svg') : require('@/static/images/testnet.svg');
 const { TabPane } = Tabs;
+
+
 
 class Layout extends Component {
   constructor(props) {
@@ -35,13 +39,14 @@ class Layout extends Component {
         m: '00',
         s: '00',
       },
+      wallet: {},
     };
   }
 
   async componentDidMount() {
     try {
-      while(true) {
-        if(isSwitchFinish()) {
+      while (true) {
+        if (isSwitchFinish()) {
           break;
         }
         await sleep(100);
@@ -212,31 +217,24 @@ class Layout extends Component {
   render() {
     let { prizePool, totalPool, tabKeyNow, jackpot, timeToClose, showCounter } = this.state;
 
-    // if (!isSwitchFinish()){
-    //   return (<div>Loading...</div>)
-    // }
-
-    const walletReady = isSwitchFinish();
+    const wallet = this.state.wallet;
 
     return (
       <div className={style.layout}>
         <div className={style.header}>
-          {
-            walletReady
-            ? <Wallet title="Wan Game" nodeUrl={getNodeUrl()} />
-            : null
-          }
-          
+          <Wallet setWallet={(wallet) => {
+            console.log('setWallet', wallet);
+            this.setState({ wallet });
+          }} wallet={wallet} />
+
+
           <img className={style.logo} width="28px" height="28px" src={require('@/static/images/logo.png')} alt="Logo" />
           <div className={style.title}>Jack's Pot&nbsp;&nbsp;-&nbsp;&nbsp;The Wanchain based no loss lottery</div>
           <div className={style.howToPlay} onClick={this.howToPlay}>How to play</div>
           <img className={style.networkLogo} style={{ height: "25px", margin: "3px 8px 3px 3px" }} src={networkLogo} />
-          {
-            walletReady
-            ? <WalletButton />
-            : <div style={{marginTop: "5px"}}>Initializing wallet...</div>
-          }
-          
+          <div className={style.howToPlay} onClick={() => {
+            wallet.resetApp().then(wallet.connect);
+          }}>{!wallet.connected ? "Connect Wallet" : (wallet.address.slice(0, 6) + '...' + wallet.address.slice(-6))}</div>
         </div>
 
         <div className={style.mainContainer}>
@@ -299,17 +297,17 @@ class Layout extends Component {
             <Tabs onChange={this.onTabChange} activeKey={this.state.tabKeyNow} size={'large'}>
               <TabPane tab="Select Here" key="1">
                 {
-                  tabKeyNow === '1' ? <Entry /> : <div></div>
+                  tabKeyNow === '1' ? <Entry wallet={wallet} /> : <div></div>
                 }
               </TabPane>
               <TabPane tab="Your Tickets" key="2">
                 {
-                  tabKeyNow === '2' ? <History /> : <div></div>
+                  tabKeyNow === '2' ? <History wallet={wallet} /> : <div></div>
                 }
               </TabPane>
               <TabPane tab="Past Draw Results" key="3">
                 {
-                  tabKeyNow === '3' ? <Result /> : <div></div>
+                  tabKeyNow === '3' ? <Result wallet={wallet} /> : <div></div>
                 }
               </TabPane>
             </Tabs>
@@ -341,13 +339,17 @@ class Layout extends Component {
   }
 }
 
-export default withRouter(connect(state => {
-  const selectedAccountID = state.WalletReducer.get('selectedAccountID');
-  return {
-    selectedAccount: getSelectedAccount(state),
-    selectedWallet: getSelectedAccountWallet(state),
-    networkId: state.WalletReducer.getIn(['accounts', selectedAccountID, 'networkId']),
-    selectedAccountID,
-    wanBalance: toUnitAmount(state.WalletReducer.getIn(['accounts', selectedAccountID, 'balance']), 18),
-  }
-})(Layout));
+const WalletButton = styled.span`
+  border-radius: 15px;
+  background: #dcdcdc;
+  color: black;
+  height: 40px;
+  width: 160px;
+  padding: 8px;
+  margin: 5px;
+  float: right;
+  text-align: center;
+  cursor: pointer;
+`;
+
+export default Layout;

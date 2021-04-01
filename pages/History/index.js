@@ -6,8 +6,6 @@ import { Component } from '../../components/base';
 import sleep from 'ko-sleep';
 import BigNumber from 'bignumber.js';
 import RefundPrincipalModal from '../../components/RefundPrincipalModal';
-import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt, WalletButtonLong } from "wan-dex-sdk-wallet";
-import "wan-dex-sdk-wallet/index.css";
 import { alertAntd, toUnitAmount, formatRaffleNumber, keepOneDecimal } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr, lotteryClosed } from '../../utils/contract.js';
 import { getNodeUrl, isSwitchFinish, getWeb3 } from '../../conf/web3switch.js';
@@ -83,7 +81,7 @@ class History extends Component {
 
   async componentDidMount() {
     let timer = 0;
-    while (this.props.selectedAccount === null) {
+    while (!this.props.wallet.connected) {
       if (timer > 10) {
         message.info(Lang.history.accountUnfounded);
         this.setState({
@@ -107,12 +105,12 @@ class History extends Component {
   }
 
   componentDidUpdate(pre) {
-    if (!pre.selectedAccount) {
+    if (!pre.wallet) {
       return;
     }
-    let preAddr = pre.selectedAccount.get('address');
-    if (this.props.selectedAccount) {
-      let currentAddr = this.props.selectedAccount.get('address');
+    let preAddr = pre.wallet.address;
+    if (this.props.wallet.address) {
+      let currentAddr = this.props.wallet.address;
       if (preAddr !== currentAddr) {
         this.resetData();
       }
@@ -120,7 +118,7 @@ class History extends Component {
   }
 
   setStakerInfo = async () => {
-    let address = this.props.selectedAccount.get('address');
+    let address = this.props.wallet.address;
     let { prize, codeCount } = await lotterySC().methods.userInfoMap(address).call();
     let pending = await lotterySC().methods.isUserPrizeWithdrawPending(address).call();
     const totalPrize = toUnitAmount(parseInt(prize), 18).toString();
@@ -132,7 +130,7 @@ class History extends Component {
   }
 
   resetData = async () => {
-    let address = this.props.selectedAccount.get('address');
+    let address = this.props.wallet.address;
     let historyData = await this.getHistoryData(address);
     this.setStakerInfo();
     let totalStake = historyData.reduce((t, n) => {
@@ -186,10 +184,9 @@ class History extends Component {
 
   sendRefundPrincipalTx = async () => {
     const { selectedRows } = this.state;
-    const { selectedAccount, selectedWallet } = this.props;
     const codes = selectedRows.map(v => Number(v.code));
     const encoded = await lotterySC().methods.redeem(codes).encodeABI();
-    const address = selectedAccount ? selectedAccount.get('address') : null;
+    const address = this.props.wallet.address;
 
     if (codes.length === 0) {
       message.warn(Lang.history.selectRow);
@@ -209,6 +206,7 @@ class History extends Component {
 
     const value = 0;
     let params = {
+      from: address,
       to: lotterySCAddr,
       data: encoded,
       value,
@@ -216,7 +214,7 @@ class History extends Component {
       gasLimit: "0x989680", // 10,000,000
     };
 
-    if (selectedWallet.type() == "EXTENSION") {
+    if (!window.injectWeb3) {
       params.gas = await this.estimateSendGas(value, codes, address);
     } else {
       params.gasLimit = await this.estimateSendGas(value, codes, address);
@@ -230,23 +228,25 @@ class History extends Component {
     // console.log('params:', params);
 
     try {
-      let transactionID = await selectedWallet.sendTransaction(params);
-      watchTransactionStatus(transactionID, async (ret) => {
-        if (ret) {
-          alertAntd(Lang.history.redeemSuccess);
-        } else {
-          message.error(Lang.history.redeemFailed);
-        }
-        await this.resetData();
-        this.setState({
-          principalButtonLoading: false,
-          historyLoading: false,
-          stakerInfoLoading: false,
-          selectedRows: [],
-          selectedRowKeys: [],
+      this.props.wallet.web3.eth.sendTransaction(params, (err, transactionID)=>{
+        console.log('transactionID', transactionID);
+        watchTransactionStatus(transactionID, this.props.wallet.web3, async (ret) => {
+          if (ret) {
+            alertAntd(Lang.history.redeemSuccess);
+          } else {
+            message.error(Lang.history.redeemFailed);
+          }
+          await this.resetData();
+          this.setState({
+            principalButtonLoading: false,
+            historyLoading: false,
+            stakerInfoLoading: false,
+            selectedRows: [],
+            selectedRowKeys: [],
+          });
         });
       });
-      return transactionID;
+      return true;
     } catch (err) {
       message.error(err.message);
       this.setState({
@@ -332,11 +332,11 @@ class History extends Component {
   }
 
   withdrawPrize = async () => {
-    const { selectedAccount, selectedWallet } = this.props;
     const encoded = await lotterySC().methods.prizeWithdraw().encodeABI();
-    const address = selectedAccount ? selectedAccount.get('address') : null;
+    const address = this.props.wallet.address;
     const value = 0;
     let params = {
+      from: address,
       to: lotterySCAddr,
       data: encoded,
       value,
@@ -344,7 +344,7 @@ class History extends Component {
       gasLimit: "0x989680", // 10,000,000
     };
 
-    if (selectedWallet.type() == "EXTENSION") {
+    if (!window.injectWeb3) {
       params.gas = await this.estimateSendGas2(value, address);
     } else {
       params.gasLimit = await this.estimateSendGas2(value, address);
@@ -356,16 +356,18 @@ class History extends Component {
     }
 
     try {
-      let transactionID = await selectedWallet.sendTransaction(params);
-      watchTransactionStatus(transactionID, (ret) => {
-        if (ret) {
-          alertAntd(Lang.history.widhdrawSuccess);
-          this.setStakerInfo();
-        } else {
-          message.error(Lang.history.widhdrawFailed);
-        }
+      this.props.wallet.web3.eth.sendTransaction(params, (err, transactionID)=>{
+        console.log('transactionID', transactionID);
+        watchTransactionStatus(transactionID, this.props.wallet.web3, (ret) => {
+          if (ret) {
+            alertAntd(Lang.history.widhdrawSuccess);
+            this.setStakerInfo();
+          } else {
+            message.error(Lang.history.widhdrawFailed);
+          }
+        });
       });
-      return transactionID;
+      return true;
     } catch (err) {
       // console.log(err.message);
       message.error(err.message);
@@ -446,21 +448,12 @@ class History extends Component {
             sendTransaction={this.sendRefundPrincipalTx}
             hideModal={this.hideModal}
             data={this.state.selectedRows}
-            account={this.props.selectedAccount.get('address')}
-            WalletButton={WalletButtonLong} />
+            account={this.props.wallet.address}
+            />
         }
       </div>
     );
   }
 }
 
-export default connect(state => {
-  const selectedAccountID = state.WalletReducer.get('selectedAccountID');
-  return {
-    selectedAccount: getSelectedAccount(state),
-    selectedWallet: getSelectedAccountWallet(state),
-    networkId: state.WalletReducer.getIn(['accounts', selectedAccountID, 'networkId']),
-    selectedAccountID,
-    wanBalance: toUnitAmount(state.WalletReducer.getIn(['accounts', selectedAccountID, 'balance']), 18),
-  }
-})(History);
+export default History;

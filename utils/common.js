@@ -1,13 +1,12 @@
-import { getTransactionReceipt } from "wan-dex-sdk-wallet";
 import { alertAntd } from './utils.js';
 
-let watchTransactionStatus = (txID, callback) => {
+let watchTransactionStatus = (txID, web3, callback) => {
     const getTransactionStatus = async () => {
-        const tx = await getTransactionReceipt(txID);
+        const tx = await web3.eth.getTransactionReceipt(txID);
         if (!tx) {
             setTimeout(() => getTransactionStatus(txID), 3000);
         } else if (callback) {
-            callback(Number(tx.status) === 1);
+            callback(tx.status);
         } else {
             alertAntd('success');
         }

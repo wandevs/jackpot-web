@@ -69,17 +69,18 @@ class SendModal extends Component {
 
   handleOk = async (e) => {
     e.preventDefault();
-    alertAntd("Sorry, out of service. we will come back soon.");
-    return;
+    // alertAntd("Sorry, out of service. we will come back soon.");
+    // return;
     this.setState({
       confirmLoading: true,
     });
-    let ret = await this.props.sendTransaction(this.amount, [this.codes, this.amounts]);
-    if (ret) {
-      this.props.watchTransactionStatus(ret, this.okCallback)
-    } else {
-      this.okCallback(false);
-    }
+    this.props.sendTransaction(this.amount, [this.codes, this.amounts], (ret)=>{
+      if (ret) {
+        this.props.watchTransactionStatus(ret, this.props.wallet.web3, this.okCallback)
+      } else {
+        this.okCallback(false);
+      }
+    });
   };
 
   handleCancel = () => {
@@ -88,7 +89,7 @@ class SendModal extends Component {
 
   render() {
     const { confirmLoading } = this.state;
-    const { data, WalletButton } = this.props;
+    const { data, account } = this.props;
     return (
       <div>
         <Modal
@@ -101,7 +102,7 @@ class SendModal extends Component {
         >
           <Form layout={'vertical'}>
             <Form.Item label="From Address:">
-              <WalletButton />
+              <Input className={style.account} placeholder="Account" value={account} disabled/>
             </Form.Item>
           </Form>
           <div className={style['totalContainer']}><span className={style.label}>Total Cost: </span><span className={style.value}>{this.amount.toString()} WAN</span></div>

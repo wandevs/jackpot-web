@@ -4,8 +4,6 @@ import { Component } from "../../components/base";
 import { Table, message, Modal, Tooltip } from 'antd';
 import SendModal from '../../components/SendModal';
 import { EditableCell, EditableFormRow } from "../../components/EditableRow";
-import { getSelectedAccount, WalletButton, WalletButtonLong, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
-import "wan-dex-sdk-wallet/index.css";
 import style from './index.less';
 import sleep from 'ko-sleep';
 import { alertAntd, toUnitAmount, formatRaffleNumber } from '../../utils/utils.js';
@@ -61,7 +59,7 @@ class IndexPage extends Component {
 
   async componentDidMount() {
     let timer = 0;
-    while (this.props.selectedAccount === null) {
+    while (!this.props.wallet || !this.props.wallet.address) {
       if (timer > 100) {
         message.info(Lang.history.accountUnfounded);
         return false;
@@ -151,14 +149,16 @@ class IndexPage extends Component {
     }
   }
 
-  sendTransaction = async (amount, selectUp) => {
-    const { selectedAccount, selectedWallet, wanBalance } = this.props;
-    const address = selectedAccount ? selectedAccount.get('address') : null;
+  sendTransaction = async (amount, selectUp, callback) => {
+    const address = this.props.wallet.address;
     selectUp[1] = selectUp[1].map(v => getWeb3().utils.toWei(v.toString()));
-    if (wanBalance <= amount) {
-      message.warn(Lang.entry.outOfBalance);
-      return false;
-    }
+
+    this.props.wallet.web3.eth.getBalance(address).then(ret=>{
+      if (Number(ret)/1e18 <= amount) {
+        message.warn(Lang.entry.outOfBalance);
+        return false;
+      }
+    });
 
     if (!address || address.length < 20) {
       message.warn(Lang.entry.selectAddress);
@@ -176,6 +176,7 @@ class IndexPage extends Component {
     const value = getWeb3().utils.toWei(amount.toString());
     const encoded = await lotterySC().methods.buy(...selectUp).encodeABI();
     const params = {
+      from: address,
       to: lotterySCAddr,
       data: encoded,
       value,
@@ -183,7 +184,7 @@ class IndexPage extends Component {
       gasLimit: "0x989680", // 10,000,000
     };
 
-    if (selectedWallet.type() == "EXTENSION") {
+    if (!window.injectWeb3) {
       params.gas = await this.estimateSendGas(value, selectUp, address);
     } else {
       params.gasLimit = await this.estimateSendGas(value, selectUp, address);
@@ -196,21 +197,24 @@ class IndexPage extends Component {
     }
 
     try {
-      let transactionID = await selectedWallet.sendTransaction(params);
-      // console.log('Tx ID:', transactionID);
-      watchTransactionStatus(transactionID, (ret) => {
-        if (ret) {
-          this.setState({
-            selectedCodes: []
-          });
-          window.localStorage.removeItem(`${prefix}_selectionList`);
-          this.resetPlaceHolder();
-        } else {
-          message.error(Lang.entry.failed);
-        }
-        this.setState({ modalVisible: false });
+      this.props.wallet.web3.eth.sendTransaction(params, (err, transactionID) => {
+        // console.log('Tx ID:', transactionID);
+        watchTransactionStatus(transactionID, this.props.wallet.web3, (ret) => {
+          if (ret) {
+            this.setState({
+              selectedCodes: []
+            });
+            window.localStorage.removeItem(`${prefix}_selectionList`);
+            this.resetPlaceHolder();
+          } else {
+            message.error(Lang.entry.failed);
+          }
+          this.setState({ modalVisible: false });
+          callback(ret);
+        });
       });
-      return transactionID;
+
+      return true;
     } catch (err) {
       console.log(err);
       message.error(err);
@@ -260,7 +264,7 @@ class IndexPage extends Component {
       return;
     }
 
-    if (this.props.selectedAccount == null) {
+    if (!this.props.wallet.connected) {
       message.warning(Lang.entry.notReady);
       this.setState({ selfAdd_loading: false });
       return false;
@@ -311,7 +315,7 @@ class IndexPage extends Component {
 
     const { selectedCodes, machineCnt } = this.state;
 
-    if (this.props.selectedAccount == null) {
+    if (!this.props.wallet.connected) {
       message.warning(Lang.entry.notReady);
       this.setState({ machineAdd_loading: false });
       return false;
@@ -385,7 +389,7 @@ class IndexPage extends Component {
   }
 
   getHistoryData = async () => {
-    let address = this.props.selectedAccount.get('address');
+    let address = this.props.wallet.address;
     let ret = await lotterySC().methods.getUserCodeList(address).call();
     return {
       amounts: ret.amounts,
@@ -446,13 +450,13 @@ class IndexPage extends Component {
 
   resetPlaceHolder = async () => {
     const { selectedCodes } = this.state;
-    let address = this.props.selectedAccount.get('address');
+    let address = this.props.wallet.address;
     let ret = await lotterySC().methods.getUserCodeList(address).call();
     let { codes } = ret;
     const t = codes.length + selectedCodes.length;
     // console.log('t:', t);
     this.setState({
-      placeholder: t < 49 ? `1 - ${50 -t}` : (t === 49 ? '1' : '0')
+      placeholder: t < 49 ? `1 - ${50 - t}` : (t === 49 ? '1' : '0')
     });
   }
 
@@ -544,20 +548,13 @@ class IndexPage extends Component {
             watchTransactionStatus={watchTransactionStatus}
             hideModal={this.hideModal}
             data={data}
-            WalletButton={WalletButtonLong} />
+            wallet={this.props.wallet}
+            account={this.props.wallet.address}
+            />
         }
       </div>
     );
   }
 }
 
-export default connect(state => {
-  const selectedAccountID = state.WalletReducer.get('selectedAccountID');
-  return {
-    selectedAccount: getSelectedAccount(state),
-    selectedWallet: getSelectedAccountWallet(state),
-    networkId: state.WalletReducer.getIn(['accounts', selectedAccountID, 'networkId']),
-    selectedAccountID,
-    wanBalance: toUnitAmount(state.WalletReducer.getIn(['accounts', selectedAccountID, 'balance']), 18),
-  }
-})(IndexPage);
+export default IndexPage;

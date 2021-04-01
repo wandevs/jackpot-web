@@ -3,9 +3,6 @@ import React from 'react';
 import { Table, message, Input } from 'antd';
 import style from './index.less';
 import { Component } from '../../components/base';
-
-import { getSelectedAccount, getSelectedAccountWallet, getTransactionReceipt } from "wan-dex-sdk-wallet";
-import "wan-dex-sdk-wallet/index.css";
 import { toUnitAmount, formatRaffleNumber, keepOneDecimal } from '../../utils/utils.js';
 import { web3, lotterySC, lotterySCAddr } from '../../utils/contract.js';
 import { getNodeUrl, isSwitchFinish, getWeb3 } from '../../conf/web3switch.js';
@@ -213,13 +210,4 @@ class Result extends Component {
   }
 }
 
-export default connect(state => {
-  const selectedAccountID = state.WalletReducer.get('selectedAccountID');
-  return {
-    selectedAccount: getSelectedAccount(state),
-    selectedWallet: getSelectedAccountWallet(state),
-    networkId: state.WalletReducer.getIn(['accounts', selectedAccountID, 'networkId']),
-    selectedAccountID,
-    wanBalance: toUnitAmount(state.WalletReducer.getIn(['accounts', selectedAccountID, 'balance']), 18),
-  }
-})(Result);
+export default Result;

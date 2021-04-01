@@ -56,7 +56,7 @@ class RefundPrincipalModal extends Component {
 
   render() {
     const { confirmLoading } = this.state;
-    const { data, WalletButton, account } = this.props;
+    const { data, account } = this.props;
     return (
       <div>
         <Modal

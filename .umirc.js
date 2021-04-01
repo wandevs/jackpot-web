@@ -8,7 +8,7 @@ export default {
         antd: true,
       }
     ],
-    "./umi-plugin-entry.js"
+    // "./umi-plugin-entry.js"
   ],
   routes: [
     { path: '/', component: '../layouts' },
