@@ -9,7 +9,7 @@ const INITIAL_STATE = {
   web3: null,
   provider: null,
   connected: false,
-  networkId: 1,
+  networkId: 888,
   chainType: "wan"
 };
 
@@ -39,7 +39,7 @@ class Wallet extends React.Component {
     this.web3Modal = new Web3Modal({
       network: 'mainnet',
       cacheProvider: true,
-      disableInjectedProvider: true, // MetaMask: false
+      disableInjectedProvider: false, // MetaMask: false
       providerOptions: this.getProviderOptions()
     });
   }
