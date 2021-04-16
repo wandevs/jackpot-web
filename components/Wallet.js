@@ -1,6 +1,7 @@
 import React from 'react'
 import Web3Modal from "@wandevs/web3modal";
 import { WanWalletConnector } from '@web3-react-wan/wanwallet-connector'
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import Web3 from "web3";
 
@@ -114,7 +115,20 @@ class Wallet extends React.Component {
           pollingInterval: 15000,
           requestTimeoutMs: 300000
         })
-      }
+      },
+      walletconnect: {
+        package: WalletConnectProvider,
+        options: {
+          infuraId: '326fb0397704475abffcfa9ca9c0ee5a',
+          rpcUrl: 'https://rpc.zookeeper.finance',
+          chainId: 888,
+          networkId: 888,
+          rpc: {
+            888: 'https://rpc.zookeeper.finance',
+            999: 'https://rpc.zookeeper.finance/testnet',
+          }
+        }
+      },
     };
     return providerOptions;
   };
