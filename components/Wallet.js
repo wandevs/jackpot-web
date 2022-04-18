@@ -110,7 +110,7 @@ class Wallet extends React.Component {
       },
       wanwallet: {
         package: new WanWalletConnector({
-          chainId: 1,
+          chainId: 3,
           url: 'https://gwan-ssl.wandevs.org:56891',
           pollingInterval: 15000,
           requestTimeoutMs: 300000
