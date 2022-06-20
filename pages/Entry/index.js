@@ -189,6 +189,7 @@ class IndexPage extends Component {
       params.gas = await this.estimateSendGas(value, selectUp, address);
     } else {
       params.gasLimit = await this.estimateSendGas(value, selectUp, address);
+      params.chainId = 1;
       // params.gasPrice = "0x2540BE400";
     }
 

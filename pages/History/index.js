@@ -218,6 +218,7 @@ class History extends Component {
       params.gas = await this.estimateSendGas(value, codes, address);
     } else {
       params.gasLimit = await this.estimateSendGas(value, codes, address);
+      params.chainId = 1;
     }
 
     if (params.gasLimit == -1) {
@@ -348,6 +349,7 @@ class History extends Component {
       params.gas = await this.estimateSendGas2(value, address);
     } else {
       params.gasLimit = await this.estimateSendGas2(value, address);
+      params.chainId = 1;
     }
 
     if (params.gasLimit == -1) {
