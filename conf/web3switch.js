@@ -8,8 +8,7 @@ let nodeUrlsTestnet = [
 ];
 
 let nodeUrlsMainnet = [
-    'wss://api.wanchain.org:8443/ws/v3/627f78bd371c3980a8782a505ffb7ec263ae0031213bb0cd2d10ed32e25b4f29',
-    'wss://api.wanglutech.net:8443/ws/v3/627f78bd371c3980a8782a505ffb7ec263ae0031213bb0cd2d10ed32e25b4f29',
+    'https://gwan-ssl.wandevs.org:56891',
 ]
 
 let nodeUrls = networkId === 1 ? nodeUrlsMainnet : nodeUrlsTestnet;
