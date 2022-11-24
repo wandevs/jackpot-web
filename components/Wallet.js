@@ -1,16 +1,17 @@
 import React from 'react'
-import Web3Modal from "@wandevs/web3modal";
+import Web3Modal from '@wandevs/web3modal';
 import { WanWalletConnector } from '@web3-react-wan/wanwallet-connector'
-import WalletConnectProvider from "@walletconnect/web3-provider";
-
+import WalletConnect from "@walletconnect/web3-provider";
 import Web3 from "web3";
+import { networkId } from '../conf/config';
+const chainId = networkId;
 
 const INITIAL_STATE = {
   address: "",
   web3: null,
   provider: null,
   connected: false,
-  networkId: 888,
+  networkId: 1,
   chainType: "wan"
 };
 
@@ -26,7 +27,8 @@ class Wallet extends React.Component {
     const intiState = {
       ...INITIAL_STATE,
       resetApp: this.resetApp,
-      connect: this.onConnect
+      connect: this.onConnect,
+      logo: this.getLogo,
     };
 
     this.setWallet = props.setWallet;
@@ -35,12 +37,12 @@ class Wallet extends React.Component {
     if (typeof window === 'undefined') {
       return;
     }
-
+    
     console.debug('new web3modal');
     this.web3Modal = new Web3Modal({
       network: 'mainnet',
       cacheProvider: true,
-      disableInjectedProvider: false, // MetaMask: false
+      disableInjectedProvider: false,
       providerOptions: this.getProviderOptions()
     });
   }
@@ -56,9 +58,13 @@ class Wallet extends React.Component {
     }
   }
 
-  onConnect = async () => {
-    const provider = await this.web3Modal.connect();
+  getLogo = () => {
+    return this.web3Modal.getLogo();
+  }
 
+  onConnect = async () => {
+    let provider;
+    
     try {
       if (window.injectWeb3) {
         provider = await this.web3Modal.connectTo('wanwallet');
@@ -91,12 +97,13 @@ class Wallet extends React.Component {
       networkId,
       chainType: this.web3Modal.cachedProvider === 'wanmask' || this.web3Modal.cachedProvider === 'wanwallet' ? 'wan' : 'eth',
       resetApp: this.resetApp,
-      connect: this.onConnect
+      connect: this.onConnect,
+      logo: this.getLogo,
     });
   };
 
   subscribeProvider = async (provider) => {
-    if (!provider.on) {
+    if (!provider || !provider.on) {
       return;
     }
     provider.on("close", () => this.resetApp());
@@ -131,7 +138,7 @@ class Wallet extends React.Component {
         })
       },
       walletconnect: {
-        package: WalletConnectProvider,
+        package: WalletConnect,
         options: {
           infuraId: '326fb0397704475abffcfa9ca9c0ee5a',
           rpcUrl: 'https://gwan-ssl.wandevs.org:56891',
@@ -140,14 +147,18 @@ class Wallet extends React.Component {
           rpc: {
             888: 'https://gwan-ssl.wandevs.org:56891',
             999: 'https://gwan-ssl.wandevs.org:46891',
-          }
-        }
+          },
+        },
       },
     };
     return providerOptions;
   };
 
   resetApp = async () => {
+    if (!this.web3Modal) {
+      return;
+    }
+
     const { web3 } = this.props.wallet;
     if (web3 && web3.currentProvider && web3.currentProvider.close) {
       await web3.currentProvider.close();
